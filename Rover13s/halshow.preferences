@@ -1,0 +1,38 @@
+# Halshow settings
+# This file is generated automatically.
+wm geometry . 740x707+72+127
+placeFrames 0.4127906976744186
+set ::ratio 0.4127906976744186
+set ::old_w_leftf 160
+set ::watchlist {
+    pin+motion.is-all-homed
+    pin+hm2_7i96s.0.7i77.0.0.output-00
+    pin+hm2_7i96s.0.7i77.0.0.input-01
+    pin+hm2_7i96s.0.7i77.0.0.input-02
+    pin+hm2_7i94.0.7i84.0.2.output-05
+    pin+hm2_7i94.0.7i84.0.2.output-04
+    pin+hm2_7i94.0.7i84.0.2.output-07
+    pin+motion.enable
+    pin+motion.feed-inhibit
+    pin+motion.jog-inhibit
+    pin+motion.jog-is-active
+    pin+hm2_7i94.0.7i84.0.2.output-01
+    pin+hm2_7i96s.0.read.time
+    pin+hm2_7i96s.0.read-request.time
+    pin+hm2_7i96s.0.ssr.00.out-00
+    pin+hm2_7i96s.0.7i77.0.1.analogout0
+    pin+spindle.0.speed-cmd-rps
+    pin+spindle.0.speed-in
+    pin+motion.current-vel
+    pin+motion.analog-out-03
+    pin+spindle.0.speed-out
+    pin+spindle.0.on
+    pin+spindle.0.at-speed
+}
+set ::workmode watchhal
+set ::watchInterval 100
+set ::col1_width 100
+set ::ffmts 
+set ::ifmts 
+set ::alwaysOnTop 0
+set ::autoSaveWatchlist 1

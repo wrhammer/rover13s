@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MachineConfiguration>
+    <Tools>
+        <!-- Vertical drills on X-axis -->
+        <ToolSeries id="101" description="Vertical X-Axis Drill Row">
+            <Tool id="1" signal="spindle1drop" description="Drill 1 on X-axis"/>
+            <Tool id="2" signal="spindle2drop" description="Drill 2 on X-axis"/>
+            <Tool id="3" signal="spindle3drop" description="Drill 3 on X-axis"/>
+            <Tool id="4" signal="spindle4drop" description="Drill 4 on X-axis"/>
+            <Tool id="5" signal="spindle5drop" description="Drill 5 on X-axis"/>
+        </ToolSeries>
+
+        <!-- Vertical drills on Y-axis -->
+        <ToolSeries id="102" description="Vertical Y-Axis Drill Row">
+            <Tool id="6" signal="spindle6drop" description="Drill 1 on Y-axis"/>
+            <Tool id="7" signal="spindle7drop" description="Drill 2 on Y-axis"/>
+            <Tool id="8" signal="spindle8drop" description="Drill 3 on Y-axis"/>
+            <Tool id="9" signal="spindle9drop" description="Drill 4 on Y-axis"/>
+            <Tool id="10" signal="spindle10drop" description="Drill 5 on Y-axis"/>
+        </ToolSeries>
+
+        <!-- Horizontal drills -->
+        <ToolSeries id="110" description="Horizontal Y-Axis Drills">
+            <Tool id="11" signal="horizontalYPosDrop" description="Horizontal drill +Y"/>
+            <Tool id="12" signal="horizontalYNegDrop" description="Horizontal drill -Y"/>
+        </ToolSeries>
+        <ToolSeries id="120" description="Horizontal X-Axis Drills">
+            <Tool id="13" signal="horizontalXPosDrop" description="Horizontal drill +X"/>
+            <Tool id="14" signal="horizontalXNegDrop" description="Horizontal drill -X"/>
+        </ToolSeries>
+
+        <!-- Saw blade -->
+        <ToolSeries id="201" description="Saw Blade">
+            <Tool id="15" signal="sawBladeActivate" description="X-axis Saw Blade"/>
+        </ToolSeries>
+
+        <!-- Router head -->
+        <ToolSeries id="301" description="Router Head">
+            <Tool id="16" signal="routerActivate" description="Main Router Head"/>
+        </ToolSeries>
+    </Tools>
+
+    <Delays>
+        <Delay name="toolActivationDelay" val="1.5" description="Delay after activating tools"/>
+    </Delays>
+</MachineConfiguration>
