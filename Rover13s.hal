@@ -18,7 +18,7 @@ setp    hm2_7i94.0.watchdog.timeout_ns 5000000
 
 loadrt pid names=pid.x,pid.y,pid.z,pid.s
 
-loadrt classicladder_rt numPhysInputs=40 numPhysOutputs=40 numSections=15
+loadrt classicladder_rt numPhysInputs=50 numPhysOutputs=50 numSections=15
 addf classicladder.0.refresh servo-thread
 loadusr classicladder --nogui rover-ladder.clp
 
@@ -211,6 +211,9 @@ net z-pos-limit     =>  	joint.2.pos-lim-sw-in
 setp   hm2_7i96s.0.7i77.0.1.analogout5-scalemax  [SPINDLE_0]OUTPUT_SCALE
 setp   hm2_7i96s.0.7i77.0.1.analogout5-minlim    [SPINDLE_0]OUTPUT_MIN_LIMIT
 setp   hm2_7i96s.0.7i77.0.1.analogout5-maxlim    [SPINDLE_0]OUTPUT_MAX_LIMIT
+
+net spindle-speed 	spindle.0.speed-out 	hm2_7i96s.0.7i77.0.1.analogout5
+net spindle-on-1 	spindle.0.on		classicladder.0.in-12
 
 ## BELOW FROM BEVINS INI CONFIG ##
 ## MAY NOT NEED IT              ##

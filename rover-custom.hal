@@ -37,10 +37,9 @@ net speed-incrs  		hm2_7i96s.0.7i77.0.0.input-11
 net speed-dcrs   		hm2_7i96s.0.7i77.0.0.input-12
 net enable-axes			hm2_7i96s.0.7i77.0.0.output-01		classicladder.0.out-02	
 net reset-vfd			hm2_7i96s.0.7i77.0.0.output-02
-net start-bitsnblade		hm2_7i96s.0.7i77.0.0.output-03
-net vfd-call-to-run  		hm2_7i96s.0.7i77.0.0.output-05
-net vfd-overload		hm2_7i96s.0.7i77.0.0.input-13
-
+net start-bitsnblade		hm2_7i96s.0.7i77.0.0.output-03		motion.digital-out-17
+net vfd-call-to-run  		hm2_7i96s.0.7i77.0.0.output-05		classicladder.0.out-12
+net vfd-overload		hm2_7i96s.0.7i77.0.0.input-13		motion.digital-in-05
 net low-vac			hm2_7i96s.0.7i77.0.0.output-04		classicladder.0.out-03
 
 
@@ -55,7 +54,7 @@ net blade-is-dwn		hm2_7i94.0.7i84.0.1.input-01		motion.digital-in-01
 ### ROUTER SPINDLE POSITION - DOWN IS IN WORKING POSITION ###
 net router-is-up		hm2_7i94.0.7i84.0.0.input-02		motion.digital-in-02
 net router-is-down		hm2_7i94.0.7i84.0.0.input-03		motion.digital-in-03
-net tool-locked-present		hm2_7i94.0.7i84.0.0.input-04
+net tool-locked-present		hm2_7i94.0.7i84.0.0.input-04		motion.digital-in-04
 net tool-released		hm2_7i94.0.7i84.0.0.input-05		classicladder.0.in-11
 net release-tool-btn		hm2_7i94.0.7i84.0.0.input-06		classicladder.0.in-10
 net x-safe-zone			hm2_7i94.0.7i84.0.0.input-07
