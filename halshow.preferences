@@ -1,23 +1,16 @@
 # Halshow settings
 # This file is generated automatically.
-wm geometry . 740x707+1104+157
+wm geometry . 740x707+1069+183
 placeFrames 0.4127906976744186
 set ::ratio 0.4127906976744186
 set ::old_w_leftf 160
 set ::watchlist {
     pin+motion.is-all-homed
-    pin+hm2_7i96s.0.7i77.0.0.output-00
-    pin+hm2_7i96s.0.7i77.0.0.input-01
-    pin+hm2_7i96s.0.7i77.0.0.input-02
-    pin+hm2_7i94.0.7i84.0.2.output-05
-    pin+hm2_7i94.0.7i84.0.2.output-04
-    pin+hm2_7i94.0.7i84.0.2.output-07
     pin+motion.enable
     pin+motion.analog-out-03
     pin+spindle.0.speed-out
     pin+spindle.0.on
     pin+spindle.0.at-speed
-    pin+hm2_7i94.0.7i84.0.2.output-00
     sig+vspindle-1-down
     pin+spindle.0.orient
     pin+spindle.0.speed-in
@@ -27,6 +20,11 @@ set ::watchlist {
     pin+hm2_7i96s.0.7i77.0.0.output-12
     pin+hm2_7i96s.0.7i77.0.0.output-05
     pin+hm2_7i96s.0.7i77.0.0.input-07
+    pin+spindle.0.speed-cmd-rps
+    pin+spindle.0.speed-out-abs
+    pin+gmoccapy.spindle_feedback_bar
+    pin+motion.digital-in-16
+    pin+motion.digital-out-16
 }
 set ::workmode watchhal
 set ::watchInterval 100

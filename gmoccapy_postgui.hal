@@ -17,3 +17,4 @@ net tooloffset-z  => gmoccapy.tooloffset-z
 #  ---spindle-at-speed indicator---
 
 net spindle-at-speed => gmoccapy.spindle_at_speed_led
+net spindle-speed gmoccapy.spindle_feedback_bar
