@@ -39,10 +39,10 @@ def remap_m6(self, **params):
         previous_tool = stat.tool_in_spindle
 
         # First, retract any currently active tools
-        router_up = bool(stat.din[2])  # motion.digital-in-02
-        router_down = bool(stat.din[3])  # motion.digital-in-03
         blade_up = bool(stat.din[0])  # motion.digital-in-00
         blade_down = bool(stat.din[1])  # motion.digital-in-01
+        router_up = bool(stat.din[2])  # motion.digital-in-02
+        router_down = bool(stat.din[3])  # motion.digital-in-03
 
         # Define simple tools (those without position feedback)
         simple_tools = {
