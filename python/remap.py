@@ -5,15 +5,7 @@
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
 #
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
-#
-#   You should have received a copy of the GNU General Public License
-#   along with this program; if not, write to the Free Software
-#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#
+
 from stdglue import *
 import linuxcnc
 import time  # Add import for sleep function
@@ -21,21 +13,45 @@ import emccanon
 from itertools import count
 
 def get_simple_tools():
-    """Dynamically build the simple_tools dictionary from the tool table."""
+    """Dynamically build the simple_tools dictionary from the tool table.
+    Special pin mapping:
+    - Tools 1-10: map to pins 0-9 respectively
+    - Tools 11-12: both map to pin 10
+    - Tools 13-14: both map to pin 11
+    - Tools 15-16: both map to pin 12
+    """
     stat = linuxcnc.stat()
     stat.poll()
     simple_tools = {}
     
-    # Iterate through possible tool numbers
-    for tool_num in range(1, 17):
-        # Check if tool exists in tool table
+    # Handle tools 1-10 with direct pin mapping
+    for tool_num in range(1, 11):
         for tool in stat.tool_table:
             if tool.id == tool_num:
-                # Map tool numbers 1-16 to pins 0-15
-                down_pin = tool_num - 1
                 simple_tools[tool_num] = {
-                    "down_pin": down_pin,
-                    "name": tool.comment or f"Tool-{tool_num}"  # Use tool comment from tool table, fallback to generic name
+                    "down_pin": tool_num - 1,  # Tools 1-10 map directly to pins 0-9
+                    "name": tool.comment or f"Tool-{tool_num}"
+                }
+                break
+    
+    # Handle special pin mappings for tools 11-16
+    special_mappings = {
+        11: {"pin": 10, "pair": 12},  # Tools 11 and 12 share pin 10
+        12: {"pin": 10, "pair": 11},
+        13: {"pin": 11, "pair": 14},  # Tools 13 and 14 share pin 11
+        14: {"pin": 11, "pair": 13},
+        15: {"pin": 12, "pair": 16},  # Tools 15 and 16 share pin 12
+        16: {"pin": 12, "pair": 15}
+    }
+    
+    for tool_num, mapping in special_mappings.items():
+        for tool in stat.tool_table:
+            if tool.id == tool_num:
+                simple_tools[tool_num] = {
+                    "down_pin": mapping["pin"],
+                    "name": tool.comment or f"Tool-{tool_num}",
+                    "shared_pin": True,
+                    "paired_tool": mapping["pair"]
                 }
                 break
     
@@ -68,12 +84,14 @@ def remap_m6(self, **params):
         # Get the current simple tools from the tool table
         simple_tools = get_simple_tools()
 
-        # Fixed Indentation Here
+        # Fixed Indentation Her
         if previous_tool in simple_tools and previous_tool != tool_number:
             prev_tool_info = simple_tools[previous_tool]
-            print(f"Retracting {prev_tool_info['name']}")
-            cmd.mdi(f"M65 P{prev_tool_info['down_pin']}")  # Release the previous tool's down command
-            cmd.wait_complete()
+            # Only retract if we're not switching to a tool that shares the same pin
+            if not (prev_tool_info.get("shared_pin") and tool_number == prev_tool_info.get("paired_tool")):
+                print(f"Retracting {prev_tool_info['name']}")
+                cmd.mdi(f"M65 P{prev_tool_info['down_pin']}")  # Release the previous tool's down command
+                cmd.wait_complete()
 
         # T18 (Router) - Logic Restored
         if previous_tool == 18 and previous_tool != tool_number:  
@@ -106,9 +124,12 @@ def remap_m6(self, **params):
         # Activate new tool
         if tool_number in simple_tools:
             tool_info = simple_tools[tool_number]
-            print(f"Activating {tool_info['name']}")
-            cmd.mdi(f"M64 P{tool_info['down_pin']}")
-            cmd.wait_complete()
+            # Only activate if we're not already using this pin (in case of shared pins)
+            if not (tool_info.get("shared_pin") and 
+                   previous_tool == tool_info.get("paired_tool")):
+                print(f"Activating {tool_info['name']}")
+                cmd.mdi(f"M64 P{tool_info['down_pin']}")
+                cmd.wait_complete()
 
         # Execute the manual tool change
         print(f"Manual tool change: Please change to Tool {tool_number}")
