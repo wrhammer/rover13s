@@ -17,12 +17,35 @@
 from stdglue import *
 import linuxcnc
 import time  # Add import for sleep function
+import emccanon
+from itertools import count
+
+def get_simple_tools():
+    """Dynamically build the simple_tools dictionary from the tool table."""
+    stat = linuxcnc.stat()
+    stat.poll()
+    simple_tools = {}
+    
+    # Iterate through possible tool numbers
+    for tool_num in range(1, 17):
+        # Check if tool exists in tool table
+        for tool in stat.tool_table:
+            if tool.id == tool_num:
+                # Map tool numbers 1-16 to pins 0-15
+                down_pin = tool_num - 1
+                simple_tools[tool_num] = {
+                    "down_pin": down_pin,
+                    "name": tool.comment or f"Tool-{tool_num}"  # Use tool comment from tool table, fallback to generic name
+                }
+                break
+    
+    return simple_tools
 
 def remap_m6(self, **params):
     """Remap M6 to handle tool changes with verification for router (T18) and saw blade (T17)."""
     cmd = linuxcnc.command()
     stat = linuxcnc.stat()
-    previous_tool = stat.tool_in_spindle  # <- Fixed indentation
+    previous_tool = stat.tool_in_spindle
 
     stat.poll()  # Ensure we have fresh data from LinuxCNC
 
@@ -42,35 +65,18 @@ def remap_m6(self, **params):
         router_up = bool(stat.din[2])  # motion.digital-in-02
         router_down = bool(stat.din[3])  # motion.digital-in-03
 
-        # Define simple tools (those without position feedback)
-        simple_tools = {
-            1: {"down_pin": 0, "name": "V-Y-Spindle-1"},
-            2: {"down_pin": 1, "name": "V-Y-Spindle-2"},
-            3: {"down_pin": 2, "name": "V-Y-Spindle-3"},
-            4: {"down_pin": 3, "name": "V-Y-Spindle-4"},
-            5: {"down_pin": 4, "name": "V-Y-Spindle-5"},
-            6: {"down_pin": 5, "name": "V-X-Spindle-6"},
-            7: {"down_pin": 6, "name": "V-X-Spindle-7"},
-            8: {"down_pin": 7, "name": "V-X-Spindle-8"},
-            9: {"down_pin": 8, "name": "V-X-Spindle-9"},
-            10: {"down_pin": 9, "name": "V-X-Spindle-10"},
-            11: {"down_pin": 10, "name": "H-X-Spindle-11"},
-            12: {"down_pin": 11, "name": "H-X-Spindle-12"},
-            13: {"down_pin": 12, "name": "H-X-Spindle-13"},
-            14: {"down_pin": 13, "name": "H-X-Spindle-14"},
-            15: {"down_pin": 14, "name": "H-Y-Spindle-15"},
-            16: {"down_pin": 15, "name": "H-Y-Spindle-16"},
-        }
+        # Get the current simple tools from the tool table
+        simple_tools = get_simple_tools()
 
-        # ✅ Fixed Indentation Here
+        # Fixed Indentation Here
         if previous_tool in simple_tools and previous_tool != tool_number:
             prev_tool_info = simple_tools[previous_tool]
             print(f"Retracting {prev_tool_info['name']}")
             cmd.mdi(f"M65 P{prev_tool_info['down_pin']}")  # Release the previous tool's down command
             cmd.wait_complete()
 
-        # ✅ T18 (Router) - Logic Restored
-        if tool_number != 18:  
+        # T18 (Router) - Logic Restored
+        if previous_tool == 18 and previous_tool != tool_number:  
             if router_down:  
                 print("Retracting Router")
                 cmd.mdi("M65 P13")  
@@ -83,8 +89,8 @@ def remap_m6(self, **params):
                 print("Router already up: Releasing P14")
                 cmd.mdi("M65 P14")  
 
-        # ✅ T17 (Saw Blade) - Logic Restored
-        if tool_number != 17:
+        # T17 (Saw Blade) - Logic Restored
+        if previous_tool == 17 and previous_tool != tool_number:
             if blade_down:
                 print("Retracting Saw Blade")
                 cmd.mdi("M65 P16")  
@@ -104,8 +110,16 @@ def remap_m6(self, **params):
             cmd.mdi(f"M64 P{tool_info['down_pin']}")
             cmd.wait_complete()
 
-        # Apply Tool Offsets
-        cmd.mdi(f"G43 H{tool_number}")  
+        # Execute the manual tool change
+        print(f"Manual tool change: Please change to Tool {tool_number}")
+        emccanon.CHANGE_TOOL_NUMBER(tool_number)  # This updates LinuxCNC's internal state
+        self.current_tool = tool_number
+        self.selected_tool = -1  # Reset selection after change
+        self.toolchange_flag = True
+        
+        # Apply all offsets from tool table using G10
+        cmd.mdi(f"G10 L1 P{tool_number}")  # This loads all offsets for the tool from the tool table
+        cmd.mdi("G43")  # Enable tool length compensation with the loaded offsets
         cmd.wait_complete()
 
         print(f"Tool change completed successfully. Changed from T{previous_tool} to T{tool_number}.")
