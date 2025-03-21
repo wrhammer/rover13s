@@ -22,6 +22,8 @@ set ::watchlist {
     pin+hm2_7i94.0.7i84.0.0.input-01
     pin+hm2_7i94.0.7i84.0.1.output-02
     pin+hm2_7i94.0.7i84.0.1.output-03
+    pin+hm2_7i94.0.7i84.0.0.input-02
+    pin+hm2_7i94.0.7i84.0.0.input-03
 }
 set ::workmode watchhal
 set ::watchInterval 100
