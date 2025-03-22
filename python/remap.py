@@ -102,34 +102,42 @@ def remap_m6(self, **params):
 
     previous_tool = self.current_tool
     tool_number = getattr(self, "selected_tool", -1)
+    print(f"Previous tool:{previous_tool} Selected Tool: {tool_number}")
     if tool_number < 1:
         print("ERROR: No valid tool number received from change_prolog.")
         return INTERP_ERROR
 
     try:
         print(f"Executing tool change to Tool {tool_number}")
-
+        stat = linuxcnc.stat()
+        stat.poll()
         # Sensor states
         blade_up = bool(stat.din[0])
+        print(f"Blade up status {blade_up}")
         blade_down = bool(stat.din[1])
+        print(f"Blade dwon status {blade_down}")
         router_up = bool(stat.din[2])
+        print(f"Router up status {router_up}")
         router_down = bool(stat.din[3])
+        print(f"Router down status {router_down}")
 
         simple_tools = get_simple_tools()
 
         # --- Retract Previous Tool ---
         if previous_tool != tool_number:
+            stat = linuxcnc.stat()
+            stat.poll()
             if previous_tool == 18 and router_down:
                 print("Raising Router")
-                self.execute("M64 P14")  # Activate retract
+                self.execute(f"M64 P14")  # Activate retract
                 time.sleep(3)
-                self.execute("M65 P14")  # Turn off after 3 seconds
+                self.execute(f"M65 P14")  # Turn off after 3 seconds
 
             elif previous_tool == 17 and blade_down:
                 print("Raising Saw Blade")
-                self.execute("M64 P15")  # Activate retract
+                self.execute(f"M64 P15")  # Activate retract
                 time.sleep(3)
-                self.execute("M65 P15")  # Turn off after 3 seconds
+                self.execute(f"M65 P15")  # Turn off after 3 seconds
 
             elif previous_tool in simple_tools:
                 prev_info = simple_tools[previous_tool]
@@ -143,25 +151,29 @@ def remap_m6(self, **params):
 
         # --- Activate New Tool ---
         if tool_number == 18:
+            stat = linuxcnc.stat()
+            stat.poll()
             print("Activating Router (T18)")
             if router_up and not router_down:
                 print("Lowering Router: P13 ON")
                 # self.execute("M65 P14")
-                self.execute("M64 P13")
+                self.execute(f"M64 P13")
                 time.sleep(3)
-                self.execute("M65 P13")
+                self.execute(f"M65 P13")
                 print("Waiting for router to reach down position...")
                 if not wait_for_input(stat, 3, True, timeout=5):
                     print("⚠️ Router did not reach down position within timeout!")
 
         elif tool_number == 17:
+            stat = linuxcnc.stat()
+            stat.poll()
             print("Activating Saw Blade (T17)")
             if blade_up and not blade_down:
                 print("Lowering Saw Blade: P16 ON")
                 # self.execute("M65 P15")
-                self.execute("M64 P16")
+                self.execute(f"M64 P16")
                 time.sleep(3)
-                self.execute("M65 P16")
+                self.execute(f"M65 P16")
                 print("Waiting for saw blade to reach down position...")
                 if not wait_for_input(stat, 1, True, timeout=5):
                     print("⚠️ Saw blade did not reach down position within timeout!")

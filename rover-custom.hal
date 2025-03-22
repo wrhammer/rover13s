@@ -48,8 +48,8 @@ net low-vac			hm2_7i96s.0.7i77.0.0.output-04		classicladder.0.out-03
 	#***************************************#
 			# TB1 INPUTS #
 ### SLOT-B SAW BLADE POSTION - DOWN IS IN WORKING POSITION ###
-net blade-is-up 		hm2_7i94.0.7i84.0.1.input-00		motion.digital-in-00
-net blade-is-dwn		hm2_7i94.0.7i84.0.1.input-01		motion.digital-in-01
+net blade-is-up 		hm2_7i94.0.7i84.0.0.input-00		motion.digital-in-00
+net blade-is-dwn		hm2_7i94.0.7i84.0.0.input-01		motion.digital-in-01
 
 ### ROUTER SPINDLE POSITION - DOWN IS IN WORKING POSITION ###
 net router-is-up		hm2_7i94.0.7i84.0.0.input-02		motion.digital-in-02
