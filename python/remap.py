@@ -124,35 +124,33 @@ def remap_m6(self, **params):
         simple_tools = get_simple_tools()
 
         # --- Retract Previous Tool ---
-        if previous_tool != tool_number:
-            stat = linuxcnc.stat()
-            stat.poll()
-            if previous_tool == 18 and router_down:
+        # If new tool is not router (18) or saw blade (17), ensure both are raised
+        if tool_number not in [17, 18]:
+            if router_down:
                 print("Raising Router")
                 self.execute(f"M64 P14")  # Activate retract
                 time.sleep(3)
                 self.execute(f"M65 P14")  # Turn off after 3 seconds
-
-            elif previous_tool == 17 and blade_down:
+            
+            if blade_down:
                 print("Raising Saw Blade")
                 self.execute(f"M64 P15")  # Activate retract
                 time.sleep(3)
                 self.execute(f"M65 P15")  # Turn off after 3 seconds
 
-            elif previous_tool in simple_tools:
-                prev_info = simple_tools[previous_tool]
-                if prev_info.get("combined"):
-                    print(f"Retracting {prev_info['name']}")
-                    for pin in prev_info["pins"]:
-                        self.execute(f"M65 P{pin}")
-                elif not (prev_info.get("shared_pin") and tool_number == prev_info.get("paired_tool")):
-                    print(f"Retracting {prev_info['name']}")
-                    self.execute(f"M65 P{prev_info['down_pin']}")
+        # Handle retraction of simple tools if changing tools
+        if previous_tool != tool_number and previous_tool in simple_tools:
+            prev_info = simple_tools[previous_tool]
+            if prev_info.get("combined"):
+                print(f"Retracting {prev_info['name']}")
+                for pin in prev_info["pins"]:
+                    self.execute(f"M65 P{pin}")
+            elif not (prev_info.get("shared_pin") and tool_number == prev_info.get("paired_tool")):
+                print(f"Retracting {prev_info['name']}")
+                self.execute(f"M65 P{prev_info['down_pin']}")
 
         # --- Activate New Tool ---
         if tool_number == 18:
-            stat = linuxcnc.stat()
-            stat.poll()
             print("Activating Router (T18)")
             if router_up and not router_down:
                 print("Lowering Router: P13 ON")
@@ -165,8 +163,6 @@ def remap_m6(self, **params):
                     print("⚠️ Router did not reach down position within timeout!")
 
         elif tool_number == 17:
-            stat = linuxcnc.stat()
-            stat.poll()
             print("Activating Saw Blade (T17)")
             if blade_up and not blade_down:
                 print("Lowering Saw Blade: P16 ON")
