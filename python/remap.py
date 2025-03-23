@@ -94,123 +94,173 @@ def wait_for_input(stat, index, expected_state=True, timeout=5):
         time.sleep(0.05)  # poll every 50ms
     return False  # timeout
 
+def release_all_outputs(self):
+    print("🔁 Releasing all digital outputs (P0–P16)...")
+    stat = linuxcnc.stat()
+    stat.poll()
+    for pin in range(17):
+        if stat.dout[pin]:
+            print(f"  - M65 P{pin} (was ON)")
+            self.execute(f"M65 P{pin}")
+            yield INTERP_EXECUTE_FINISH
+        else:
+            print(f"  - P{pin} already OFF")
+
+
 def remap_m6(self, **params):
-    """Remap M6 to handle tool changes with verification for router (T18) and saw blade (T17)."""
+    import linuxcnc
+    import time
+
     cmd = linuxcnc.command()
     stat = linuxcnc.stat()
     stat.poll()
 
-    previous_tool = self.current_tool
     tool_number = getattr(self, "selected_tool", -1)
-    print(f"Previous tool:{previous_tool} Selected Tool: {tool_number}")
+    previous_tool = int(params.get("tool_in_spindle", self.current_tool))
     if tool_number < 1:
-        print("ERROR: No valid tool number received from change_prolog.")
-        return INTERP_ERROR
+        print("ERROR: No valid tool number received.")
+        yield INTERP_ERROR
 
     try:
-        print(f"Executing tool change to Tool {tool_number}")
-        stat = linuxcnc.stat()
+        # --- Optional: Release all outputs first ---
+        yield from release_all_outputs(self)
+        print(f"Tool change: T{previous_tool} -> T{tool_number}")
         stat.poll()
-        # Sensor states
         blade_up = bool(stat.din[0])
-        print(f"Blade up status {blade_up}")
         blade_down = bool(stat.din[1])
-        print(f"Blade dwon status {blade_down}")
         router_up = bool(stat.din[2])
-        print(f"Router up status {router_up}")
         router_down = bool(stat.din[3])
-        print(f"Router down status {router_down}")
 
         simple_tools = get_simple_tools()
 
-        # --- Retract Previous Tool ---
-        # If new tool is not router (18) or saw blade (17), ensure both are raised
+        # --- Retract Router or Blade ---
         if tool_number not in [17, 18]:
             if router_down:
-                print("Raising Router")
-                self.execute(f"M64 P14")  # Activate retract
+                print("Raising Router (P14)")
+                self.execute("M64 P14")
+                yield INTERP_EXECUTE_FINISH
                 time.sleep(3)
-                self.execute(f"M65 P14")  # Turn off after 3 seconds
-            
-            if blade_down:
-                print("Raising Saw Blade")
-                self.execute(f"M64 P15")  # Activate retract
-                time.sleep(3)
-                self.execute(f"M65 P15")  # Turn off after 3 seconds
+                self.execute("M65 P14")
+                yield INTERP_EXECUTE_FINISH
 
-        # Handle retraction of simple tools if changing tools
-        if previous_tool != tool_number and previous_tool in simple_tools:
-            prev_info = simple_tools[previous_tool]
-            if prev_info.get("combined"):
-                print(f"Retracting {prev_info['name']}")
-                for pin in prev_info["pins"]:
+            if blade_down:
+                print("Raising Saw Blade (P15)")
+                self.execute("M64 P15")
+                yield INTERP_EXECUTE_FINISH
+                time.sleep(3)
+                self.execute("M65 P15")
+                yield INTERP_EXECUTE_FINISH
+
+        # --- Retract Previous Simple or Combined Tool ---
+        if previous_tool != tool_number:
+            if previous_tool == 19:
+                print("Retracting T19 (Vertical Y Spindles)")
+                for pin in [0, 1, 2, 3, 4]:
                     self.execute(f"M65 P{pin}")
-            elif not (prev_info.get("shared_pin") and tool_number == prev_info.get("paired_tool")):
-                print(f"Retracting {prev_info['name']}")
-                self.execute(f"M65 P{prev_info['down_pin']}")
+                    yield INTERP_EXECUTE_FINISH
+
+            elif previous_tool == 20:
+                print("Retracting T20 (Vertical X Spindles)")
+                for pin in [5, 6, 7, 8, 9]:
+                    self.execute(f"M65 P{pin}")
+                    yield INTERP_EXECUTE_FINISH
+
+            elif previous_tool in simple_tools:
+                prev_info = simple_tools[previous_tool]
+                if prev_info.get("shared_pin"):
+                    paired_tool = prev_info.get("paired_tool")
+                    if tool_number != paired_tool:
+                        print(f"Retracting shared-pin tool: {prev_info['name']}")
+                        self.execute(f"M65 P{prev_info['down_pin']}")
+                        yield INTERP_EXECUTE_FINISH
+                    else:
+                        print(f"Skipping retraction: {prev_info['name']} shares pin with T{tool_number}")
+                else:
+                    print(f"Retracting standard tool: {prev_info['name']}")
+                    self.execute(f"M65 P{prev_info['down_pin']}")
+                    yield INTERP_EXECUTE_FINISH
 
         # --- Activate New Tool ---
         if tool_number == 18:
             print("Activating Router (T18)")
             if router_up and not router_down:
-                print("Lowering Router: P13 ON")
-                # self.execute("M65 P14")
-                self.execute(f"M64 P13")
+                self.execute("M64 P13")
+                yield INTERP_EXECUTE_FINISH
                 time.sleep(3)
-                self.execute(f"M65 P13")
+                self.execute("M65 P13")
+                yield INTERP_EXECUTE_FINISH
                 print("Waiting for router to reach down position...")
+                stat.poll()
                 if not wait_for_input(stat, 3, True, timeout=5):
-                    print("⚠️ Router did not reach down position within timeout!")
+                    print("⚠️ Router did not reach down position!")
 
         elif tool_number == 17:
             print("Activating Saw Blade (T17)")
             if blade_up and not blade_down:
-                print("Lowering Saw Blade: P16 ON")
-                # self.execute("M65 P15")
-                self.execute(f"M64 P16")
+                self.execute("M64 P16")
+                yield INTERP_EXECUTE_FINISH
                 time.sleep(3)
-                self.execute(f"M65 P16")
+                self.execute("M65 P16")
+                yield INTERP_EXECUTE_FINISH
                 print("Waiting for saw blade to reach down position...")
+                stat.poll()
                 if not wait_for_input(stat, 1, True, timeout=5):
-                    print("⚠️ Saw blade did not reach down position within timeout!")
+                    print("⚠️ Saw blade did not reach down position!")
+
+        elif tool_number == 19:
+            print("Activating T19 (Vertical Y Spindles)")
+            for pin in [0, 1, 2, 3, 4]:
+                self.execute(f"M64 P{pin}")
+                yield INTERP_EXECUTE_FINISH
+
+        elif tool_number == 20:
+            print("Activating T20 (Vertical X Spindles)")
+            for pin in [5, 6, 7, 8, 9]:
+                self.execute(f"M64 P{pin}")
+                yield INTERP_EXECUTE_FINISH
 
         elif tool_number in simple_tools:
             info = simple_tools[tool_number]
-            if info.get("combined"):
-                print(f"Activating {info['name']}")
-                for pin in info["pins"]:
-                    self.execute(f"M64 P{pin}")
-            elif not (info.get("shared_pin") and previous_tool == info.get("paired_tool")):
+            if not (info.get("shared_pin") and previous_tool == info.get("paired_tool")):
                 print(f"Activating {info['name']}")
                 self.execute(f"M64 P{info['down_pin']}")
+                yield INTERP_EXECUTE_FINISH
 
-        # --- Apply Tool Change Internally ---
-        print(f"Tool change in progress. Changing to tool {tool_number}")
-        emccanon.CHANGE_TOOL_NUMBER(tool_number)
+        # --- Finalize Tool Change State ---
         self.current_tool = tool_number
         self.selected_tool = -1
         self.toolchange_flag = True
 
-        # --- Apply Offsets via G10 ---
         stat.poll()
         tool_data = next((t for t in stat.tool_table if t.id == tool_number), None)
-        if tool_data:
+        if not tool_data:
+            print(f"❌ Tool ID {tool_number} not found in tool table.")
+            yield INTERP_ERROR
+        else:
             x = tool_data.xoffset
             y = tool_data.yoffset
             z = tool_data.zoffset
             d = tool_data.diameter
             r = d / 2 if d else 0
-
             g10_cmd = f"G10 L1 P{tool_number} X{x} Y{y} Z{z} R{r}"
             print(f"Applying offsets: {g10_cmd}")
-            self.execute(g10_cmd)
-        else:
-            print(f"Tool {tool_number} not found in tool table.")
-            return INTERP_ERROR
 
-        print(f"Tool change completed successfully. Changed from T{previous_tool} to T{tool_number}.")
-        return INTERP_OK
+            if tool_number <= 0:
+                print(f"Invalid tool number for G10: {tool_number}")
+                yield INTERP_ERROR
+            else:
+                self.execute(g10_cmd)
+                yield INTERP_EXECUTE_FINISH
+                self.execute(f"G43 H{tool_number}")
+                yield INTERP_EXECUTE_FINISH
+
+                # Now tell LinuxCNC this is the active tool
+                emccanon.CHANGE_TOOL(tool_number)
+        
+        print(f"✅ Tool change to T{tool_number} complete.")
+        yield INTERP_OK
 
     except Exception as e:
-        print(f"Error in remap_m6: {e}")
-        return INTERP_ERROR
+        print(f"❌ Error in remap_m6: {e}")
+        yield INTERP_ERROR
+

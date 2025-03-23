@@ -48,32 +48,32 @@ net low-vac			hm2_7i96s.0.7i77.0.0.output-04		classicladder.0.out-03
 	#***************************************#
 			# TB1 INPUTS #
 ### SLOT-B SAW BLADE POSTION - DOWN IS IN WORKING POSITION ###
-net blade-is-up 		hm2_7i94.0.7i84.0.0.input-00		motion.digital-in-00
-net blade-is-dwn		hm2_7i94.0.7i84.0.0.input-01		motion.digital-in-01
+net blade-is-up 			hm2_7i94.0.7i84.0.0.input-00		motion.digital-in-00
+net blade-is-dwn			hm2_7i94.0.7i84.0.0.input-01		motion.digital-in-01
 
 ### ROUTER SPINDLE POSITION - DOWN IS IN WORKING POSITION ###
-net router-is-up		hm2_7i94.0.7i84.0.0.input-02		motion.digital-in-02
-net router-is-down		hm2_7i94.0.7i84.0.0.input-03		motion.digital-in-03
+net router-is-up			hm2_7i94.0.7i84.0.0.input-02		motion.digital-in-02
+net router-is-down			hm2_7i94.0.7i84.0.0.input-03		motion.digital-in-03
 net tool-locked-present		hm2_7i94.0.7i84.0.0.input-04		motion.digital-in-04
-net tool-released		hm2_7i94.0.7i84.0.0.input-05		classicladder.0.in-11
+net tool-released			hm2_7i94.0.7i84.0.0.input-05		classicladder.0.in-11
 net release-tool-btn		hm2_7i94.0.7i84.0.0.input-06		classicladder.0.in-10
-net x-safe-zone			hm2_7i94.0.7i84.0.0.input-07
-net y-safe-zone			hm2_7i94.0.7i84.0.0.input-08
+net x-safe-zone				hm2_7i94.0.7i84.0.0.input-07
+net y-safe-zone				hm2_7i94.0.7i84.0.0.input-08
 
 			# TB1 OUTPUTS #
-net vspindle-1-down		hm2_7i94.0.7i84.0.0.output-00		motion.digital-out-00
-net vspindle-2-down		hm2_7i94.0.7i84.0.0.output-01		motion.digital-out-01
-net vspindle-3-down		hm2_7i94.0.7i84.0.0.output-02		motion.digital-out-02
-net vspindle-4-down		hm2_7i94.0.7i84.0.0.output-03		motion.digital-out-03
-net vspindle-5-down		hm2_7i94.0.7i84.0.0.output-04		motion.digital-out-04
-net vspindle-6-down		hm2_7i94.0.7i84.0.0.output-05		motion.digital-out-05
-net vspindle-7-down		hm2_7i94.0.7i84.0.0.output-06		motion.digital-out-06
-net vspindle-8-down		hm2_7i94.0.7i84.0.0.output-07		motion.digital-out-07
+net vspindle-1-down			hm2_7i94.0.7i84.0.0.output-00		motion.digital-out-00
+net vspindle-2-down			hm2_7i94.0.7i84.0.0.output-01		motion.digital-out-01
+net vspindle-3-down			hm2_7i94.0.7i84.0.0.output-02		motion.digital-out-02
+net vspindle-4-down			hm2_7i94.0.7i84.0.0.output-03		motion.digital-out-03
+net vspindle-5-down			hm2_7i94.0.7i84.0.0.output-04		motion.digital-out-04
+net vspindle-6-down			hm2_7i94.0.7i84.0.0.output-05		motion.digital-out-05
+net vspindle-7-down			hm2_7i94.0.7i84.0.0.output-06		motion.digital-out-06
+net vspindle-8-down			hm2_7i94.0.7i84.0.0.output-07		motion.digital-out-07
 
 			# TB2 INPUTS #
 
 			# TB2 OUTPUTS #
-net vspindle-9-down		hm2_7i94.0.7i84.0.0.output-08		motion.digital-out-08
+net vspindle-9-down			hm2_7i94.0.7i84.0.0.output-08		motion.digital-out-08
 net vspindle-10-down		hm2_7i94.0.7i84.0.0.output-09		motion.digital-out-09 
 net hspindles-1-down		hm2_7i94.0.7i84.0.0.output-10		motion.digital-out-10
 net hspindles-2-down		hm2_7i94.0.7i84.0.0.output-11		motion.digital-out-11
