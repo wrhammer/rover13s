@@ -134,7 +134,7 @@ def remap_m6(self, **params):
         simple_tools = get_simple_tools()
 
         # --- Retract Router or Blade ---
-        if tool_number not in [17, 18]:
+        if tool_number != 20:  # Only check if we're not switching to router
             if router_down:
                 print("Raising Router (P14)")
                 self.execute("M64 P14")
@@ -143,6 +143,7 @@ def remap_m6(self, **params):
                 self.execute("M65 P14")
                 yield INTERP_EXECUTE_FINISH
 
+        if tool_number != 17:  # Only check if we're not switching to saw blade
             if blade_down:
                 print("Raising Saw Blade (P15)")
                 self.execute("M64 P15")
@@ -151,38 +152,29 @@ def remap_m6(self, **params):
                 self.execute("M65 P15")
                 yield INTERP_EXECUTE_FINISH
 
-        # --- Retract Previous Simple or Combined Tool ---
-        if previous_tool != tool_number:
-            if previous_tool == 19:
-                print("Retracting T19 (Vertical Y Spindles)")
-                for pin in [0, 1, 2, 3, 4]:
-                    self.execute(f"M65 P{pin}")
-                    yield INTERP_EXECUTE_FINISH
-
-            elif previous_tool == 20:
-                print("Retracting T20 (Vertical X Spindles)")
-                for pin in [5, 6, 7, 8, 9]:
-                    self.execute(f"M65 P{pin}")
-                    yield INTERP_EXECUTE_FINISH
-
-            elif previous_tool in simple_tools:
-                prev_info = simple_tools[previous_tool]
-                if prev_info.get("shared_pin"):
-                    paired_tool = prev_info.get("paired_tool")
-                    if tool_number != paired_tool:
-                        print(f"Retracting shared-pin tool: {prev_info['name']}")
-                        self.execute(f"M65 P{prev_info['down_pin']}")
-                        yield INTERP_EXECUTE_FINISH
-                    else:
-                        print(f"Skipping retraction: {prev_info['name']} shares pin with T{tool_number}")
-                else:
-                    print(f"Retracting standard tool: {prev_info['name']}")
-                    self.execute(f"M65 P{prev_info['down_pin']}")
-                    yield INTERP_EXECUTE_FINISH
+        # For router (T20), use manual tool change
+        if tool_number >= 20:
+            self.selected_pocket = int(self.params["selected_pocket"])
+            # Manual tool change - requires user confirmation
+            emccanon.CHANGE_TOOL()
+            self.current_pocket = self.selected_pocket
+            self.selected_pocket = -1
+            self.selected_tool = -1
+            # cause a sync()
+            self.set_tool_parameters()
+            self.toolchange_flag = True
+        else:
+            # For all other tools (T1-T19), skip manual confirmation
+            self.current_tool = tool_number
+            self.current_pocket = tool_number
+            self.selected_pocket = -1
+            self.selected_tool = -1
+            self.set_tool_parameters()
+            self.toolchange_flag = True
 
         # --- Activate New Tool ---
-        if tool_number == 18:
-            print("Activating Router (T18)")
+        if tool_number == 20:  # Router is now T20
+            print("Activating Router (T20)")
             if router_up and not router_down:
                 self.execute("M64 P13")
                 yield INTERP_EXECUTE_FINISH
@@ -207,14 +199,14 @@ def remap_m6(self, **params):
                 if not wait_for_input(stat, 1, True, timeout=5):
                     print("⚠️ Saw blade did not reach down position!")
 
-        elif tool_number == 19:
-            print("Activating T19 (Vertical Y Spindles)")
+        elif tool_number == 18:  # Combined Vertical Y Spindles (was T19)
+            print("Activating T18 (Vertical Y Spindles)")
             for pin in [0, 1, 2, 3, 4]:
                 self.execute(f"M64 P{pin}")
                 yield INTERP_EXECUTE_FINISH
 
-        elif tool_number == 20:
-            print("Activating T20 (Vertical X Spindles)")
+        elif tool_number == 19:  # Combined Vertical X Spindles (was T20)
+            print("Activating T19 (Vertical X Spindles)")
             for pin in [5, 6, 7, 8, 9]:
                 self.execute(f"M64 P{pin}")
                 yield INTERP_EXECUTE_FINISH
@@ -226,41 +218,9 @@ def remap_m6(self, **params):
                 self.execute(f"M64 P{info['down_pin']}")
                 yield INTERP_EXECUTE_FINISH
 
-        # --- Finalize Tool Change State ---
-        self.current_tool = tool_number
-        self.selected_tool = -1
-        self.toolchange_flag = True
-
-        stat.poll()
-        tool_data = next((t for t in stat.tool_table if t.id == tool_number), None)
-        if not tool_data:
-            print(f"❌ Tool ID {tool_number} not found in tool table.")
-            yield INTERP_ERROR
-        else:
-            x = tool_data.xoffset
-            y = tool_data.yoffset
-            z = tool_data.zoffset
-            d = tool_data.diameter
-            r = d / 2 if d else 0
-            g10_cmd = f"G10 L1 P{tool_number} X{x} Y{y} Z{z} R{r}"
-            print(f"Applying offsets: {g10_cmd}")
-
-            if tool_number <= 0:
-                print(f"Invalid tool number for G10: {tool_number}")
-                yield INTERP_ERROR
-            else:
-                self.execute(g10_cmd)
-                yield INTERP_EXECUTE_FINISH
-                self.execute(f"G43 H{tool_number}")
-                yield INTERP_EXECUTE_FINISH
-
-                # Now tell LinuxCNC this is the active tool
-                emccanon.CHANGE_TOOL(tool_number)
-        
-        print(f"✅ Tool change to T{tool_number} complete.")
         yield INTERP_OK
 
     except Exception as e:
-        print(f"❌ Error in remap_m6: {e}")
+        self.set_errormsg(f"M6 remap error: {str(e)}")
         yield INTERP_ERROR
 
