@@ -12,35 +12,35 @@ net estop-loopin 		iocontrol.0.user-enable-out => 		estop-latch.0.ok-in
 net estop-reset 		iocontrol.0.user-request-enable => 	estop-latch.0.reset
 
 ### Change to below at final connection in cnc. Should be a not ###
-net remote-estop 		estop-latch.0.fault-in <=  		hm2_7i96s.0.7i77.0.0.input-03-not
-#net remote-estop 		estop-latch.0.fault-in <=  		hm2_7i96s.0.7i77.0.0.input-03
+net remote-estop 		estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03-not
+#net remote-estop 		estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03
 
 	#***************************************#
 	#	  MESA 7I77 IN CABINET		#
 	#***************************************#
 
-net estop-loopout 		classicladder.0.in-00 
-net enable-machine 		classicladder.0.out-00 			hm2_7i96s.0.7i77.0.0.output-00
+net estop-loopout 			classicladder.0.in-00 
+net enable-machine 			classicladder.0.out-00 				hm2_7i96s.0.7i77.0.0.output-00
 
 ###INPUT FROM PIN 27 ON DRIVES###
-net x-axis-ok 			hm2_7i96s.0.7i77.0.0.input-04 		classicladder.0.in-01
-net y-axis-ok 			hm2_7i96s.0.7i77.0.0.input-05 		classicladder.0.in-02
-net z-axis-ok 			hm2_7i96s.0.7i77.0.0.input-06 		classicladder.0.in-03
+net x-axis-ok 				hm2_7i96s.0.7i77.0.0.input-04 		classicladder.0.in-01
+net y-axis-ok 				hm2_7i96s.0.7i77.0.0.input-05 		classicladder.0.in-02
+net z-axis-ok 				hm2_7i96s.0.7i77.0.0.input-06 		classicladder.0.in-03
 
 ### MOTOR STOPPED SIGNAL FROM INVERTER ###
-net motor-stopped 		hm2_7i96s.0.7i77.0.0.input-07
+net motor-stopped 			hm2_7i96s.0.7i77.0.0.input-07
 net tooling-in-progress 	hm2_7i96s.0.7i77.0.0.input-09
-net start-lube 			hm2_7i96s.0.7i77.0.0.input-10
+net start-lube 				hm2_7i96s.0.7i77.0.0.input-10
 
 ### REMOTE SPEED INCREASE AND DECREASE ###
-net speed-incrs  		hm2_7i96s.0.7i77.0.0.input-11
-net speed-dcrs   		hm2_7i96s.0.7i77.0.0.input-12
-net enable-axes			hm2_7i96s.0.7i77.0.0.output-01		classicladder.0.out-02	
-net reset-vfd			hm2_7i96s.0.7i77.0.0.output-02
+net speed-incrs  			hm2_7i96s.0.7i77.0.0.input-11
+net speed-dcrs   			hm2_7i96s.0.7i77.0.0.input-12
+net enable-axes				hm2_7i96s.0.7i77.0.0.output-01		classicladder.0.out-02	
+net reset-vfd				hm2_7i96s.0.7i77.0.0.output-02
 net start-bitsnblade		hm2_7i96s.0.7i77.0.0.output-03		motion.digital-out-17
 net vfd-call-to-run  		hm2_7i96s.0.7i77.0.0.output-05		classicladder.0.out-12
-net vfd-overload		hm2_7i96s.0.7i77.0.0.input-13		motion.digital-in-05
-net low-vac			hm2_7i96s.0.7i77.0.0.output-04		classicladder.0.out-03
+net vfd-overload			hm2_7i96s.0.7i77.0.0.input-13		motion.digital-in-05
+net low-vac					hm2_7i96s.0.7i77.0.0.output-04		classicladder.0.out-03
 
 
 	#***************************************#

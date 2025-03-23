@@ -57,7 +57,7 @@ def get_simple_tools():
                 }
                 break
     
-    # Handle combined tools 19 and 20
+    # Below are the 5 combined vertical X and 
     combined_tools = {
         19: {  # Vertical Y spindles (tools 1-5)
             "name": "Vertical Y Spindles",
@@ -95,12 +95,12 @@ def wait_for_input(stat, index, expected_state=True, timeout=5):
     return False  # timeout
 
 def release_all_outputs(self):
-    print("🔁 Releasing all digital outputs (P0–P16)...")
+    print("🔁 Releasing all tool digital outputs (P0-P16)...")
     stat = linuxcnc.stat()
     stat.poll()
     for pin in range(17):
         if stat.dout[pin]:
-            print(f"  - M65 P{pin} (was ON)")
+            print(f"  - P{pin} (was ON)")
             self.execute(f"M65 P{pin}")
             yield INTERP_EXECUTE_FINISH
         else:
