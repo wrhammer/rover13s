@@ -1,20 +1,35 @@
-T1   P1   D+5.000000 ;Vertical Y Bit 01 
-T2   P4   D+5.000000 Y-32.000000 ;Vertical Y Bit 02 
-T3   P3   D+5.000000 Y-64.000000 ;Vertical Y Bit 03 
-T4   P2   D+5.000000 Y-96.000000 ;Vertical Y Bit 04 
-T5   P5   D+5.000000 Y-128.000000 ;Vertical Y Bit 05 
-T6   P6   D+5.000000 Y-160.000000 ;Vertical X Bit 01 
-T7   P7   D+5.000000 X-32.000000 Y-160.000000 ;Vertical X Bit 02 
-T8   P8   D+5.000000 X-64.000000 Y-160.000000 ;Vertical X Bit 03 
-T9   P9   D+5.000000 X-96.000000 Y-160.000000 ;Vertical X Bit 04 
-T10  P10  D+5.000000 X-128.000000 Y-160.000000 ;Vertical X Bit 05 
-T11  P11  D+5.000000 X+32.000000 Y-119.000000 Z+46.350000 ;Horizontal X Bit A1 
-T12  P11  D+5.000000 X+32.000000 Y-9.000000 Z+46.350000 ;Horizontal X Bit A2 
-T13  P12  D+5.000000 X+64.000000 Y-119.000000 Z+46.350000 ;Horizontal X Bit B1 
-T14  P12  D+5.000000 X+64.000000 Y-9.000000 Z+46.350000 ;Horizontal X Bit B2 
-T15  P13  D+5.000000 X+23.000000 Y-192.000000 Z+46.350000 ;Horizontal Y Bit A1 
-T16  P13  D+5.000000 X-87.000000 Y-192.000000 Z+46.350000 ;Horizontal Y Bit A2 
-T17  P17  D+4.000000 X+32.000000 Y-188.000000 Z+0.900000 ;Saw Blade 
-T18  P19  D+5.000000 ;Vertical Y Spindles Combined
-T19  P20  D+5.000000 Y-160.000000 ;Vertical X Spindles Combined
-T20  P18  D+6.350000 X-180.100000 Y-45.000000 Z-38.650000 ;Main Router
+;------------------------------------------
+; Individual Vertical Y Bits (P0-P4)
+;------------------------------------------
+T1   P1   D+5.000000 ;Vertical Y Bit 1 (P0)
+T2   P2   D+5.000000 Y-32.000000 ;Vertical Y Bit 2 (P1)
+T3   P3   D+5.000000 Y-64.000000 ;Vertical Y Bit 3 (P2)
+T4   P4   D+5.000000 Y-96.000000 ;Vertical Y Bit 4 (P3)
+T5   P5   D+5.000000 Y-128.000000 ;Vertical Y Bit 5 (P4)
+
+;------------------------------------------
+; Individual Vertical X Bits (P5-P9)
+;------------------------------------------
+T6   P6   D+5.000000 Y-160.000000 ;Vertical X Bit 1 (P5)
+T7   P7   D+5.000000 X-32.000000 Y-160.000000 ;Vertical X Bit 2 (P6)
+T8   P8   D+5.000000 X-64.000000 Y-160.000000 ;Vertical X Bit 3 (P7)
+T9   P9   D+5.000000 X-96.000000 Y-160.000000 ;Vertical X Bit 4 (P8)
+T10  P10  D+5.000000 X-128.000000 Y-160.000000 ;Vertical X Bit 5 (P9)
+
+;------------------------------------------
+; Horizontal Shared Bits (P10-P12)
+;------------------------------------------
+T11  P11  D+5.000000 X+32.000000 Y-119.000000 Z+46.350000 ;Horizontal X Bit A1 (P10 shared)
+T12  P11  D+5.000000 X+32.000000 Y-9.000000 Z+46.350000 ;Horizontal X Bit A2 (P10 shared)
+T13  P12  D+5.000000 X+64.000000 Y-119.000000 Z+46.350000 ;Horizontal X Bit B1 (P11 shared)
+T14  P12  D+5.000000 X+64.000000 Y-9.000000 Z+46.350000 ;Horizontal X Bit B2 (P11 shared)
+T15  P13  D+5.000000 X+23.000000 Y-192.000000 Z+46.350000 ;Horizontal Y Bit A1 (P12 shared)
+T16  P13  D+5.000000 X-87.000000 Y-192.000000 Z+46.350000 ;Horizontal Y Bit A2 (P12 shared)
+
+;------------------------------------------
+; Special Tools
+;------------------------------------------
+T17  P17  D+4.000000 X+32.000000 Y-188.000000 Z+0.900000 ;Saw Blade (P15-P16)
+T18  P18  D+5.000000 ;Vertical Y Combined (P0-P4)
+T19  P19  D+5.000000 Y-160.000000 ;Vertical X Combined (P5-P9)
+T20  P20  D+6.350000 X-180.100000 Y-45.000000 Z-38.650000 ;Router (P13-P14)

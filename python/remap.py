@@ -98,13 +98,29 @@ def release_all_outputs(self):
     print("🔁 Releasing all tool digital outputs (P0-P16)...")
     stat = linuxcnc.stat()
     stat.poll()
-    for pin in range(17):
+    for pin in range(17):  # Only check pins 0-16 for tools 1-19
         if stat.dout[pin]:
             print(f"  - P{pin} (was ON)")
             self.execute(f"M65 P{pin}")
             yield INTERP_EXECUTE_FINISH
         else:
             print(f"  - P{pin} already OFF")
+
+
+def remap_m8(self, **words):
+    """Remap M8 (coolant) to retract all bits for tools 1-19"""
+    try:
+        print("M8: Retracting all bits (tools 1-19)...")
+        yield from release_all_outputs(self)
+        yield INTERP_OK
+    except Exception as e:
+        self.set_errormsg(f"M8 remap error: {str(e)}")
+        yield INTERP_ERROR
+
+
+def remap_m9(self, **words):
+    """Remap M9 (coolant off) to do nothing since M8 already retracts"""
+    yield INTERP_OK
 
 
 def remap_m6(self, **params):

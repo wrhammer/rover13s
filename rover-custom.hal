@@ -7,9 +7,9 @@
 
 loadrt estop_latch
 addf estop-latch.0 servo-thread
-net estop-loopout 		iocontrol.0.emc-enable-in <= 		estop-latch.0.ok-out
-net estop-loopin 		iocontrol.0.user-enable-out => 		estop-latch.0.ok-in
-net estop-reset 		iocontrol.0.user-request-enable => 	estop-latch.0.reset
+net estop-loopout 			iocontrol.0.emc-enable-in <= 		estop-latch.0.ok-out
+net estop-loopin 			iocontrol.0.user-enable-out => 		estop-latch.0.ok-in
+net estop-reset 			iocontrol.0.user-request-enable => 	estop-latch.0.reset
 
 #***********************
 # === work area control ===
@@ -18,9 +18,30 @@ net estop-reset 		iocontrol.0.user-request-enable => 	estop-latch.0.reset
 # Load the work area control component
 loadusr -Wn work_area python3 python/work_area_control.py
 
+#***********************
+# === tool release control ===
+#***********************
+
+# Load the tool release control component
+loadusr -Wn tool_release python3 python/tool_release_control.py
+
+#***********************
+# === vfd control ===
+#***********************
+
+# Load the VFD control component
+loadusr -Wn vfd_control python3 python/vfd_control.py
+
+#***********************
+# === vacuum control ===
+#***********************
+
+# Load the vacuum control component
+loadusr -Wn vacuum_control python3 python/vacuum_control.py
+
 ### Change to below at final connection in cnc. Should be a not ###
-net remote-estop 		estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03-not
-#net remote-estop 		estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03
+net remote-estop 			estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03-not
+#net remote-estop 			estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03
 
 	#***************************************#
 	#	  MESA 7I77 IN CABINET		#
@@ -35,7 +56,7 @@ net y-axis-ok 				hm2_7i96s.0.7i77.0.0.input-05 		classicladder.0.in-02
 net z-axis-ok 				hm2_7i96s.0.7i77.0.0.input-06 		classicladder.0.in-03
 
 ### MOTOR STOPPED SIGNAL FROM INVERTER ###
-net motor-stopped 			hm2_7i96s.0.7i77.0.0.input-07
+net motor-stopped 			hm2_7i96s.0.7i77.0.0.input-07      vfd_control.motor_stopped
 net tooling-in-progress 	hm2_7i96s.0.7i77.0.0.input-09
 net start-lube 				hm2_7i96s.0.7i77.0.0.input-10
 
@@ -43,11 +64,11 @@ net start-lube 				hm2_7i96s.0.7i77.0.0.input-10
 net speed-incrs  			hm2_7i96s.0.7i77.0.0.input-11
 net speed-dcrs   			hm2_7i96s.0.7i77.0.0.input-12
 net enable-axes				hm2_7i96s.0.7i77.0.0.output-01		classicladder.0.out-02	
-net reset-vfd				hm2_7i96s.0.7i77.0.0.output-02
+net reset-vfd				hm2_7i96s.0.7i77.0.0.output-02      vfd_control.vfd_reset
 net start-bitsnblade		hm2_7i96s.0.7i77.0.0.output-03		motion.digital-out-17
-net vfd-call-to-run  		hm2_7i96s.0.7i77.0.0.output-05		classicladder.0.out-12
-net vfd-overload			hm2_7i96s.0.7i77.0.0.input-13		motion.digital-in-05
-net low-vac					hm2_7i96s.0.7i77.0.0.output-04		classicladder.0.out-03
+net vfd-call-to-run  		hm2_7i96s.0.7i77.0.0.output-05		vfd_control.vfd_run
+net vfd-overload			hm2_7i96s.0.7i77.0.0.input-13		motion.digital-in-05 vfd_control.vfd_overload
+net low-vac					hm2_7i96s.0.7i77.0.0.output-04		work_area.low_vacuum
 
 
 	#***************************************#
@@ -61,30 +82,31 @@ net blade-is-dwn			hm2_7i94.0.7i84.0.0.input-01		motion.digital-in-01
 ### ROUTER SPINDLE POSITION - DOWN IS IN WORKING POSITION ###
 net router-is-up			hm2_7i94.0.7i84.0.0.input-02		motion.digital-in-02
 net router-is-down			hm2_7i94.0.7i84.0.0.input-03		motion.digital-in-03
-net tool-locked-present		hm2_7i94.0.7i84.0.0.input-04		motion.digital-in-04
-net tool-released			hm2_7i94.0.7i84.0.0.input-05		classicladder.0.in-11
-net release-tool-btn		hm2_7i94.0.7i84.0.0.input-06		classicladder.0.in-10
-net x-safe-zone				hm2_7i94.0.7i84.0.0.input-07
-net y-safe-zone				hm2_7i94.0.7i84.0.0.input-08
+net tool-locked-present		hm2_7i94.0.7i84.0.0.input-04		motion.digital-in-04 		tool_release.tool_locked
+net tool-released			hm2_7i94.0.7i84.0.0.input-05		tool_release.tool_released
+net release-tool-btn		hm2_7i94.0.7i84.0.0.input-06		tool_release.release_button
+net x-safe-zone				hm2_7i94.0.7i84.0.0.input-07		tool_release.x_safe_zone
+net y-safe-zone				hm2_7i94.0.7i84.0.0.input-08		tool_release.y_safe_zone
 
 			# TB1 OUTPUTS #
-net vspindle-1-down			hm2_7i94.0.7i84.0.0.output-00		motion.digital-out-00
-net vspindle-2-down			hm2_7i94.0.7i84.0.0.output-01		motion.digital-out-01
-net vspindle-3-down			hm2_7i94.0.7i84.0.0.output-02		motion.digital-out-02
-net vspindle-4-down			hm2_7i94.0.7i84.0.0.output-03		motion.digital-out-03
-net vspindle-5-down			hm2_7i94.0.7i84.0.0.output-04		motion.digital-out-04
-net vspindle-6-down			hm2_7i94.0.7i84.0.0.output-05		motion.digital-out-05
-net vspindle-7-down			hm2_7i94.0.7i84.0.0.output-06		motion.digital-out-06
-net vspindle-8-down			hm2_7i94.0.7i84.0.0.output-07		motion.digital-out-07
+# Tools 1-5 (used in T18 - Vertical Y Spindles)
+net t1-down			hm2_7i94.0.7i84.0.0.output-00		motion.digital-out-00
+net t2-down			hm2_7i94.0.7i84.0.0.output-01		motion.digital-out-01
+net t3-down			hm2_7i94.0.7i84.0.0.output-02		motion.digital-out-02
+net t4-down			hm2_7i94.0.7i84.0.0.output-03		motion.digital-out-03
+net t5-down			hm2_7i94.0.7i84.0.0.output-04		motion.digital-out-04
 
-			# TB2 INPUTS #
+# Tools 6-10 (used in T19 - Vertical X Spindles)
+net t6-down			hm2_7i94.0.7i84.0.0.output-05		motion.digital-out-05
+net t7-down			hm2_7i94.0.7i84.0.0.output-06		motion.digital-out-06
+net t8-down			hm2_7i94.0.7i84.0.0.output-07		motion.digital-out-07
+net t9-down			hm2_7i94.0.7i84.0.0.output-08		motion.digital-out-08
+net t10-down		hm2_7i94.0.7i84.0.0.output-09		motion.digital-out-09
 
-			# TB2 OUTPUTS #
-net vspindle-9-down			hm2_7i94.0.7i84.0.0.output-08		motion.digital-out-08
-net vspindle-10-down		hm2_7i94.0.7i84.0.0.output-09		motion.digital-out-09 
-net hspindles-1-down		hm2_7i94.0.7i84.0.0.output-10		motion.digital-out-10
-net hspindles-2-down		hm2_7i94.0.7i84.0.0.output-11		motion.digital-out-11
-net hspindles-3-down		hm2_7i94.0.7i84.0.0.output-12		motion.digital-out-12
+# Tools 11-16 (Horizontal spindles with shared pins)
+net t11-t12-down	hm2_7i94.0.7i84.0.0.output-10		motion.digital-out-10
+net t13-t14-down	hm2_7i94.0.7i84.0.0.output-11		motion.digital-out-11
+net t15-t16-down	hm2_7i94.0.7i84.0.0.output-12		motion.digital-out-12
 
 	#***************************************#
 	#	MESA 7I84-01 IN MACHINE HEAD	#
@@ -92,36 +114,49 @@ net hspindles-3-down		hm2_7i94.0.7i84.0.0.output-12		motion.digital-out-12
 			# TB1 INPUTS #
 
 			# TB2 OUTPUTS #
-net router-down			hm2_7i94.0.7i84.0.1.output-00		motion.digital-out-13
-net router-up			hm2_7i94.0.7i84.0.1.output-01		motion.digital-out-14
-net blade-up			hm2_7i94.0.7i84.0.1.output-02		motion.digital-out-15
-net blade-down			hm2_7i94.0.7i84.0.1.output-03		motion.digital-out-16
-net release-tool		hm2_7i94.0.7i84.0.1.output-04		classicladder.0.out-04
-net lock-tool			hm2_7i94.0.7i84.0.1.output-05		classicladder.0.out-11
+# Router control (T20)
+net router-down				hm2_7i94.0.7i84.0.1.output-00		motion.digital-out-13
+net router-up				hm2_7i94.0.7i84.0.1.output-01		motion.digital-out-14
+
+# Saw blade control (T17)
+net blade-up				hm2_7i94.0.7i84.0.1.output-02		motion.digital-out-15
+net blade-down				hm2_7i94.0.7i84.0.1.output-03		motion.digital-out-16
+
+# Tool change control
+net release-tool			hm2_7i94.0.7i84.0.1.output-04		tool_release.release_tool
+net lock-tool				hm2_7i94.0.7i84.0.1.output-05		tool_release.lock_tool
+
+# Add override safety signal (optional - set to 0 if not used)
+setp tool_release.override_safety 0
 
 	#***************************************#
 	#	MESA 7I84-02 FRONT OF TABLE	#
 	#***************************************#
 			# TB1 INPUTS #
-net left-area-pb		hm2_7i94.0.7i84.0.2.input-00		work_area.left_button
-net rht-area-pb			hm2_7i94.0.7i84.0.2.input-01		work_area.right_button
-net vac-pedal			hm2_7i94.0.7i84.0.2.input-02		work_area.vacuum_pedal
-net estop-pcells		hm2_7i94.0.7i84.0.2.input-03		work_area.photo_eyes_bypass
-net vaccuum-ok			hm2_7i94.0.7i84.0.2.input-04		work_area.machine_enabled
+net left-area-pb			hm2_7i94.0.7i84.0.2.input-00		work_area.left_button
+net rht-area-pb				hm2_7i94.0.7i84.0.2.input-01		work_area.right_button
+net vac-pedal				hm2_7i94.0.7i84.0.2.input-02		work_area.vacuum_pedal
+net estop-pcells			hm2_7i94.0.7i84.0.2.input-03		work_area.photo_eyes_bypass
+net vaccuum-ok				hm2_7i94.0.7i84.0.2.input-04		work_area.vacuum_ok
 
 
 			# TB2 OUTPUTS #
-net sx-lamp				hm2_7i94.0.7i84.0.2.output-00	
-net dx-lamp				hm2_7i94.0.7i84.0.2.output-01
-net lh-stops			hm2_7i94.0.7i84.0.2.output-02		work_area.left_stops
-net rh-stops			hm2_7i94.0.7i84.0.2.output-03		work_area.right_stops
-net on-suction			hm2_7i94.0.7i84.0.2.output-04		work_area.suction_on
-net off-suction			hm2_7i94.0.7i84.0.2.output-05		work_area.suction_off
-net frnt-stops			hm2_7i94.0.7i84.0.2.output-06		work_area.front_stops
-net up-suction			hm2_7i94.0.7i84.0.2.output-07		work_area.suction_up
+net sx-lamp					hm2_7i94.0.7i84.0.2.output-00	
+net dx-lamp					hm2_7i94.0.7i84.0.2.output-01
+net lh-stops				hm2_7i94.0.7i84.0.2.output-02		work_area.left_stops
+net rh-stops				hm2_7i94.0.7i84.0.2.output-03		work_area.right_stops
+net on-suction				hm2_7i94.0.7i84.0.2.output-04		work_area.suction_on
+net off-suction				hm2_7i94.0.7i84.0.2.output-05		work_area.suction_off
+net frnt-stops				hm2_7i94.0.7i84.0.2.output-06		work_area.front_stops
+net up-suction				hm2_7i94.0.7i84.0.2.output-07		work_area.suction_up
 
-# Machine control connections (add these where you have other motion/spindle connections)
-net work-area-motion    work_area.motion_enable    			motion.enable
-net work-area-spindle   work_area.spindle_stop     			spindle.0.on
+# Machine control connections
+net work-area-motion    	work_area.motion_enable    			motion.enable
+net work-area-spindle   	work_area.spindle_stop     			spindle.0.on
+
+# VFD CONTROL CONNECTIONS ###
+net spindle-on              motion.spindle-on                    vfd_control.spindle_on
+
+# Remove redundant vacuum connections since they're already defined above
 
 
