@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# command to make python files executable: chmod +x python/*.py
 
 import hal
 import time
