@@ -46,7 +46,7 @@ chmod +x python/*.py
 
 ## Tool Configuration
 
-### Pin Assignments
+## M-Code Pin Assignments (set in rover-custom.hal)
 - **P0-P4**: Vertical Y bits (T1-T5)
 - **P5-P9**: Vertical X bits (T6-T10)
 - **P10-P12**: Horizontal shared bits (T11-T16)
@@ -61,8 +61,8 @@ chmod +x python/*.py
 ## Custom M-Codes
 
 - **M6**: Remapped for custom tool change behavior
-  - Automatic tool changes for T1-T19
-  - Manual tool change prompt for T20
+  - Automatic tool changes for T1-T19 that are the integrated vertical and horizontal bit and the saw blade
+  - Manual tool change prompt for router bits, T20 and above
   - Integrated safety checks and position verification
 
 - **M8/M9**: Repurposed coolant control for bit retraction
