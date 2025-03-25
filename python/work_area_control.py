@@ -51,6 +51,11 @@ class WorkAreaControl:
         self.h.newpin("spindle_stop", hal.HAL_BIT, hal.HAL_IN)     # Spindle state input
         self.h.newpin("enable_axes", hal.HAL_BIT, hal.HAL_OUT)    # Enable all axes
         
+        # Debug Output pins
+        self.h.newpin("debug_axes_ok", hal.HAL_BIT, hal.HAL_OUT)     # Shows if all axes are OK
+        self.h.newpin("debug_machine_safe", hal.HAL_BIT, hal.HAL_OUT) # Shows if machine is safe to enable
+        self.h.newpin("debug_halui_on", hal.HAL_BIT, hal.HAL_OUT)    # Shows HALUI machine.is-on state
+        
         # Parameters
         self.VACUUM_CHECK_TIME = 2.0    # Time to check for good vacuum (seconds)
         self.ERROR_TIMEOUT = 5.0        # Time before declaring vacuum error
@@ -79,6 +84,9 @@ class WorkAreaControl:
         self.h.low_vacuum = False
         self.h.motion_enable = False     # Start with motion disabled
         self.h.enable_axes = False       # Start with axes disabled
+        self.h.debug_axes_ok = False
+        self.h.debug_machine_safe = False
+        self.h.debug_halui_on = False
         
         self.h.ready()
     
@@ -143,18 +151,23 @@ class WorkAreaControl:
         all_axes_ok = self.h.x_axis_ok and self.h.y_axis_ok and self.h.z_axis_ok
         machine_safe = all_axes_ok and self.h.estop_ok
         
+        # Update debug pins
+        self.h.debug_axes_ok = all_axes_ok
+        self.h.debug_machine_safe = machine_safe
+        self.h.debug_halui_on = self.h.machine_enabled
+        
         # Handle machine enable state
         if self.h.machine_enabled and machine_safe:
             # When machine is enabled and safe, enable all systems
             self.h.enable_machine = True
-            self.h.machine_on = True     # Set HALUI machine on
+            self.h.machine_on = True
             self.h.enable_axes = True
             if self.work_area_state == WorkAreaState.IDLE:
                 self.h.motion_enable = True
         else:
             # When machine is disabled or unsafe, disable all systems
             self.h.enable_machine = False
-            self.h.machine_on = False    # Clear HALUI machine on
+            self.h.machine_on = False
             self.h.enable_axes = False
             self.h.motion_enable = False
             
