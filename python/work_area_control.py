@@ -157,12 +157,12 @@ class WorkAreaControl:
         self.h.debug_halui_on = self.h.machine_enabled
         
         # Handle machine enable state
-        if machine_safe:
-            # When safe, enable hardware
+        if self.h.machine_enabled and machine_safe:
+            # When machine is enabled and safe, enable hardware
             self.h.enable_machine = True
             self.h.enable_axes = True
         else:
-            # When unsafe, disable hardware
+            # When machine is disabled or unsafe, disable hardware
             self.h.enable_machine = False
             self.h.enable_axes = False
             
