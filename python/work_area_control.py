@@ -137,6 +137,20 @@ class WorkAreaControl:
     def update(self):
         current_time = time.time()
         
+        # Check machine enable and safety conditions
+        all_axes_ok = self.h.x_axis_ok and self.h.y_axis_ok and self.h.z_axis_ok
+        machine_safe = all_axes_ok and self.h.estop_ok
+        
+        # Handle machine enable state
+        if self.h.machine_enabled and machine_safe:
+            self.h.enable_machine = True
+            self.h.enable_axes = True
+            self.h.motion_enable = True
+        else:
+            self.h.enable_machine = False
+            self.h.enable_axes = False
+            self.h.motion_enable = False
+        
         # Read button states
         left_button = self.h.left_button
         right_button = self.h.right_button
@@ -154,10 +168,8 @@ class WorkAreaControl:
                 self.work_area_state = WorkAreaState.SETUP_MODE
                 self.setup_side = 'left' if left_pressed else 'right'
                 
-                # Disable machine and photo eyes
+                # Temporarily disable motion but keep machine enabled
                 self.h.motion_enable = False
-                self.h.spindle_stop = True
-                self.h.photo_eyes_bypass = True
                 
                 # Raise appropriate stops
                 self.h.left_stops = True if left_pressed else False
