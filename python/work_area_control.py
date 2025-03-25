@@ -25,7 +25,7 @@ class WorkAreaControl:
         self.h.newpin("left_button", hal.HAL_BIT, hal.HAL_IN)
         self.h.newpin("right_button", hal.HAL_BIT, hal.HAL_IN)
         self.h.newpin("vacuum_pedal", hal.HAL_BIT, hal.HAL_IN)
-        self.h.newpin("machine_enabled", hal.HAL_BIT, hal.HAL_IN)
+        self.h.newpin("machine_enabled", hal.HAL_BIT, hal.HAL_IN)      # Machine enable signal
         self.h.newpin("vacuum_ok", hal.HAL_BIT, hal.HAL_IN)      # Vacuum level OK signal
         self.h.newpin("estop_ok", hal.HAL_BIT, hal.HAL_IN)      # E-stop chain status
         
@@ -34,6 +34,7 @@ class WorkAreaControl:
         self.h.newpin("right_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("front_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("photo_eyes_bypass", hal.HAL_BIT, hal.HAL_OUT)
+        self.h.newpin("enable_machine", hal.HAL_BIT, hal.HAL_OUT)    # Machine enable output
         
         # Vacuum Output pins
         self.h.newpin("suction_on", hal.HAL_BIT, hal.HAL_OUT)    # Turn vacuum on
@@ -66,6 +67,7 @@ class WorkAreaControl:
         self.h.right_stops = False
         self.h.front_stops = False
         self.h.photo_eyes_bypass = False
+        self.h.enable_machine = True     # Start with machine enabled
         self.h.suction_on = False
         self.h.suction_off = False
         self.h.suction_up = False
