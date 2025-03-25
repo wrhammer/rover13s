@@ -32,13 +32,6 @@ loadusr -Wn tool_release python3 python/tool_release_control.py
 # Load the VFD control component
 loadusr -Wn vfd_control python3 python/vfd_control.py
 
-#***********************
-# === vacuum control ===
-#***********************
-
-# Load the vacuum control component
-loadusr -Wn vacuum_control python3 python/vacuum_control.py
-
 ### Change to below at final connection in cnc. Should be a not ###
 net remote-estop 			estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03-not
 #net remote-estop 			estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03
@@ -156,7 +149,5 @@ net work-area-spindle   	work_area.spindle_stop     			spindle.0.on
 
 # VFD CONTROL CONNECTIONS ###
 net spindle-on              motion.spindle-on                    vfd_control.spindle_on
-
-# Remove redundant vacuum connections since they're already defined above
 
 

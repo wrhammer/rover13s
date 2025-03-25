@@ -1,0 +1,19 @@
+style "custom-panel" {
+    bg[NORMAL] = "#2B2B2B"  # Dark background
+    fg[NORMAL] = "#FFFFFF"  # White text
+    
+    # Custom colors for widgets
+    GtkFrame::label-color = "#4CAF50"  # Green frame labels
+    GtkLabel::color = "#FFFFFF"        # White text for labels
+}
+
+style "custom-led" {
+    # LED colors
+    HALLed::pick-color-on = "#00FF00"   # Bright green for ON
+    HALLed::pick-color-off = "#FF0000"  # Red for OFF
+}
+
+# Apply styles to specific widget classes
+class "GtkFrame" style "custom-panel"
+class "GtkLabel" style "custom-panel"
+class "HAL_LED"  style "custom-led" 
