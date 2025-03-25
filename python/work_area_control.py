@@ -77,12 +77,12 @@ class WorkAreaControl:
         self.h.right_stops = False
         self.h.front_stops = False
         self.h.enable_machine = False    # Start with machine disabled
-        self.h.machine_on = False        # Start with HALUI machine off
+        self.h.machine_on = True         # Allow machine to be turned on
         self.h.suction_on = False
         self.h.suction_off = False
         self.h.suction_up = False
         self.h.low_vacuum = False
-        self.h.motion_enable = False     # Start with motion disabled
+        self.h.motion_enable = True      # Allow motion to be enabled
         self.h.enable_axes = False       # Start with axes disabled
         self.h.debug_axes_ok = False
         self.h.debug_machine_safe = False
@@ -157,19 +157,14 @@ class WorkAreaControl:
         self.h.debug_halui_on = self.h.machine_enabled
         
         # Handle machine enable state
-        if self.h.machine_enabled and machine_safe:
-            # When machine is enabled and safe, enable all systems
+        if machine_safe:
+            # When safe, enable hardware
             self.h.enable_machine = True
-            self.h.machine_on = True
             self.h.enable_axes = True
-            if self.work_area_state == WorkAreaState.IDLE:
-                self.h.motion_enable = True
         else:
-            # When machine is disabled or unsafe, disable all systems
+            # When unsafe, disable hardware
             self.h.enable_machine = False
-            self.h.machine_on = False
             self.h.enable_axes = False
-            self.h.motion_enable = False
             
             # Return to IDLE state if machine is disabled
             if not self.h.machine_enabled:
