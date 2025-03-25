@@ -38,6 +38,7 @@ class WorkAreaControl:
         self.h.newpin("right_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("front_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("enable_machine", hal.HAL_BIT, hal.HAL_OUT)    # Machine enable output
+        self.h.newpin("machine_on", hal.HAL_BIT, hal.HAL_OUT)        # HALUI machine on control
         
         # Vacuum Output pins
         self.h.newpin("suction_on", hal.HAL_BIT, hal.HAL_OUT)    # Turn vacuum on
@@ -71,6 +72,7 @@ class WorkAreaControl:
         self.h.right_stops = False
         self.h.front_stops = False
         self.h.enable_machine = False    # Start with machine disabled
+        self.h.machine_on = False        # Start with HALUI machine off
         self.h.suction_on = False
         self.h.suction_off = False
         self.h.suction_up = False
@@ -145,12 +147,14 @@ class WorkAreaControl:
         if self.h.machine_enabled and machine_safe:
             # When machine is enabled and safe, enable all systems
             self.h.enable_machine = True
+            self.h.machine_on = True     # Set HALUI machine on
             self.h.enable_axes = True
             if self.work_area_state == WorkAreaState.IDLE:
                 self.h.motion_enable = True
         else:
             # When machine is disabled or unsafe, disable all systems
             self.h.enable_machine = False
+            self.h.machine_on = False    # Clear HALUI machine on
             self.h.enable_axes = False
             self.h.motion_enable = False
             
