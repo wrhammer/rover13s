@@ -139,9 +139,8 @@ net work-area-motion    	work_area.motion_enable    			motion.enable
 net spindle-on          	work_area.spindle_stop
 
 # Connect machine on/off buttons
-net machine-on          work_area.machine_on    halui.machine.on
+net machine-on          work_area.machine_on    halui.machine.on    not.0.in
 net machine-off         not.0.out               halui.machine.off
-net machine-off-in      work_area.machine_on    not.0.in
 
 # VFD CONTROL CONNECTIONS ###
 # Spindle control is now handled in Rover13s.hal
