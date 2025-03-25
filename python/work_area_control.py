@@ -27,6 +27,7 @@ class WorkAreaControl:
         self.h.newpin("vacuum_pedal", hal.HAL_BIT, hal.HAL_IN)
         self.h.newpin("machine_enabled", hal.HAL_BIT, hal.HAL_IN)
         self.h.newpin("vacuum_ok", hal.HAL_BIT, hal.HAL_IN)      # Vacuum level OK signal
+        self.h.newpin("estop_ok", hal.HAL_BIT, hal.HAL_IN)      # E-stop chain status
         
         # Work Area Output pins
         self.h.newpin("left_stops", hal.HAL_BIT, hal.HAL_OUT)
