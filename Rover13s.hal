@@ -7,6 +7,10 @@ loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=40
 loadrt hostmot2
 loadrt hm2_eth board_ip="10.10.10.10,10.10.10.11" config="num_encoders=8 num_pwmgens=1 num_stepgens=5 sserial_port_0=0000xxxx" 
+
+# Load VFD control component
+loadusr -Wn vfd_control python3 python/vfd_control.py
+
 setp    [HMOT](CARD0).pwmgen.pwm_frequency 20000
 setp    [HMOT](CARD0).pwmgen.pdm_frequency 6000000
 setp    [HMOT](CARD0).watchdog.timeout_ns 5000000
@@ -216,7 +220,7 @@ setp   hm2_7i96s.0.7i77.0.1.analogout4-scalemax  [SPINDLE_0]OUTPUT_SCALE
 setp   hm2_7i96s.0.7i77.0.1.analogout4-minlim    [SPINDLE_0]OUTPUT_MIN_LIMIT
 setp   hm2_7i96s.0.7i77.0.1.analogout4-maxlim    [SPINDLE_0]OUTPUT_MAX_LIMIT
 
-# Spindle connections
+# Spindle connections - connect to spindle_on pin
 net spindle-on 	spindle.0.on			hm2_7i96s.0.7i77.0.1.spinena	vfd_control.spindle_on
 net spindle-speed 	spindle.0.speed-out-abs 	hm2_7i96s.0.7i77.0.1.analogout4	
 
