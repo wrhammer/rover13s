@@ -2,11 +2,23 @@
 # This file will not be overwritten when you run PNCconf again
 
 #***********************
-# === estop signals ===
+# === Load Components ===
 #***********************
 
 loadrt estop_latch
+loadrt not count=1
+
+#***********************
+# === Thread Assignments ===
+#***********************
+
 addf estop-latch.0 servo-thread
+addf not.0 servo-thread
+
+#***********************
+# === estop signals ===
+#***********************
+
 net estop-loopout 			iocontrol.0.emc-enable-in <= 		estop-latch.0.ok-out
 net estop-loopin 			iocontrol.0.user-enable-out => 		estop-latch.0.ok-in
 net estop-reset 			iocontrol.0.user-request-enable => 	estop-latch.0.reset
@@ -129,12 +141,6 @@ net spindle-on          	work_area.spindle_stop
 # Connect machine on/off buttons
 net machine-on          work_area.machine_on    halui.machine.on
 net machine-off         not.0.out               halui.machine.off
-
-# Load not component for machine off signal
-loadrt not count=1
-addf not.0 servo-thread
-
-# Connect machine_on to not gate for machine off
 net machine-off-in      work_area.machine_on    not.0.in
 
 # VFD CONTROL CONNECTIONS ###
