@@ -12,13 +12,6 @@ net estop-loopin 			iocontrol.0.user-enable-out => 		estop-latch.0.ok-in
 net estop-reset 			iocontrol.0.user-request-enable => 	estop-latch.0.reset
 
 #***********************
-# === work area control ===
-#***********************
-
-# Load the work area control component
-loadusr -Wn work_area python3 python/work_area_control.py
-
-#***********************
 # === tool release control ===
 #***********************
 
