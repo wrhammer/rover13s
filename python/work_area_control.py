@@ -70,13 +70,13 @@ class WorkAreaControl:
         self.h.left_stops = False
         self.h.right_stops = False
         self.h.front_stops = False
-        self.h.enable_machine = True     # Start with machine enabled
+        self.h.enable_machine = False    # Start with machine disabled
         self.h.suction_on = False
         self.h.suction_off = False
         self.h.suction_up = False
         self.h.low_vacuum = False
-        self.h.motion_enable = True
-        self.h.enable_axes = True     # Start with axes enabled
+        self.h.motion_enable = False     # Start with motion disabled
+        self.h.enable_axes = False       # Start with axes disabled
         
         self.h.ready()
     
