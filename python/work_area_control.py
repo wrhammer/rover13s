@@ -31,12 +31,12 @@ class WorkAreaControl:
         self.h.newpin("x_axis_ok", hal.HAL_BIT, hal.HAL_IN)      # X axis status signal
         self.h.newpin("y_axis_ok", hal.HAL_BIT, hal.HAL_IN)      # Y axis status signal
         self.h.newpin("z_axis_ok", hal.HAL_BIT, hal.HAL_IN)      # Z axis status signal
+        self.h.newpin("photo_eyes_bypass", hal.HAL_BIT, hal.HAL_IN)    # Photo eye bypass signal
         
         # Work Area Output pins
         self.h.newpin("left_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("right_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("front_stops", hal.HAL_BIT, hal.HAL_OUT)
-        self.h.newpin("photo_eyes_bypass", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("enable_machine", hal.HAL_BIT, hal.HAL_OUT)    # Machine enable output
         
         # Vacuum Output pins
@@ -48,6 +48,7 @@ class WorkAreaControl:
         # Machine control pins
         self.h.newpin("motion_enable", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("spindle_stop", hal.HAL_BIT, hal.HAL_OUT)
+        self.h.newpin("enable_axes", hal.HAL_BIT, hal.HAL_OUT)    # Enable all axes
         
         # Parameters
         self.VACUUM_CHECK_TIME = 2.0    # Time to check for good vacuum (seconds)
@@ -69,7 +70,6 @@ class WorkAreaControl:
         self.h.left_stops = False
         self.h.right_stops = False
         self.h.front_stops = False
-        self.h.photo_eyes_bypass = False
         self.h.enable_machine = True     # Start with machine enabled
         self.h.suction_on = False
         self.h.suction_off = False
@@ -77,6 +77,7 @@ class WorkAreaControl:
         self.h.low_vacuum = False
         self.h.motion_enable = True
         self.h.spindle_stop = False
+        self.h.enable_axes = True     # Start with axes enabled
         
         self.h.ready()
     
