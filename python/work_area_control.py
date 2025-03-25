@@ -145,11 +145,18 @@ class WorkAreaControl:
         if self.h.machine_enabled and machine_safe:
             self.h.enable_machine = True
             self.h.enable_axes = True
-            self.h.motion_enable = True
+            if self.work_area_state == WorkAreaState.IDLE:
+                self.h.motion_enable = True
         else:
             self.h.enable_machine = False
             self.h.enable_axes = False
             self.h.motion_enable = False
+            # Return to IDLE state if machine is disabled
+            if not self.h.machine_enabled:
+                self.work_area_state = WorkAreaState.IDLE
+                self.h.left_stops = False
+                self.h.right_stops = False
+                self.h.front_stops = False
         
         # Read button states
         left_button = self.h.left_button
@@ -164,7 +171,7 @@ class WorkAreaControl:
         
         # Work area state machine
         if self.work_area_state == WorkAreaState.IDLE:
-            if left_pressed or right_pressed:
+            if left_pressed or right_pressed and self.h.machine_enabled and machine_safe:
                 self.work_area_state = WorkAreaState.SETUP_MODE
                 self.setup_side = 'left' if left_pressed else 'right'
                 
@@ -193,10 +200,9 @@ class WorkAreaControl:
                 self.h.right_stops = False
                 self.h.front_stops = False
                 
-                # Re-enable machine and photo eyes
-                self.h.motion_enable = True
-                self.h.spindle_stop = False
-                self.h.photo_eyes_bypass = False
+                # Re-enable motion if machine is still enabled and safe
+                if self.h.machine_enabled and machine_safe:
+                    self.h.motion_enable = True
                 
                 # Keep suction on but lower cups
                 self.h.suction_up = False
