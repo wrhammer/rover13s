@@ -124,7 +124,7 @@ net up-suction				hm2_7i94.0.7i84.0.2.output-07		work_area.suction_up
 
 # Machine control connections
 net work-area-motion    	work_area.motion_enable    			motion.enable
-net spindle-on          	work_area.spindle_stop
+net spindle-on          	=>  work_area.spindle_stop
 
 # VFD CONTROL CONNECTIONS ###
 # Spindle control is now handled in Rover13s.hal

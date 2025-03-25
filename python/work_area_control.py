@@ -47,7 +47,7 @@ class WorkAreaControl:
         
         # Machine control pins
         self.h.newpin("motion_enable", hal.HAL_BIT, hal.HAL_OUT)
-        self.h.newpin("spindle_stop", hal.HAL_BIT, hal.HAL_OUT)
+        self.h.newpin("spindle_stop", hal.HAL_BIT, hal.HAL_IN)     # Spindle state input
         self.h.newpin("enable_axes", hal.HAL_BIT, hal.HAL_OUT)    # Enable all axes
         
         # Parameters
@@ -76,7 +76,6 @@ class WorkAreaControl:
         self.h.suction_up = False
         self.h.low_vacuum = False
         self.h.motion_enable = True
-        self.h.spindle_stop = False
         self.h.enable_axes = True     # Start with axes enabled
         
         self.h.ready()
