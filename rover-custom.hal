@@ -148,6 +148,6 @@ net work-area-motion    	work_area.motion_enable    			motion.enable
 net work-area-spindle   	work_area.spindle_stop     			spindle.0.on
 
 # VFD CONTROL CONNECTIONS ###
-net spindle-on              motion.spindle-on                    vfd_control.spindle_on
+# Spindle control is now handled in Rover13s.hal
 
 

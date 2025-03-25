@@ -216,7 +216,8 @@ setp   hm2_7i96s.0.7i77.0.1.analogout4-scalemax  [SPINDLE_0]OUTPUT_SCALE
 setp   hm2_7i96s.0.7i77.0.1.analogout4-minlim    [SPINDLE_0]OUTPUT_MIN_LIMIT
 setp   hm2_7i96s.0.7i77.0.1.analogout4-maxlim    [SPINDLE_0]OUTPUT_MAX_LIMIT
 
-net spindle-on-1 	spindle.0.on			hm2_7i96s.0.7i77.0.1.spinena	vfd_control.spindle_on
+# Spindle connections
+net spindle-on 	spindle.0.on			hm2_7i96s.0.7i77.0.1.spinena	vfd_control.spindle_on
 net spindle-speed 	spindle.0.speed-out-abs 	hm2_7i96s.0.7i77.0.1.analogout4	
 
 
