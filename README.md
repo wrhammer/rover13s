@@ -34,9 +34,9 @@ chmod +x python/*.py
 
 ### Core Configuration
 - `Rover13s.ini` - Main configuration file
+- 'Rover13s.hal - Main HAL configs
 - `tool.tbl` - Tool table with all tool definitions
 - `rover-custom.hal` - Custom HAL file for machine-specific connections
-- `custom_postgui.hal` - Post-GUI HAL configurations
 
 ### Python Components
 - `python/work_area_control.py` - Work area and vacuum control
