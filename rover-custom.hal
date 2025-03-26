@@ -138,14 +138,17 @@ net up-suction				hm2_7i94.0.7i84.0.2.output-07		work_area.suction_up
 net work-area-motion    	work_area.motion_enable    			motion.enable
 net spindle-on          	work_area.spindle_stop
 
-# Connect machine on/off buttons
-net machine-on          work_area.machine_on    halui.machine.on
-net machine-enabled work_area.machine_enabled halui.machine.is-on
+# Machine On/Off control
+net machine-enabled    	halui.machine.is-on    					work_area.machine_enabled
+
+# Machine enable outputs
+net enable-machine 			work_area.enable_machine 			hm2_7i96s.0.7i77.0.0.output-00
+net enable-axes 			work_area.enable_axes 				hm2_7i96s.0.7i77.0.0.output-01
 
 # Debug pins
-net debug-axes-ok work_area.debug_axes_ok hm2_7i94.0.7i84.0.2.output-10
-net debug-machine-safe work_area.debug_machine_safe hm2_7i94.0.7i84.0.2.output-11
-net debug-halui-on work_area.debug_halui_on hm2_7i94.0.7i84.0.2.output-12
+net debug-axes-ok 			work_area.debug_axes_ok 			hm2_7i94.0.7i84.0.2.output-10
+net debug-machine-safe 		work_area.debug_machine_safe 		hm2_7i94.0.7i84.0.2.output-11
+net debug-halui-on 			work_area.debug_halui_on 			hm2_7i94.0.7i84.0.2.output-12
 
 # VFD CONTROL CONNECTIONS ###
 # Spindle control is now handled in Rover13s.hal

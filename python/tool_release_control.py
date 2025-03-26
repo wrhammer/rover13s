@@ -18,15 +18,12 @@ class ToolReleaseControl:
         self.h.newpin("release_button", hal.HAL_BIT, hal.HAL_IN)     # Button input
         self.h.newpin("tool_released", hal.HAL_BIT, hal.HAL_IN)      # Feedback that tool is released
         self.h.newpin("tool_locked", hal.HAL_BIT, hal.HAL_IN)        # Feedback that tool is locked
-        self.h.newpin("x_safe_zone", hal.HAL_BIT, hal.HAL_IN)        # X axis in safe zone
-        self.h.newpin("y_safe_zone", hal.HAL_BIT, hal.HAL_IN)        # Y axis in safe zone
         self.h.newpin("override_safety", hal.HAL_BIT, hal.HAL_IN)    # Override safety checks (for maintenance)
         
         # Output pins
         self.h.newpin("release_tool", hal.HAL_BIT, hal.HAL_OUT)      # Release tool output
         self.h.newpin("lock_tool", hal.HAL_BIT, hal.HAL_OUT)         # Lock tool output
         self.h.newpin("error_active", hal.HAL_BIT, hal.HAL_OUT)      # Error status
-        self.h.newpin("in_safe_zone", hal.HAL_BIT, hal.HAL_OUT)      # Safe zone status
         
         # Parameters
         self.TIMEOUT = 5.0          # Timeout for operations (seconds)
@@ -42,15 +39,8 @@ class ToolReleaseControl:
         self.h.lock_tool = True     # Start with tool locked
         self.h.release_tool = False
         self.h.error_active = False
-        self.h.in_safe_zone = False
         
         self.h.ready()
-        
-    def check_safe_zone(self):
-        """Check if machine is in safe position for tool operations"""
-        is_safe = (self.h.x_safe_zone and self.h.y_safe_zone) or self.h.override_safety
-        self.h.in_safe_zone = is_safe
-        return is_safe
     
     def check_timeout(self):
         """Check if current operation has timed out"""
@@ -70,18 +60,14 @@ class ToolReleaseControl:
         button_falling_edge = not button_pressed and self.last_button_state
         current_time = time.time()
         
-        # Update safe zone status
-        self.check_safe_zone()
-        
         # State machine
         if self.state == ToolState.IDLE:
             if button_rising_edge:
-                if self.check_safe_zone():
-                    self.state = ToolState.RELEASING
-                    self.h.release_tool = True
-                    self.h.lock_tool = False
-                    self.operation_start_time = current_time
-                    self.h.error_active = False
+                self.state = ToolState.RELEASING
+                self.h.release_tool = True
+                self.h.lock_tool = False
+                self.operation_start_time = current_time
+                self.h.error_active = False
         
         elif self.state == ToolState.RELEASING:
             if button_falling_edge:

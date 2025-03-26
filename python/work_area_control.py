@@ -71,6 +71,11 @@ class WorkAreaControl:
         self.vacuum_timer_start = 0
         self.last_vacuum_ok = False
         self.vacuum_loss_time = 0
+        self.last_vacuum_pedal = False
+        
+        # Machine enable state tracking
+        self.machine_enabled_state = False  # Latch state for machine enable
+        self.last_machine_enabled = False   # For edge detection
         
         # Initialize outputs
         self.h.left_stops = False
@@ -114,8 +119,12 @@ class WorkAreaControl:
             self.h.low_vacuum = True
             return False  # Indicate vacuum not ready
         
+        # Detect rising edge of pedal press for latching behavior
+        pedal_pressed = self.h.vacuum_pedal and not self.last_vacuum_pedal
+        self.last_vacuum_pedal = self.h.vacuum_pedal
+        
         if self.vacuum_state == VacuumState.IDLE:
-            if self.h.vacuum_pedal:
+            if pedal_pressed:  # Toggle vacuum on
                 self.vacuum_state = VacuumState.VACUUM_ON
                 self.vacuum_timer_start = current_time
                 self.h.suction_on = True
@@ -127,7 +136,7 @@ class WorkAreaControl:
                 if current_time - self.vacuum_timer_start >= self.VACUUM_CHECK_TIME:
                     return True  # Indicate vacuum ready
             
-            if not self.h.vacuum_pedal:  # Pedal released
+            if pedal_pressed:  # Toggle vacuum off
                 self.vacuum_state = VacuumState.VACUUM_OFF
                 self.h.suction_on = False
                 self.h.suction_off = True
@@ -148,26 +157,52 @@ class WorkAreaControl:
         current_time = time.time()
         
         # Check machine enable and safety conditions
-        all_axes_ok = self.h.x_axis_ok and self.h.y_axis_ok and self.h.z_axis_ok
-        machine_safe = all_axes_ok and self.h.estop_ok
+        safety_ok = self.h.estop_ok
+        x_ok = self.h.x_axis_ok
+        y_ok = self.h.y_axis_ok
+        z_ok = self.h.z_axis_ok
+        machine_on = self.h.machine_enabled
+        
+        # Detailed debug output
+        print(f"\nEnable Chain Status:")
+        print(f"  halui.machine.is-on: {machine_on}")
+        print(f"  estop_ok: {safety_ok}")
+        print(f"  Axis Status:")
+        print(f"    X: {x_ok}")
+        print(f"    Y: {y_ok}")
+        print(f"    Z: {z_ok}")
+        print(f"  Current Outputs:")
+        print(f"    enable_machine: {self.h.enable_machine}")
+        print(f"    enable_axes: {self.h.enable_axes}")
         
         # Update debug pins
-        self.h.debug_axes_ok = all_axes_ok
-        self.h.debug_machine_safe = machine_safe
-        self.h.debug_halui_on = self.h.machine_enabled
+        self.h.debug_axes_ok = x_ok and y_ok and z_ok
+        self.h.debug_machine_safe = safety_ok and x_ok and y_ok and z_ok
+        self.h.debug_halui_on = machine_on
         
         # Handle machine enable state
-        if self.h.machine_enabled and machine_safe:
-            # When machine is enabled and safe, enable hardware
-            self.h.enable_machine = True
-            self.h.enable_axes = True
+        if safety_ok and machine_on:
+            if x_ok and y_ok and z_ok:
+                # All conditions met, enable machine
+                self.machine_enabled_state = True
+                self.h.enable_machine = True
+                self.h.enable_axes = True
+                print("  Action: Machine enabled - all conditions met")
+            else:
+                # Any axis not OK, disable machine
+                self.machine_enabled_state = False
+                self.h.enable_machine = False
+                self.h.enable_axes = False
+                print("  Action: Machine disabled - axis not OK")
         else:
-            # When machine is disabled or unsafe, disable hardware
+            # Safety not OK or machine not enabled, disable machine
+            self.machine_enabled_state = False
             self.h.enable_machine = False
             self.h.enable_axes = False
+            print("  Action: Machine disabled - safety not OK or machine not enabled")
             
             # Return to IDLE state if machine is disabled
-            if not self.h.machine_enabled:
+            if not machine_on:
                 self.work_area_state = WorkAreaState.IDLE
                 self.h.left_stops = False
                 self.h.right_stops = False
@@ -190,7 +225,7 @@ class WorkAreaControl:
         
         # Work area state machine
         if self.work_area_state == WorkAreaState.IDLE:
-            if left_pressed or right_pressed and self.h.machine_enabled and machine_safe:
+            if left_pressed or right_pressed and self.h.machine_enabled and self.machine_enabled_state:
                 self.work_area_state = WorkAreaState.SETUP_MODE
                 self.setup_side = 'left' if left_pressed else 'right'
                 
@@ -220,7 +255,7 @@ class WorkAreaControl:
                 self.h.front_stops = False
                 
                 # Re-enable motion if machine is still enabled and safe
-                if self.h.machine_enabled and machine_safe:
+                if self.h.machine_enabled and self.machine_enabled_state:
                     self.h.motion_enable = True
                 
                 # Keep suction on but lower cups
