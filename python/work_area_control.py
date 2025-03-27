@@ -181,7 +181,6 @@ class WorkAreaControl:
         print(f"    remote-estop (input-03): {self.h.remote_estop}")
         print(f"  Machine State:")
         print(f"    machine_enabled (from HALUI): {machine_enabled}")
-        print(f"    machine_on (from HALUI): {self.h.machine_on}")
         print(f"    machine_enabled_state (internal): {self.machine_enabled_state}")
         print(f"  Axis Status:")
         print(f"    X: {x_ok}")
