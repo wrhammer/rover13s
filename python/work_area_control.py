@@ -25,7 +25,7 @@ class WorkAreaControl:
         self.h.newpin("left_button", hal.HAL_BIT, hal.HAL_IN)
         self.h.newpin("right_button", hal.HAL_BIT, hal.HAL_IN)
         self.h.newpin("vacuum_pedal", hal.HAL_BIT, hal.HAL_IN)
-        self.h.newpin("machine_enabled", hal.HAL_BIT, hal.HAL_IN)      # Machine enable signal
+        self.h.newpin("machine_btn_on", hal.HAL_BIT, hal.HAL_IN)      # Machine enable signal
         self.h.newpin("vacuum_ok", hal.HAL_BIT, hal.HAL_IN)      # Vacuum level OK signal
         self.h.newpin("estop_ok", hal.HAL_BIT, hal.HAL_IN)      # E-stop chain status
         self.h.newpin("x_axis_ok", hal.HAL_BIT, hal.HAL_IN)      # X axis status signal
@@ -57,10 +57,6 @@ class WorkAreaControl:
         self.h.newpin("spindle_stop", hal.HAL_BIT, hal.HAL_IN)     # Spindle state input
         self.h.newpin("enable_axes", hal.HAL_BIT, hal.HAL_OUT)    # Enable all axes
         
-        # Debug Output pins
-        self.h.newpin("debug_axes_ok", hal.HAL_BIT, hal.HAL_OUT)     # Shows if all axes are OK
-        self.h.newpin("debug_machine_safe", hal.HAL_BIT, hal.HAL_OUT) # Shows if machine is safe to enable
-        self.h.newpin("debug_halui_on", hal.HAL_BIT, hal.HAL_OUT)    # Shows HALUI machine.is-on state
         
         # Parameters
         self.VACUUM_CHECK_TIME = 2.0    # Time to check for good vacuum (seconds)
@@ -80,8 +76,8 @@ class WorkAreaControl:
         self.last_vacuum_pedal = False
         
         # Machine enable state tracking
-        self.machine_enabled_state = False  # Latch state for machine enable
-        self.last_machine_enabled = False   # For edge detection
+        self.machine_btn_on_state = False  # Latch state for machine enable
+        self.last_machine_btn_on = False   # For edge detection
         
         # Initialize outputs
         self.h.left_stops = False
@@ -163,7 +159,7 @@ class WorkAreaControl:
         
         # Check machine enable and safety conditions
         safety_ok = self.h.estop_ok
-        machine_enabled = self.h.machine_enabled  # From HALUI machine.is-on
+        machine_btn_on = self.h.machine_btn_on  # From HALUI machine.is-on
         
         # Monitor axis status
         x_ok = self.h.x_axis_ok
@@ -180,8 +176,8 @@ class WorkAreaControl:
         print(f"    estop-latch.fault-in: {self.h.estop_latch_fault}")
         print(f"    remote-estop (input-03): {self.h.remote_estop}")
         print(f"  Machine State:")
-        print(f"    machine_enabled (from HALUI): {machine_enabled}")
-        print(f"    machine_enabled_state (internal): {self.machine_enabled_state}")
+        print(f"    machine_btn_on (from HALUI): {machine_btn_on}")
+        print(f"    machine_btn_on_state (internal): {self.machine_btn_on_state}")
         print(f"  Axis Status:")
         print(f"    X: {x_ok}")
         print(f"    Y: {y_ok}")
@@ -193,13 +189,13 @@ class WorkAreaControl:
         
         # Update debug pins
         self.h.debug_machine_safe = safety_ok
-        self.h.debug_halui_on = machine_enabled
+        self.h.debug_halui_on = machine_btn_on
         self.h.debug_axes_ok = x_ok and y_ok and z_ok
         
         # Handle machine enable state
-        if safety_ok and machine_enabled:
+        if safety_ok and machine_btn_on:
             # Safety OK and machine enabled, enable machine
-            self.machine_enabled_state = True
+            self.machine_btn_on_state = True
             self.h.enable_machine = True
             self.h.enable_axes = True
             # Only enable motion if all axes are OK
@@ -208,9 +204,9 @@ class WorkAreaControl:
             print("  Action: Machine enabled - safety OK and machine enabled")
         else:
             # Safety not OK or machine not enabled, disable machine
-            if self.machine_enabled_state:  # Only print if state is changing
-                print(f"  Action: Machine disabled - safety_ok: {safety_ok}, machine_enabled: {machine_enabled}")
-            self.machine_enabled_state = False
+            if self.machine_btn_on_state:  # Only print if state is changing
+                print(f"  Action: Machine disabled - safety_ok: {safety_ok}, machine_btn_on: {machine_btn_on}")
+            self.machine_btn_on_state = False
             self.h.enable_machine = False
             self.h.enable_axes = False
             self.h.motion_enable = False
@@ -238,7 +234,7 @@ class WorkAreaControl:
         
         # Work area state machine
         if self.work_area_state == WorkAreaState.IDLE:
-            if left_pressed or right_pressed and self.h.machine_enabled and self.machine_enabled_state:
+            if left_pressed or right_pressed and self.h.machine_btn_on and self.machine_btn_on_state:
                 self.work_area_state = WorkAreaState.SETUP_MODE
                 self.setup_side = 'left' if left_pressed else 'right'
                 
@@ -268,7 +264,7 @@ class WorkAreaControl:
                 self.h.front_stops = False
                 
                 # Re-enable motion if machine is still enabled and safe
-                if self.h.machine_enabled and self.machine_enabled_state:
+                if self.h.machine_btn_on and self.machine_btn_on_state:
                     self.h.motion_enable = True
                 
                 # Keep suction on but lower cups

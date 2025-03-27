@@ -19,7 +19,6 @@ addf not.0 servo-thread
 # === estop signals ===
 #***********************
 
-# Primary E-stop chain connections
 net estop-loopout 			iocontrol.0.emc-enable-in <= 		estop-latch.0.ok-out
 net estop-loopin 			iocontrol.0.user-enable-out => 		estop-latch.0.ok-in
 net estop-reset 			iocontrol.0.user-request-enable => 	estop-latch.0.reset
@@ -28,20 +27,11 @@ net estop-reset 			iocontrol.0.user-request-enable => 	estop-latch.0.reset
 net remote-estop 			estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03-not
 #net remote-estop 			estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03
 
-# Connect E-stop chain signals to work_area component
-net estop-loopout 			work_area.estop_ok
-net estop-loopout 			work_area.emc_enable_in
-net estop-loopin 			work_area.user_enable_out
-net estop-loopout 			work_area.estop_latch_ok
-net remote-estop 			work_area.estop_latch_fault
-net remote-estop 			work_area.remote_estop
-
 	#***************************************#
 	#	  MESA 7I77 IN CABINET		#
 	#***************************************#
 
 net estop-loopout 			work_area.estop_ok
-net enable-machine 			work_area.enable_machine 			hm2_7i96s.0.7i77.0.0.output-00
 
 ###INPUT FROM PIN 27 ON DRIVES###
 net x-axis-ok 				hm2_7i96s.0.7i77.0.0.input-04 		work_area.x_axis_ok
@@ -56,11 +46,12 @@ net start-lube 				hm2_7i96s.0.7i77.0.0.input-10
 ### REMOTE SPEED INCREASE AND DECREASE ###
 net speed-incrs  			hm2_7i96s.0.7i77.0.0.input-11
 net speed-dcrs   			hm2_7i96s.0.7i77.0.0.input-12
+net enable-machine 			hm2_7i96s.0.7i77.0.0.output-00  	work_area.enable_machine 			
 net enable-axes				hm2_7i96s.0.7i77.0.0.output-01		work_area.enable_axes
 net reset-vfd				hm2_7i96s.0.7i77.0.0.output-02      vfd_control.vfd_reset
 net start-bitsnblade		hm2_7i96s.0.7i77.0.0.output-03		motion.digital-out-17
 net vfd-call-to-run  		hm2_7i96s.0.7i77.0.0.output-05		vfd_control.vfd_run
-net vfd-reset-btn			hm2_7i96s.0.7i77.0.0.input-08      vfd_control.reset_button
+net vfd-reset-btn			hm2_7i96s.0.7i77.0.0.input-08    	vfd_control.reset_button
 net vfd-overload			hm2_7i96s.0.7i77.0.0.input-13		motion.digital-in-05 vfd_control.vfd_overload
 net low-vac					hm2_7i96s.0.7i77.0.0.output-04		work_area.low_vacuum
 
@@ -143,18 +134,6 @@ net up-suction				hm2_7i94.0.7i84.0.2.output-07		work_area.suction_up
 # Machine control connections
 net work-area-motion    	work_area.motion_enable    			motion.enable
 net spindle-on          	work_area.spindle_stop
-
-# Machine On/Off control
-net machine-enabled    	halui.machine.is-on    					work_area.machine_enabled
-
-# Machine enable outputs
-net enable-machine 			work_area.enable_machine 			hm2_7i96s.0.7i77.0.0.output-00
-net enable-axes 			work_area.enable_axes 				hm2_7i96s.0.7i77.0.0.output-01
-
-# Debug pins
-net debug-axes-ok 			work_area.debug_axes_ok 			hm2_7i94.0.7i84.0.2.output-10
-net debug-machine-safe 		work_area.debug_machine_safe 		hm2_7i94.0.7i84.0.2.output-11
-net debug-halui-on 			work_area.debug_halui_on 			hm2_7i94.0.7i84.0.2.output-12
 
 # VFD CONTROL CONNECTIONS ###
 # Spindle control is now handled in Rover13s.hal
