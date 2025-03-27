@@ -33,6 +33,13 @@ class WorkAreaControl:
         self.h.newpin("z_axis_ok", hal.HAL_BIT, hal.HAL_IN)      # Z axis status signal
         self.h.newpin("photo_eyes_bypass", hal.HAL_BIT, hal.HAL_IN)    # Photo eye bypass signal
         
+        # E-stop chain input pins
+        self.h.newpin("emc_enable_in", hal.HAL_BIT, hal.HAL_IN)        # EMC enable input
+        self.h.newpin("user_enable_out", hal.HAL_BIT, hal.HAL_IN)      # User enable output
+        self.h.newpin("estop_latch_ok", hal.HAL_BIT, hal.HAL_IN)       # E-stop latch OK output
+        self.h.newpin("estop_latch_fault", hal.HAL_BIT, hal.HAL_IN)    # E-stop latch fault input
+        self.h.newpin("remote_estop", hal.HAL_BIT, hal.HAL_IN)         # Remote E-stop input
+        
         # Work Area Output pins
         self.h.newpin("left_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("right_stops", hal.HAL_BIT, hal.HAL_OUT)
@@ -169,11 +176,11 @@ class WorkAreaControl:
         print(f"\nEnable Chain Status:")
         print(f"  E-Stop Chain:")
         print(f"    estop_ok: {safety_ok}")
-        print(f"    emc-enable-in: {self.h.hal.get_value('iocontrol.0.emc-enable-in')}")
-        print(f"    user-enable-out: {self.h.hal.get_value('iocontrol.0.user-enable-out')}")
-        print(f"    estop-latch.ok-out: {self.h.hal.get_value('estop-latch.0.ok-out')}")
-        print(f"    estop-latch.fault-in: {self.h.hal.get_value('estop-latch.0.fault-in')}")
-        print(f"    remote-estop (input-03): {self.h.hal.get_value('hm2_7i96s.0.7i77.0.0.input-03')}")
+        print(f"    emc-enable-in: {self.h.emc_enable_in}")
+        print(f"    user-enable-out: {self.h.user_enable_out}")
+        print(f"    estop-latch.ok-out: {self.h.estop_latch_ok}")
+        print(f"    estop-latch.fault-in: {self.h.estop_latch_fault}")
+        print(f"    remote-estop (input-03): {self.h.remote_estop}")
         print(f"  Machine State:")
         print(f"    machine_enabled (from HALUI): {machine_enabled}")
         print(f"    machine_on (our output): {self.h.machine_on}")

@@ -27,6 +27,14 @@ net estop-reset 			iocontrol.0.user-request-enable => 	estop-latch.0.reset
 net remote-estop 			estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03-not
 #net remote-estop 			estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03
 
+# Connect E-stop chain signals to work_area component
+net estop-loopout 			work_area.estop_ok
+net estop-loopout 			work_area.emc_enable_in
+net estop-loopin 			work_area.user_enable_out
+net estop-latch-ok 			estop-latch.0.ok-out 			work_area.estop_latch_ok
+net estop-latch-fault 		estop-latch.0.fault-in 		work_area.estop_latch_fault
+net remote-estop 			work_area.remote_estop
+
 	#***************************************#
 	#	  MESA 7I77 IN CABINET		#
 	#***************************************#
