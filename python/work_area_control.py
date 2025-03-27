@@ -168,7 +168,9 @@ class WorkAreaControl:
         # Detailed debug output
         print(f"\nEnable Chain Status:")
         print(f"  estop_ok: {safety_ok}")
-        print(f"  machine_enabled: {machine_enabled}")
+        print(f"  machine_enabled (from HALUI): {machine_enabled}")
+        print(f"  machine_on (our output): {self.h.machine_on}")
+        print(f"  machine_enabled_state (internal): {self.machine_enabled_state}")
         print(f"  Axis Status:")
         print(f"    X: {x_ok}")
         print(f"    Y: {y_ok}")
@@ -176,6 +178,7 @@ class WorkAreaControl:
         print(f"  Current Outputs:")
         print(f"    enable_machine: {self.h.enable_machine}")
         print(f"    enable_axes: {self.h.enable_axes}")
+        print(f"    motion_enable: {self.h.motion_enable}")
         
         # Update debug pins
         self.h.debug_machine_safe = safety_ok
@@ -195,16 +198,17 @@ class WorkAreaControl:
             self.h.enable_machine = True
             self.h.enable_axes = True
             # Only enable motion if all axes are OK
-            # if x_ok and y_ok and z_ok:
-                # self.h.motion_enable = True
+            if x_ok and y_ok and z_ok:
+                self.h.motion_enable = True
             print("  Action: Machine enabled - safety OK and machine enabled")
         else:
             # Safety not OK or machine not enabled, disable machine
+            if self.machine_enabled_state:  # Only print if state is changing
+                print(f"  Action: Machine disabled - safety_ok: {safety_ok}, machine_enabled: {machine_enabled}")
             self.machine_enabled_state = False
             self.h.enable_machine = False
             self.h.enable_axes = False
             self.h.motion_enable = False
-            print("  Action: Machine disabled - safety not OK or machine not enabled")
             
             # Return to IDLE state
             self.work_area_state = WorkAreaState.IDLE
