@@ -24,7 +24,7 @@ net estop-loopin 			iocontrol.0.user-enable-out => 		estop-latch.0.ok-in
 net estop-reset 			iocontrol.0.user-request-enable => 	estop-latch.0.reset
 
 ### Change to below at final connection in cnc. Should be a not ###
-net remote-estop 			estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-07
+net remote-estop 			estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03-not
 #net remote-estop 			estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03
 
 	#***************************************#
