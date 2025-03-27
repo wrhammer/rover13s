@@ -12,6 +12,7 @@ class VFDControl:
         self.h.newpin("vfd_fault", hal.HAL_BIT, hal.HAL_IN)         # VFD fault input
         self.h.newpin("motor_stopped", hal.HAL_BIT, hal.HAL_IN)     # Motor stopped feedback
         self.h.newpin("vfd_overload", hal.HAL_BIT, hal.HAL_IN)      # VFD overload signal
+        self.h.newpin("reset_button", hal.HAL_BIT, hal.HAL_IN)      # Manual reset button
         
         # Output pins
         self.h.newpin("vfd_run", hal.HAL_BIT, hal.HAL_OUT)          # VFD run command
@@ -27,6 +28,7 @@ class VFDControl:
         self.timer_start = 0
         self.reset_timer = 0
         self.is_resetting = False
+        self.last_reset_button = False
         
         # Initialize outputs
         self.h.vfd_run = False
@@ -54,11 +56,21 @@ class VFDControl:
         current_time = time.time()
         
         # Check for faults
-        if self.check_faults():
+        fault_detected = self.check_faults()
+        
+        # Handle reset button
+        reset_button_pressed = self.h.reset_button
+        reset_button_rising_edge = reset_button_pressed and not self.last_reset_button
+        
+        if fault_detected:
             self.h.vfd_run = False
             self.h.fault_active = True
+        else:
+            self.h.fault_active = False
+        
+        # Handle reset sequence on button press
+        if reset_button_rising_edge and fault_detected and not self.is_resetting:
             self.handle_reset(current_time)
-            return
         
         # Normal operation
         if self.h.spindle_on and not self.h.fault_active:
@@ -76,6 +88,9 @@ class VFDControl:
                     self.timer_start = current_time
                 elif current_time - self.timer_start >= self.STOP_TIMEOUT:
                     self.h.fault_active = True
+        
+        # Update button state tracking
+        self.last_reset_button = reset_button_pressed
 
 def main():
     vfd = VFDControl()
