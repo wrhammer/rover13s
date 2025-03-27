@@ -89,12 +89,12 @@ class WorkAreaControl:
         self.h.right_stops = False
         self.h.front_stops = False
         self.h.enable_machine = False    # Start with machine disabled
-        self.h.machine_on = True         # Allow machine to be turned on
+        self.h.machine_on = False        # Start with machine off (will be controlled by HALUI)
         self.h.suction_on = False
         self.h.suction_off = False
         self.h.suction_up = False
         self.h.low_vacuum = False
-        self.h.motion_enable = True      # Allow motion to be enabled
+        self.h.motion_enable = False     # Start with motion disabled
         self.h.enable_axes = False       # Start with axes disabled
         self.h.debug_axes_ok = False
         self.h.debug_machine_safe = False
@@ -199,11 +199,8 @@ class WorkAreaControl:
         self.h.debug_halui_on = machine_enabled
         self.h.debug_axes_ok = x_ok and y_ok and z_ok
         
-        # Check for axis faults only if machine is enabled
-        if self.machine_enabled_state and not (x_ok and y_ok and z_ok):
-            # Any axis not OK, disable motion
-            self.h.motion_enable = False
-            print("  Action: Motion disabled - axis fault detected")
+        # Update machine_on to follow HALUI state
+        self.h.machine_on = machine_enabled
         
         # Handle machine enable state
         if safety_ok and machine_enabled:
