@@ -182,8 +182,8 @@ class WorkAreaControl:
         self.h.debug_halui_on = machine_enabled
         self.h.debug_axes_ok = x_ok and y_ok and z_ok
         
-        # Check for axis faults
-        if not (x_ok and y_ok and z_ok):
+        # Check for axis faults only if machine is enabled
+        if self.machine_enabled_state and not (x_ok and y_ok and z_ok):
             # Any axis not OK, disable motion
             self.h.motion_enable = False
             print("  Action: Motion disabled - axis fault detected")
@@ -194,12 +194,16 @@ class WorkAreaControl:
             self.machine_enabled_state = True
             self.h.enable_machine = True
             self.h.enable_axes = True
+            # Only enable motion if all axes are OK
+            if x_ok and y_ok and z_ok:
+                self.h.motion_enable = True
             print("  Action: Machine enabled - safety OK and machine enabled")
         else:
             # Safety not OK or machine not enabled, disable machine
             self.machine_enabled_state = False
             self.h.enable_machine = False
             self.h.enable_axes = False
+            self.h.motion_enable = False
             print("  Action: Machine disabled - safety not OK or machine not enabled")
             
             # Return to IDLE state
