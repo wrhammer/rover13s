@@ -45,7 +45,6 @@ class WorkAreaControl:
         self.h.newpin("right_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("front_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("enable_machine", hal.HAL_BIT, hal.HAL_OUT)    # Machine enable output
-        self.h.newpin("machine_on", hal.HAL_BIT, hal.HAL_OUT)        # HALUI machine on control
         
         # Vacuum Output pins
         self.h.newpin("suction_on", hal.HAL_BIT, hal.HAL_OUT)    # Turn vacuum on
@@ -89,7 +88,6 @@ class WorkAreaControl:
         self.h.right_stops = False
         self.h.front_stops = False
         self.h.enable_machine = False    # Start with machine disabled
-        self.h.machine_on = False        # Start with machine off (will be controlled by HALUI)
         self.h.suction_on = False
         self.h.suction_off = False
         self.h.suction_up = False
@@ -183,7 +181,7 @@ class WorkAreaControl:
         print(f"    remote-estop (input-03): {self.h.remote_estop}")
         print(f"  Machine State:")
         print(f"    machine_enabled (from HALUI): {machine_enabled}")
-        print(f"    machine_on (our output): {self.h.machine_on}")
+        print(f"    machine_on (from HALUI): {self.h.machine_on}")
         print(f"    machine_enabled_state (internal): {self.machine_enabled_state}")
         print(f"  Axis Status:")
         print(f"    X: {x_ok}")
@@ -198,9 +196,6 @@ class WorkAreaControl:
         self.h.debug_machine_safe = safety_ok
         self.h.debug_halui_on = machine_enabled
         self.h.debug_axes_ok = x_ok and y_ok and z_ok
-        
-        # Update machine_on to follow HALUI state
-        self.h.machine_on = machine_enabled
         
         # Handle machine enable state
         if safety_ok and machine_enabled:
