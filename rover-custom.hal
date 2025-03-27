@@ -109,9 +109,6 @@ net blade-down				hm2_7i94.0.7i84.0.1.output-03		motion.digital-out-16
 net release-tool			hm2_7i94.0.7i84.0.1.output-04		tool_release.release_tool
 net lock-tool				hm2_7i94.0.7i84.0.1.output-05		tool_release.lock_tool
 
-# Add override safety signal (optional - set to 0 if not used)
-setp tool_release.override_safety 0
-
 	#***************************************#
 	#	MESA 7I84-02 FRONT OF TABLE	#
 	#***************************************#
