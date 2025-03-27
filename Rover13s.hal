@@ -285,11 +285,6 @@ net tool-prepare-loopback   iocontrol.0.tool-prepare      =>  iocontrol.0.tool-p
 # Machine On/Off control
 net machine-enabled    	halui.machine.is-on    					work_area.machine_enabled
 
-# Machine enable chain
-net enable-machine    	work_area.enable_machine    				hm2_7i96s.0.7i96s.0.0.axis.0.enable
-net enable-machine    	work_area.enable_machine    				hm2_7i96s.0.7i96s.0.0.axis.1.enable
-net enable-machine    	work_area.enable_machine    				hm2_7i96s.0.7i96s.0.0.axis.2.enable
-
 # Axis enable chain
 net enable-axes 			work_area.enable_axes 					hm2_7i96s.0.7i96s.0.0.axis.0.enable
 net enable-axes 			work_area.enable_axes 					hm2_7i96s.0.7i96s.0.0.axis.1.enable
