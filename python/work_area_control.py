@@ -158,15 +158,17 @@ class WorkAreaControl:
         
         # Check machine enable and safety conditions
         safety_ok = self.h.estop_ok
+        machine_enabled = self.h.machine_enabled  # From HALUI machine.is-on
+        
+        # Monitor axis status
         x_ok = self.h.x_axis_ok
         y_ok = self.h.y_axis_ok
         z_ok = self.h.z_axis_ok
-        machine_on = self.h.machine_enabled
         
         # Detailed debug output
         print(f"\nEnable Chain Status:")
-        print(f"  halui.machine.is-on: {machine_on}")
         print(f"  estop_ok: {safety_ok}")
+        print(f"  machine_enabled: {machine_enabled}")
         print(f"  Axis Status:")
         print(f"    X: {x_ok}")
         print(f"    Y: {y_ok}")
@@ -176,24 +178,23 @@ class WorkAreaControl:
         print(f"    enable_axes: {self.h.enable_axes}")
         
         # Update debug pins
+        self.h.debug_machine_safe = safety_ok
+        self.h.debug_halui_on = machine_enabled
         self.h.debug_axes_ok = x_ok and y_ok and z_ok
-        self.h.debug_machine_safe = safety_ok and x_ok and y_ok and z_ok
-        self.h.debug_halui_on = machine_on
+        
+        # Check for axis faults
+        if not (x_ok and y_ok and z_ok):
+            # Any axis not OK, disable motion
+            self.h.motion_enable = False
+            print("  Action: Motion disabled - axis fault detected")
         
         # Handle machine enable state
-        if safety_ok and machine_on:
-            if x_ok and y_ok and z_ok:
-                # All conditions met, enable machine
-                self.machine_enabled_state = True
-                self.h.enable_machine = True
-                self.h.enable_axes = True
-                print("  Action: Machine enabled - all conditions met")
-            else:
-                # Any axis not OK, disable machine
-                self.machine_enabled_state = False
-                self.h.enable_machine = False
-                self.h.enable_axes = False
-                print("  Action: Machine disabled - axis not OK")
+        if safety_ok and machine_enabled:
+            # Safety OK and machine enabled, enable machine
+            self.machine_enabled_state = True
+            self.h.enable_machine = True
+            self.h.enable_axes = True
+            print("  Action: Machine enabled - safety OK and machine enabled")
         else:
             # Safety not OK or machine not enabled, disable machine
             self.machine_enabled_state = False
@@ -201,16 +202,15 @@ class WorkAreaControl:
             self.h.enable_axes = False
             print("  Action: Machine disabled - safety not OK or machine not enabled")
             
-            # Return to IDLE state if machine is disabled
-            if not machine_on:
-                self.work_area_state = WorkAreaState.IDLE
-                self.h.left_stops = False
-                self.h.right_stops = False
-                self.h.front_stops = False
-                self.h.suction_on = False
-                self.h.suction_off = False
-                self.h.suction_up = False
-                self.vacuum_state = VacuumState.IDLE
+            # Return to IDLE state
+            self.work_area_state = WorkAreaState.IDLE
+            self.h.left_stops = False
+            self.h.right_stops = False
+            self.h.front_stops = False
+            self.h.suction_on = False
+            self.h.suction_off = False
+            self.h.suction_up = False
+            self.vacuum_state = VacuumState.IDLE
         
         # Read button states
         left_button = self.h.left_button
