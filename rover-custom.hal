@@ -52,7 +52,7 @@ net start-bitsnblade		hm2_7i96s.0.7i77.0.0.output-03		motion.digital-out-17
 net vfd-call-to-run  		hm2_7i96s.0.7i77.0.0.output-05		vfd_control.vfd_run
 net vfd-reset-btn			hm2_7i96s.0.7i77.0.0.input-08    	vfd_control.reset_button
 net vfd-overload			hm2_7i96s.0.7i77.0.0.input-13		motion.digital-in-05 			vfd_control.vfd_overload
-net low-vac					hm2_7i96s.0.7i77.0.0.output-04		vacuum_control.low_vacuum
+net low-vac					hm2_7i96s.0.7i77.0.0.output-04		vacuum.low_vacuum
 
 
 	#***************************************#
@@ -115,9 +115,9 @@ net lock-tool				hm2_7i94.0.7i84.0.1.output-05		tool_release.lock_tool
 			# TB1 INPUTS #
 net left-area-pb			hm2_7i94.0.7i84.0.2.input-00		work_area.left_button
 net rht-area-pb				hm2_7i94.0.7i84.0.2.input-01		work_area.right_button
-net vac-pedal				hm2_7i94.0.7i84.0.2.input-02		vacuum_control.vacuum_pedal
+net vac-pedal				hm2_7i94.0.7i84.0.2.input-02		vacuum.vacuum_pedal
 net estop-pcells			hm2_7i94.0.7i84.0.2.input-03		machine_enable.estop_pcells
-net vaccuum-ok				hm2_7i94.0.7i84.0.2.input-04		vacuum_control.vacuum_ok
+net vaccuum-ok				hm2_7i94.0.7i84.0.2.input-04		vacuum.vacuum_ok
 
 
 			# TB2 OUTPUTS #
@@ -125,10 +125,10 @@ net sx-lamp					hm2_7i94.0.7i84.0.2.output-00
 net dx-lamp					hm2_7i94.0.7i84.0.2.output-01
 net lh-stops				hm2_7i94.0.7i84.0.2.output-02		work_area.left_stops
 net rh-stops				hm2_7i94.0.7i84.0.2.output-03		work_area.right_stops
-net on-suction				hm2_7i94.0.7i84.0.2.output-04		vacuum_control.suction_on
-net off-suction				hm2_7i94.0.7i84.0.2.output-05		vacuum_control.suction_off
+net on-suction				hm2_7i94.0.7i84.0.2.output-04		vacuum.suction_on
+net off-suction				hm2_7i94.0.7i84.0.2.output-05		vacuum.suction_off
 net frnt-stops				hm2_7i94.0.7i84.0.2.output-06		work_area.front_stops
-net up-suction				hm2_7i94.0.7i84.0.2.output-07		vacuum_control.suction_up
+net up-suction				hm2_7i94.0.7i84.0.2.output-07		vacuum.suction_up
 
 # Machine control connections
 net spindle-on          	work_area.spindle_stop
