@@ -36,7 +36,7 @@ class WorkAreaControl:
         # E-stop chain input pins
         self.h.newpin("emc_enable_in", hal.HAL_BIT, hal.HAL_IN)        # EMC enable input
         self.h.newpin("user_enable_out", hal.HAL_BIT, hal.HAL_IN)      # User enable output
-        self.h.newpin("estop_latch_ok", hal.HAL_BIT, hal.HAL_IN)       # E-stop latch OK output
+        #self.h.newpin("estop_latch_ok", hal.HAL_BIT, hal.HAL_IN)       # E-stop latch OK output
         self.h.newpin("estop_latch_fault", hal.HAL_BIT, hal.HAL_IN)    # E-stop latch fault input
         self.h.newpin("remote_estop", hal.HAL_BIT, hal.HAL_IN)         # Remote E-stop input
         
@@ -176,7 +176,7 @@ class WorkAreaControl:
         print(f"    estop_ok: {safety_ok}")
         print(f"    emc-enable-in: {self.h.emc_enable_in}")
         print(f"    user-enable-out: {self.h.user_enable_out}")
-        print(f"    estop-latch.ok-out: {self.h.estop_latch_ok}")
+        #print(f"    estop-latch.ok-out: {self.h.estop_latch_ok}")
         print(f"    estop-latch.fault-in: {self.h.estop_latch_fault}")
         print(f"    remote-estop (input-03): {self.h.remote_estop}")
         print(f"  Machine State:")

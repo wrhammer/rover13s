@@ -31,8 +31,8 @@ net remote-estop 			estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03-
 	#	  MESA 7I77 IN CABINET		#
 	#***************************************#
 
-net estop-loopout 			work_area.estop_ok
-#net emc-enable-in          	estop-loopout                      work_area.emc_enable_in
+# net estop-loopout 			work_area.estop_ok
+# net emc-enable-in          	estop-loopout                      work_area.emc_enable_in
 
 ###INPUT FROM PIN 27 ON DRIVES###
 net x-axis-ok 				hm2_7i96s.0.7i77.0.0.input-04 		work_area.x_axis_ok
