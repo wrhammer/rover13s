@@ -203,8 +203,8 @@ class WorkAreaControl:
             self.h.enable_machine = True
             self.h.enable_axes = True
             # Only enable motion if all axes are OK
-            if x_ok and y_ok and z_ok:
-                self.h.motion_enable = True
+            # if x_ok and y_ok and z_ok:
+                # self.h.motion_enable = True
             print("  Action: Machine enabled - safety OK and machine enabled")
         else:
             # Safety not OK or machine not enabled, disable machine
