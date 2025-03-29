@@ -92,7 +92,7 @@ class WorkAreaControl:
         self.h.suction_off = False
         self.h.suction_up = False
         self.h.low_vacuum = False
-        self.h.motion_enable = False     # Start with motion disabled
+        self.h.motion_enable = True     # Start with motion enabled
         self.h.enable_axes = False       # Start with axes disabled
         self.h["debug-axes-ok"] = False
         self.h["debug-machine-safe"] = False
