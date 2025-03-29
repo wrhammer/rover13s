@@ -11,12 +11,6 @@ class WorkAreaState(Enum):
     WAITING_FOR_VACUUM = 2
     ERROR = 3
 
-class VacuumState(Enum):
-    IDLE = 0
-    VACUUM_ON = 1
-    VACUUM_OFF = 2
-    ERROR = 3
-
 class WorkAreaControl:
     def __init__(self):
         self.h = hal.component("work_area")
@@ -24,113 +18,29 @@ class WorkAreaControl:
         # Work Area Input pins
         self.h.newpin("left_button", hal.HAL_BIT, hal.HAL_IN)
         self.h.newpin("right_button", hal.HAL_BIT, hal.HAL_IN)
-        self.h.newpin("vacuum_pedal", hal.HAL_BIT, hal.HAL_IN)
-        self.h.newpin("vacuum_ok", hal.HAL_BIT, hal.HAL_IN)      # Vacuum level OK signal
-        
+        self.h.newpin("vacuum_ready", hal.HAL_BIT, hal.HAL_IN)    # From vacuum component
         
         # Work Area Output pins
         self.h.newpin("left_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("right_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("front_stops", hal.HAL_BIT, hal.HAL_OUT)
-        
-        # Vacuum Output pins
-        self.h.newpin("suction_on", hal.HAL_BIT, hal.HAL_OUT)    # Turn vacuum on
-        self.h.newpin("suction_off", hal.HAL_BIT, hal.HAL_OUT)   # Turn vacuum off
-        self.h.newpin("suction_up", hal.HAL_BIT, hal.HAL_OUT)    # Raise suction cups
-        self.h.newpin("low_vacuum", hal.HAL_BIT, hal.HAL_OUT)    # Low vacuum warning
-        
-        # Machine control pins
-        self.h.newpin("spindle_stop", hal.HAL_BIT, hal.HAL_IN)     # Spindle state input
-        
-        # Parameters
-        self.VACUUM_CHECK_TIME = 2.0    # Time to check for good vacuum (seconds)
-        self.ERROR_TIMEOUT = 5.0        # Time before declaring vacuum error
+        self.h.newpin("suction_up", hal.HAL_BIT, hal.HAL_OUT)    # Control suction cup position
         
         # State tracking
         self.work_area_state = WorkAreaState.IDLE
-        self.vacuum_state = VacuumState.IDLE
         self.last_left_button = False
         self.last_right_button = False
         self.setup_side = None  # 'left' or 'right'
-        
-        # Vacuum tracking
-        self.vacuum_timer_start = 0
-        self.last_vacuum_ok = False
-        self.vacuum_loss_time = 0
-        self.last_vacuum_pedal = False
         
         # Initialize outputs
         self.h.left_stops = False
         self.h.right_stops = False
         self.h.front_stops = False
-        self.h.suction_on = False
-        self.h.suction_off = False
         self.h.suction_up = False
-        self.h.low_vacuum = False
         
         self.h.ready()
     
-    def check_vacuum_loss(self, current_time):
-        """Monitor vacuum level and detect losses"""
-        if self.h.vacuum_ok:
-            self.vacuum_loss_time = 0
-            self.last_vacuum_ok = True
-            return False
-        elif self.last_vacuum_ok:  # Vacuum just lost
-            self.vacuum_loss_time = current_time
-            self.last_vacuum_ok = False
-        
-        # Check if vacuum has been lost for too long
-        if self.vacuum_loss_time and (current_time - self.vacuum_loss_time > self.ERROR_TIMEOUT):
-            return True
-        
-        return False
-    
-    def handle_vacuum_state(self, current_time):
-        """Handle vacuum control state machine"""
-        # Check for vacuum loss in any state
-        if self.check_vacuum_loss(current_time):
-            self.vacuum_state = VacuumState.ERROR
-            self.h.low_vacuum = True
-            return False  # Indicate vacuum not ready
-        
-        # Detect rising edge of pedal press for latching behavior
-        pedal_pressed = self.h.vacuum_pedal and not self.last_vacuum_pedal
-        self.last_vacuum_pedal = self.h.vacuum_pedal
-        
-        if self.vacuum_state == VacuumState.IDLE:
-            if pedal_pressed:  # Toggle vacuum on
-                self.vacuum_state = VacuumState.VACUUM_ON
-                self.vacuum_timer_start = current_time
-                self.h.suction_on = True
-                self.h.suction_off = False
-                self.h.low_vacuum = False
-        
-        elif self.vacuum_state == VacuumState.VACUUM_ON:
-            if self.h.vacuum_ok:
-                if current_time - self.vacuum_timer_start >= self.VACUUM_CHECK_TIME:
-                    return True  # Indicate vacuum ready
-            
-            if pedal_pressed:  # Toggle vacuum off
-                self.vacuum_state = VacuumState.VACUUM_OFF
-                self.h.suction_on = False
-                self.h.suction_off = True
-        
-        elif self.vacuum_state == VacuumState.VACUUM_OFF:
-            self.vacuum_state = VacuumState.IDLE
-            self.h.suction_off = False
-        
-        elif self.vacuum_state == VacuumState.ERROR:
-            if self.h.vacuum_ok:  # Reset error if vacuum restored
-                self.vacuum_state = VacuumState.IDLE
-                self.h.low_vacuum = False
-                self.vacuum_loss_time = 0
-        
-        return False  # Vacuum not ready by default
-    
     def update(self):
-        current_time = time.time()
-        
         # Read button states
         left_button = self.h.left_button
         right_button = self.h.right_button
@@ -138,9 +48,6 @@ class WorkAreaControl:
         # Detect button press events
         left_pressed = left_button and not self.last_left_button
         right_pressed = right_button and not self.last_right_button
-        
-        # Handle vacuum control
-        vacuum_ready = self.handle_vacuum_state(current_time)
         
         # Work area state machine
         if self.work_area_state == WorkAreaState.IDLE:
@@ -154,7 +61,7 @@ class WorkAreaControl:
                 self.h.front_stops = True
         
         elif self.work_area_state == WorkAreaState.SETUP_MODE:
-            if vacuum_ready:
+            if self.h.vacuum_ready:  # Check vacuum ready signal from vacuum component
                 self.work_area_state = WorkAreaState.WAITING_FOR_VACUUM
                 # Activate suction cups
                 self.h.suction_up = True
@@ -170,7 +77,7 @@ class WorkAreaControl:
                 self.h.right_stops = False
                 self.h.front_stops = False
                 
-                # Keep suction on but lower cups
+                # Lower suction cups
                 self.h.suction_up = False
         
         # Update button state tracking

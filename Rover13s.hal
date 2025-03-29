@@ -13,15 +13,16 @@ loadusr -Wn machine_enable python3 python/machine_enable.py
 loadusr -Wn work_area python3 python/work_area_control.py
 loadusr -Wn vfd_control python3 python/vfd_control.py
 loadusr -Wn tool_release python3 python/tool_release_control.py
+loadusr -Wn vacuum python3 python/vacuum_control.py
 
 setp    [HMOT](CARD0).pwmgen.pwm_frequency 20000
 setp    [HMOT](CARD0).pwmgen.pdm_frequency 6000000
 setp    [HMOT](CARD0).watchdog.timeout_ns 5000000
 
-addf hm2_7i94.0.read          servo-thread
-addf hm2_7i94.0.write         servo-thread
-setp hm2_7i94.0.dpll.01.timer-us -50
-setp    hm2_7i94.0.watchdog.timeout_ns 5000000
+addf        hm2_7i94.0.read                     servo-thread
+addf        hm2_7i94.0.write                    servo-thread
+setp        hm2_7i94.0.dpll.01.timer-us         -50
+setp        hm2_7i94.0.watchdog.timeout_ns      5000000
 
 loadrt pid names=pid.x,pid.y,pid.z,pid.s
 
@@ -33,16 +34,16 @@ addf scale.0 servo-thread
 #addf classicladder.0.refresh servo-thread
 #loadusr classicladder --nogui rover-ladder.clp
 
-addf [HMOT](CARD0).read          servo-thread
-addf motion-command-handler   servo-thread
-addf motion-controller        servo-thread
-addf pid.x.do-pid-calcs       servo-thread
-addf pid.y.do-pid-calcs       servo-thread
-addf pid.z.do-pid-calcs       servo-thread
-addf pid.s.do-pid-calcs       servo-thread
-addf [HMOT](CARD0).write         servo-thread
-setp [HMOT](CARD0).dpll.01.timer-us -50
-setp [HMOT](CARD0).stepgen.timer-number 1
+addf        [HMOT](CARD0).read                  servo-thread
+addf        motion-command-handler              servo-thread
+addf        motion-controller                   servo-thread
+addf        pid.x.do-pid-calcs                  servo-thread
+addf        pid.y.do-pid-calcs                  servo-thread
+addf        pid.z.do-pid-calcs                  servo-thread
+addf        pid.s.do-pid-calcs                  servo-thread
+addf        [HMOT](CARD0).write                 servo-thread
+setp        [HMOT](CARD0).dpll.01.timer-us      -50
+setp        [HMOT](CARD0).stepgen.timer-number  1
 
 # external output signals
 
@@ -282,6 +283,7 @@ net tooloffset-z  <=  motion.tooloffset.z
 
 #  ---ignore tool prepare requests---
 net tool-prepare-loopback   iocontrol.0.tool-prepare      =>  iocontrol.0.tool-prepared
+
 
 
 
