@@ -17,6 +17,11 @@ class MachineEnable:
         self.h.newpin("enable_machine", hal.HAL_BIT, hal.HAL_OUT)      # Machine enable output
         self.h.newpin("enable_axes", hal.HAL_BIT, hal.HAL_OUT)         # Enable all axes
         
+        # Debug output pins
+        self.h.newpin("debug_safety_ok", hal.HAL_BIT, hal.HAL_OUT)     # Shows if safety conditions are met
+        self.h.newpin("debug_machine_btn", hal.HAL_BIT, hal.HAL_OUT)   # Shows machine button state
+        self.h.newpin("debug_enabled", hal.HAL_BIT, hal.HAL_OUT)       # Shows if machine is enabled
+        
         # State tracking
         self.machine_enabled_state = False
         
@@ -30,6 +35,11 @@ class MachineEnable:
         # Check machine enable and safety conditions
         safety_ok = self.h.estop_ok and not self.h.estop_pcells
         machine_btn_on = self.h.machine_btn_on
+
+        # Update debug outputs
+        self.h.debug_safety_ok = safety_ok
+        self.h.debug_machine_btn = machine_btn_on
+        self.h.debug_enabled = self.machine_enabled_state
 
         if safety_ok and machine_btn_on:
             if not self.machine_enabled_state:

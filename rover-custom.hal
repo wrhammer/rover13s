@@ -133,6 +133,11 @@ net up-suction				hm2_7i94.0.7i84.0.2.output-07		vacuum.suction_up
 # Machine control connections
 net spindle-on          	vfd_control.spindle_on
 
+# Machine enable debug outputs
+net debug-safety-ok     machine_enable.debug_safety_ok
+net debug-machine-btn   machine_enable.debug_machine_btn
+net debug-enabled       machine_enable.debug_enabled
+
 # VFD CONTROL CONNECTIONS ###
 # Spindle control is now handled in Rover13s.hal
 
