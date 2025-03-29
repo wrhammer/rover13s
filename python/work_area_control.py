@@ -80,8 +80,8 @@ class WorkAreaControl:
         self.last_vacuum_pedal = False
         
         # Machine enable state tracking
-        self.machine_btn_on_state = False  # Latch state for machine enable
-        self.last_machine_btn_on = False   # For edge detection
+        # self.machine_btn_on_state = False  # Latch state for machine enable
+        #self.last_machine_btn_on = False   # For edge detection
         
         # Initialize outputs
         self.h.left_stops = False
