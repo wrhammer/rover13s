@@ -18,7 +18,7 @@ class WorkAreaControl:
         # Work Area Input pins
         self.h.newpin("left_button", hal.HAL_BIT, hal.HAL_IN)
         self.h.newpin("right_button", hal.HAL_BIT, hal.HAL_IN)
-        self.h.newpin("vacuum_ready", hal.HAL_BIT, hal.HAL_IN)    # From vacuum component
+        self.h.newpin("work_area_setup", hal.HAL_BIT, hal.HAL_IN)    # From vacuum component
         
         # Work Area Output pins
         self.h.newpin("left_stops", hal.HAL_BIT, hal.HAL_OUT)
@@ -37,6 +37,7 @@ class WorkAreaControl:
         self.h.right_stops = False
         self.h.front_stops = False
         self.h.suction_up = False
+        self.h.work_area_setup = False
         
         self.h.ready()
     
@@ -61,10 +62,10 @@ class WorkAreaControl:
                 self.h.front_stops = True
         
         elif self.work_area_state == WorkAreaState.SETUP_MODE:
-            if self.h.vacuum_ready:  # Check vacuum ready signal from vacuum component
                 self.work_area_state = WorkAreaState.WAITING_FOR_VACUUM
                 # Activate suction cups
                 self.h.suction_up = True
+                self.h.work_area_setup = True
         
         elif self.work_area_state == WorkAreaState.WAITING_FOR_VACUUM:
             if (left_pressed and self.setup_side == 'left') or \
