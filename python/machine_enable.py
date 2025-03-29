@@ -36,6 +36,14 @@ class MachineEnable:
         safety_ok = self.h.estop_ok and not self.h.estop_pcells
         machine_btn_on = self.h.machine_btn_on
 
+        # Print detailed state information
+        print(f"Machine Enable State:")
+        print(f"  estop_ok: {self.h.estop_ok}")
+        print(f"  estop_pcells: {self.h.estop_pcells}")
+        print(f"  machine_btn_on: {machine_btn_on}")
+        print(f"  safety_ok: {safety_ok}")
+        print(f"  current_state: {'Enabled' if self.machine_enabled_state else 'Disabled'}")
+
         # Update debug outputs
         self.h.debug_safety_ok = safety_ok
         self.h.debug_machine_btn = machine_btn_on
@@ -54,6 +62,10 @@ class MachineEnable:
             self.h.enable_machine = False
             self.h.enable_axes = False
 
+        # Print output states
+        print(f"  enable_machine: {self.h.enable_machine}")
+        print(f"  enable_axes: {self.h.enable_axes}")
+        print("---")
 
 def main():
     machine_enable = MachineEnable()
@@ -61,7 +73,7 @@ def main():
     try:
         while True:
             machine_enable.update()
-            time.sleep(0.1)  # 100ms update rate
+            time.sleep(1.0)  # Changed to 1 second to make output more readable
             
     except KeyboardInterrupt:
         raise SystemExit
