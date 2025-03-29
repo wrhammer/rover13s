@@ -197,7 +197,7 @@ class WorkAreaControl:
         self.h["debug-axes-ok"] = x_ok and y_ok and z_ok
         
         # Handle machine enable state
-        if safety_ok:
+        if safety_ok and machine_enabled:
             # Safety OK and machine enabled, enable machine
             # self.machine_btn_on_state = True
             self.h.enable_machine = True
