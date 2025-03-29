@@ -27,7 +27,7 @@ class WorkAreaControl:
         self.h.newpin("vacuum_pedal", hal.HAL_BIT, hal.HAL_IN)
         self.h.newpin("machine_btn_on", hal.HAL_BIT, hal.HAL_IN)      # Machine enable signal
         self.h.newpin("vacuum_ok", hal.HAL_BIT, hal.HAL_IN)      # Vacuum level OK signal
-        self.h.newpin("estop_ok", hal.HAL_BIT, hal.HAL_IN)      # E-stop chain status
+        # self.h.newpin("estop_ok", hal.HAL_BIT, hal.HAL_IN)      # E-stop chain status
         self.h.newpin("x_axis_ok", hal.HAL_BIT, hal.HAL_IN)      # X axis status signal
         self.h.newpin("y_axis_ok", hal.HAL_BIT, hal.HAL_IN)      # Y axis status signal
         self.h.newpin("z_axis_ok", hal.HAL_BIT, hal.HAL_IN)      # Z axis status signal
@@ -35,8 +35,8 @@ class WorkAreaControl:
         
         # E-stop chain input pins
         self.h.newpin("emc_enable_in", hal.HAL_BIT, hal.HAL_IN)        # EMC enable input
-        self.h.newpin("user_enable_out", hal.HAL_BIT, hal.HAL_IN)      # User enable output
-        #self.h.newpin("estop_latch_ok", hal.HAL_BIT, hal.HAL_IN)       # E-stop latch OK output
+        # self.h.newpin("user_enable_out", hal.HAL_BIT, hal.HAL_IN)      # User enable output
+        # self.h.newpin("estop_latch_ok", hal.HAL_BIT, hal.HAL_IN)       # E-stop latch OK output
         self.h.newpin("estop_latch_fault", hal.HAL_BIT, hal.HAL_IN)    # E-stop latch fault input
         self.h.newpin("remote_estop", hal.HAL_BIT, hal.HAL_IN)         # Remote E-stop input
         
@@ -162,7 +162,7 @@ class WorkAreaControl:
         current_time = time.time()
         
         # Check machine enable and safety conditions
-        safety_ok = self.h.estop_ok
+        safety_ok = self.h.emc_enable_in
         machine_btn_on = self.h.machine_btn_on  # From HALUI machine.is-on
         
         # Monitor axis status
@@ -175,7 +175,7 @@ class WorkAreaControl:
         print(f"  E-Stop Chain:")
         print(f"    estop_ok: {safety_ok}")
         print(f"    emc-enable-in: {self.h.emc_enable_in}")
-        print(f"    user-enable-out: {self.h.user_enable_out}")
+        #print(f"    user-enable-out: {self.h.user_enable_out}")
         #print(f"    estop-latch.ok-out: {self.h.estop_latch_ok}")
         print(f"    estop-latch.fault-in: {self.h.estop_latch_fault}")
         print(f"    remote-estop (input-03): {self.h.remote_estop}")
