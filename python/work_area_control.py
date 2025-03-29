@@ -92,7 +92,7 @@ class WorkAreaControl:
         self.h.suction_off = False
         self.h.suction_up = False
         self.h.low_vacuum = False
-        self.h.motion_enable = True     # Start with motion enabled
+        self.h.motion_enable = False     # Start with motion disabled
         self.h.enable_axes = False       # Start with axes disabled
         self.h["debug-axes-ok"] = False
         self.h["debug-machine-safe"] = False
@@ -199,34 +199,22 @@ class WorkAreaControl:
         # Handle machine enable state
         if safety_ok and machine_enabled:
             # Safety OK and machine enabled, enable machine
-            # self.machine_enabled_state = True
             self.machine_enabled_state = True
-            self.h.motion_enable = True
             self.h.enable_machine = True
             self.h.enable_axes = True
             
             # Only enable motion if all axes are OK
-            # if x_ok and y_ok and z_ok:
-                # self.h.motion_enable = True
+            if x_ok and y_ok and z_ok:
+                self.h.motion_enable = True
             print("  Action: Machine enabled - safety OK and machine enabled")
         else:
             # Safety not OK or machine not enabled, disable machine
-            # if self.machine_enabled_state:  # Only print if state is changing
-                # print(f"  Action: Machine disabled - safety_ok: {safety_ok}, machine_btn_on: {machine_btn_on}")
-            #self.machine_enabled_state = False
+            if self.machine_enabled_state:  # Only print if state is changing
+                print(f"  Action: Machine disabled - safety_ok: {safety_ok}, machine_enabled: {machine_enabled}")
+            self.machine_enabled_state = False
             self.h.enable_machine = False
             self.h.enable_axes = False
             self.h.motion_enable = False
-            
-            # Return to IDLE state
-            self.work_area_state = WorkAreaState.IDLE
-            self.h.left_stops = False
-            self.h.right_stops = False
-            self.h.front_stops = False
-            self.h.suction_on = False
-            self.h.suction_off = False
-            self.h.suction_up = False
-            self.vacuum_state = VacuumState.IDLE
         
         # Read button states
         left_button = self.h.left_button
