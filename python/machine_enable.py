@@ -42,9 +42,10 @@ class MachineEnable:
             if self.pcells_latched:  # Only print if we're actually resetting
                 print("  Action: PCells latch reset (machine turned off)")
             self.pcells_latched = False  # Reset latch when machine is turned off
-        elif self.h.estop_pcells and not self.pcells_latched:  # PCells just tripped
-            self.pcells_latched = True
-            print("  Action: PCells tripped and latched")
+        elif machine_btn_on and self.machine_enabled_state:  # Only check PCells if machine is running
+            if self.h.estop_pcells and not self.pcells_latched:  # PCells just tripped
+                self.pcells_latched = True
+                print("  Action: PCells tripped and latched")
         
         # Use latched state for safety check
         safety_ok = self.h.estop_ok and not self.pcells_latched
