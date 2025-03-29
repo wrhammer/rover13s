@@ -24,6 +24,7 @@ class MachineEnable:
         
         # State tracking
         self.machine_enabled_state = False
+        self.pcells_latched = False  # Track if PCells are latched
         
         # Initialize outputs
         self.h.enable_machine = False    # Start with machine disabled
@@ -33,13 +34,23 @@ class MachineEnable:
     
     def update(self):
         # Check machine enable and safety conditions
-        safety_ok = self.h.estop_ok and self.h.estop_pcells
         machine_btn_on = self.h.machine_btn_on
+        
+        # Handle PCells latching
+        if not machine_btn_on:  # Machine is turned off
+            self.pcells_latched = False  # Reset latch when machine is turned off
+        elif self.h.estop_pcells and not self.pcells_latched:  # PCells just tripped
+            self.pcells_latched = True
+            print("  Action: PCells tripped and latched")
+        
+        # Use latched state for safety check
+        safety_ok = self.h.estop_ok and not self.pcells_latched
 
         # Print detailed state information
         print(f"Machine Enable State:")
         print(f"  estop_ok: {self.h.estop_ok}")
         print(f"  estop_pcells: {self.h.estop_pcells}")
+        print(f"  pcells_latched: {self.pcells_latched}")
         print(f"  machine_btn_on: {machine_btn_on}")
         print(f"  safety_ok: {safety_ok}")
         print(f"  current_state: {'Enabled' if self.machine_enabled_state else 'Disabled'}")
