@@ -161,61 +161,6 @@ class WorkAreaControl:
     def update(self):
         current_time = time.time()
         
-        # Check machine enable and safety conditions
-        safety_ok = self.h.emc_enable_in
-        machine_enabled = self.h.machine_enabled  # From HALUI machine.is-on
-        
-        # Monitor axis status
-        x_ok = self.h.x_axis_ok
-        y_ok = self.h.y_axis_ok
-        z_ok = self.h.z_axis_ok
-        
-        # Detailed debug output
-        print(f"\nEnable Chain Status:")
-        print(f"  E-Stop Chain:")
-        print(f"    estop_ok: {safety_ok}")
-        print(f"    emc-enable-in: {self.h.emc_enable_in}")
-        #print(f"    user-enable-out: {self.h.user_enable_out}")
-        #print(f"    estop-latch.ok-out: {self.h.estop_latch_ok}")
-        print(f"    estop-latch.fault-in: {self.h.estop_latch_fault}")
-        print(f"    remote-estop (input-03): {self.h.remote_estop}")
-        print(f"  Machine State:")
-        print(f"    machine_enabled (from HALUI): {machine_enabled}")
-        print(f"    machine_enabled_state (internal): {self.machine_enabled_state}")
-        print(f"  Axis Status:")
-        print(f"    X: {x_ok}")
-        print(f"    Y: {y_ok}")
-        print(f"    Z: {z_ok}")
-        print(f"  Current Outputs:")
-        print(f"    enable_machine: {self.h.enable_machine}")
-        print(f"    enable_axes: {self.h.enable_axes}")
-        print(f"    motion_enable: {self.h.motion_enable}")
-        
-        # Update debug pins
-        self.h["debug-machine-safe"] = safety_ok
-        self.h["debug-halui-on"] = machine_enabled
-        self.h["debug-axes-ok"] = x_ok and y_ok and z_ok
-        
-        # Handle machine enable state
-        if safety_ok and machine_enabled:
-            # Safety OK and machine enabled, enable machine
-            self.machine_enabled_state = True
-            self.h.enable_machine = True
-            self.h.enable_axes = True
-            
-            # Only enable motion if all axes are OK
-            if x_ok and y_ok and z_ok:
-                self.h.motion_enable = True
-            print("  Action: Machine enabled - safety OK and machine enabled")
-        else:
-            # Safety not OK or machine not enabled, disable machine
-            if self.machine_enabled_state:  # Only print if state is changing
-                print(f"  Action: Machine disabled - safety_ok: {safety_ok}, machine_enabled: {machine_enabled}")
-            self.machine_enabled_state = False
-            self.h.enable_machine = False
-            self.h.enable_axes = False
-            self.h.motion_enable = False
-        
         # Read button states
         left_button = self.h.left_button
         right_button = self.h.right_button
@@ -229,12 +174,9 @@ class WorkAreaControl:
         
         # Work area state machine
         if self.work_area_state == WorkAreaState.IDLE:
-            if left_pressed or right_pressed and self.h.machine_enabled:
+            if left_pressed or right_pressed:
                 self.work_area_state = WorkAreaState.SETUP_MODE
                 self.setup_side = 'left' if left_pressed else 'right'
-                
-                # Temporarily disable motion but keep machine enabled
-                self.h.motion_enable = False
                 
                 # Raise appropriate stops
                 self.h.left_stops = True if left_pressed else False
@@ -257,10 +199,6 @@ class WorkAreaControl:
                 self.h.left_stops = False
                 self.h.right_stops = False
                 self.h.front_stops = False
-                
-                # Re-enable motion if machine is still enabled and safe
-                if self.h.machine_enabled:
-                    self.h.motion_enable = True
                 
                 # Keep suction on but lower cups
                 self.h.suction_up = False

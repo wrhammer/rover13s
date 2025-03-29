@@ -9,6 +9,7 @@ loadrt hostmot2
 loadrt hm2_eth board_ip="10.10.10.10,10.10.10.11" config="num_encoders=8 num_pwmgens=1 num_stepgens=5 sserial_port_0=0000xxxx" 
 
 # Load all Python components first
+loadusr -Wn machine_enable python3 python/machine_enable.py
 loadusr -Wn work_area python3 python/work_area_control.py
 loadusr -Wn vfd_control python3 python/vfd_control.py
 loadusr -Wn tool_release python3 python/tool_release_control.py
@@ -282,14 +283,16 @@ net tooloffset-z  <=  motion.tooloffset.z
 #  ---ignore tool prepare requests---
 net tool-prepare-loopback   iocontrol.0.tool-prepare      =>  iocontrol.0.tool-prepared
 
-# Machine On/Off control
-#net machine-btn-on      	halui.machine.is-on    					work_area.machine_btn_on
+# Machine enable control
+net machine-btn-on      	        halui.machine.is-on    					machine_enable.machine_btn_on
+net machine-is-enabled        <=    motion.motion-enabled
+net x-axis-ok             hm2_7i96s.0.7i77.0.0.input-00
+net y-axis-ok             hm2_7i96s.0.7i77.0.0.input-01
+net z-axis-ok             hm2_7i96s.0.7i77.0.0.input-02
 
 # Axis enable chain
 net enable-axes 			work_area.enable_axes 					hm2_7i96s.0.7i77.0.0.output-01
 
-# Motion enable chain
-net motion-enable 		    work_area.motion_enable 				motion.enable
 
 
 

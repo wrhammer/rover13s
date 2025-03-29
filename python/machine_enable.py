@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+# command to make python files executable: chmod +x python/*.py
+
+import hal
+import time
+
+class MachineEnable:
+    def __init__(self):
+        self.h = hal.component("machine_enable")
+        
+        # Input pins
+        self.h.newpin("estop_ok", hal.HAL_BIT, hal.HAL_IN)       # E-stop chain status
+        self.h.newpin("machine_btn_on", hal.HAL_BIT, hal.HAL_IN)       # Machine button state\
+        
+        # Output pins
+        self.h.newpin("enable_machine", hal.HAL_BIT, hal.HAL_OUT)      # Machine enable output
+        self.h.newpin("enable_axes", hal.HAL_BIT, hal.HAL_OUT)         # Enable all axes
+        
+        # State tracking
+        self.machine_enabled_state = False
+        
+        # Initialize outputs
+        self.h.enable_machine = False    # Start with machine disabled
+        self.h.enable_axes = False       # Start with axes disabled
+        
+        self.h.ready()
+    
+    def update(self):
+        # Check machine enable and safety conditions
+        safety_ok = self.h.estop_ok
+        machine_btn_on = self.h.machine_btn_on
+
+        if safety_ok and machine_btn_on:
+            if not self.machine_enabled_state:
+                print(f"  Action: Machine enabled - safety_ok: {safety_ok}, machine_btn_on: {machine_btn_on}")
+            self.machine_enabled_state = True
+            self.h.enable_machine = True
+            self.h.enable_axes = True
+        else:
+            if self.machine_enabled_state:
+                print(f"  Action: Machine disabled - safety_ok: {safety_ok}, machine_btn_on: {machine_btn_on}")
+            self.machine_enabled_state = False
+            self.h.enable_machine = False
+            self.h.enable_axes = False
+
+
+def main():
+    machine_enable = MachineEnable()
+    
+    try:
+        while True:
+            machine_enable.update()
+            time.sleep(0.1)  # 100ms update rate
+            
+    except KeyboardInterrupt:
+        raise SystemExit
+
+if __name__ == "__main__":
+    main() 

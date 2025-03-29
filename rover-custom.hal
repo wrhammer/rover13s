@@ -19,7 +19,7 @@ addf not.0 servo-thread
 # === estop signals ===
 #***********************
 
-net estop-loopout 			iocontrol.0.emc-enable-in <= 		estop-latch.0.ok-out	work_area.emc_enable_in
+net estop-loopout 			iocontrol.0.emc-enable-in <= 		estop-latch.0.ok-out	
 net estop-loopin 			iocontrol.0.user-enable-out => 		estop-latch.0.ok-in
 net estop-reset 			iocontrol.0.user-request-enable => 	estop-latch.0.reset
 
@@ -31,7 +31,7 @@ net remote-estop 			estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03-
 	#	  MESA 7I77 IN CABINET		#
 	#***************************************#
 
-# net estop-loopout 			work_area.estop_ok
+net estop-loopout 			machine_enable.estop_ok
 # net emc-enable-in          	estop-loopout                      work_area.emc_enable_in
 
 ###INPUT FROM PIN 27 ON DRIVES###
