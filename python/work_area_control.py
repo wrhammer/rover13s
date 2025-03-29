@@ -25,26 +25,13 @@ class WorkAreaControl:
         self.h.newpin("left_button", hal.HAL_BIT, hal.HAL_IN)
         self.h.newpin("right_button", hal.HAL_BIT, hal.HAL_IN)
         self.h.newpin("vacuum_pedal", hal.HAL_BIT, hal.HAL_IN)
-        self.h.newpin("machine_enabled", hal.HAL_BIT, hal.HAL_IN)      # Machine enable signal
         self.h.newpin("vacuum_ok", hal.HAL_BIT, hal.HAL_IN)      # Vacuum level OK signal
-        # self.h.newpin("estop_ok", hal.HAL_BIT, hal.HAL_IN)      # E-stop chain status
-        self.h.newpin("x_axis_ok", hal.HAL_BIT, hal.HAL_IN)      # X axis status signal
-        self.h.newpin("y_axis_ok", hal.HAL_BIT, hal.HAL_IN)      # Y axis status signal
-        self.h.newpin("z_axis_ok", hal.HAL_BIT, hal.HAL_IN)      # Z axis status signal
-        self.h.newpin("photo_eyes_bypass", hal.HAL_BIT, hal.HAL_IN)    # Photo eye bypass signal
         
-        # E-stop chain input pins
-        self.h.newpin("emc_enable_in", hal.HAL_BIT, hal.HAL_IN)        # EMC enable input
-        # self.h.newpin("user_enable_out", hal.HAL_BIT, hal.HAL_IN)      # User enable output
-        # self.h.newpin("estop_latch_ok", hal.HAL_BIT, hal.HAL_IN)       # E-stop latch OK output
-        self.h.newpin("estop_latch_fault", hal.HAL_BIT, hal.HAL_IN)    # E-stop latch fault input
-        self.h.newpin("remote_estop", hal.HAL_BIT, hal.HAL_IN)         # Remote E-stop input
         
         # Work Area Output pins
         self.h.newpin("left_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("right_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("front_stops", hal.HAL_BIT, hal.HAL_OUT)
-        self.h.newpin("enable_machine", hal.HAL_BIT, hal.HAL_OUT)    # Machine enable output
         
         # Vacuum Output pins
         self.h.newpin("suction_on", hal.HAL_BIT, hal.HAL_OUT)    # Turn vacuum on
@@ -53,14 +40,7 @@ class WorkAreaControl:
         self.h.newpin("low_vacuum", hal.HAL_BIT, hal.HAL_OUT)    # Low vacuum warning
         
         # Machine control pins
-        self.h.newpin("motion_enable", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("spindle_stop", hal.HAL_BIT, hal.HAL_IN)     # Spindle state input
-        self.h.newpin("enable_axes", hal.HAL_BIT, hal.HAL_OUT)    # Enable all axes
-        
-        # Debug Output pins
-        self.h.newpin("debug-axes-ok", hal.HAL_BIT, hal.HAL_OUT)     # Shows if all axes are OK
-        self.h.newpin("debug-machine-safe", hal.HAL_BIT, hal.HAL_OUT) # Shows if machine is safe to enable
-        self.h.newpin("debug-halui-on", hal.HAL_BIT, hal.HAL_OUT)    # Shows HALUI machine.is-on state
         
         # Parameters
         self.VACUUM_CHECK_TIME = 2.0    # Time to check for good vacuum (seconds)
@@ -79,24 +59,14 @@ class WorkAreaControl:
         self.vacuum_loss_time = 0
         self.last_vacuum_pedal = False
         
-        # Machine enable state tracking
-        self.machine_enabled_state = False
-        self.last_machine_enabled = False   # For edge detection
-        
         # Initialize outputs
         self.h.left_stops = False
         self.h.right_stops = False
         self.h.front_stops = False
-        self.h.enable_machine = False    # Start with machine disabled
         self.h.suction_on = False
         self.h.suction_off = False
         self.h.suction_up = False
         self.h.low_vacuum = False
-        self.h.motion_enable = False     # Start with motion disabled
-        self.h.enable_axes = False       # Start with axes disabled
-        self.h["debug-axes-ok"] = False
-        self.h["debug-machine-safe"] = False
-        self.h["debug-halui-on"] = False
         
         self.h.ready()
     

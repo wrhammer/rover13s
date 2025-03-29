@@ -6,14 +6,12 @@
 #***********************
 
 loadrt estop_latch
-loadrt not count=1
 
 #***********************
 # === Thread Assignments ===
 #***********************
 
 addf estop-latch.0 servo-thread
-addf not.0 servo-thread
 
 #***********************
 # === estop signals ===
@@ -32,12 +30,12 @@ net remote-estop 			estop-latch.0.fault-in <=  			hm2_7i96s.0.7i77.0.0.input-03-
 	#***************************************#
 
 net estop-loopout 			machine_enable.estop_ok
-# net emc-enable-in          	estop-loopout                      work_area.emc_enable_in
+
 
 ###INPUT FROM PIN 27 ON DRIVES###
-net x-axis-ok 				hm2_7i96s.0.7i77.0.0.input-04 		work_area.x_axis_ok
-net y-axis-ok 				hm2_7i96s.0.7i77.0.0.input-05 		work_area.y_axis_ok
-net z-axis-ok 				hm2_7i96s.0.7i77.0.0.input-06 		work_area.z_axis_ok
+net x-axis-ok 				hm2_7i96s.0.7i77.0.0.input-04 		
+net y-axis-ok 				hm2_7i96s.0.7i77.0.0.input-05 		
+net z-axis-ok 				hm2_7i96s.0.7i77.0.0.input-06 		
 
 ### MOTOR STOPPED SIGNAL FROM INVERTER ###
 net motor-stopped 			hm2_7i96s.0.7i77.0.0.input-07      vfd_control.motor_stopped
@@ -47,8 +45,8 @@ net start-lube 				hm2_7i96s.0.7i77.0.0.input-10
 ### REMOTE SPEED INCREASE AND DECREASE ###
 net speed-incrs  			hm2_7i96s.0.7i77.0.0.input-11
 net speed-dcrs   			hm2_7i96s.0.7i77.0.0.input-12
-net enable-machine 			hm2_7i96s.0.7i77.0.0.output-00  	work_area.enable_machine 			
-net enable-axes				hm2_7i96s.0.7i77.0.0.output-01		work_area.enable_axes
+net enable-machine 			hm2_7i96s.0.7i77.0.0.output-00  	machine_enable.enable_machine 			
+net enable-axes				hm2_7i96s.0.7i77.0.0.output-01		machine_enable.enable_axes
 net reset-vfd				hm2_7i96s.0.7i77.0.0.output-02      vfd_control.vfd_reset
 net start-bitsnblade		hm2_7i96s.0.7i77.0.0.output-03		motion.digital-out-17
 net vfd-call-to-run  		hm2_7i96s.0.7i77.0.0.output-05		vfd_control.vfd_run
@@ -118,7 +116,7 @@ net lock-tool				hm2_7i94.0.7i84.0.1.output-05		tool_release.lock_tool
 net left-area-pb			hm2_7i94.0.7i84.0.2.input-00		work_area.left_button
 net rht-area-pb				hm2_7i94.0.7i84.0.2.input-01		work_area.right_button
 net vac-pedal				hm2_7i94.0.7i84.0.2.input-02		work_area.vacuum_pedal
-net estop-pcells			hm2_7i94.0.7i84.0.2.input-03		work_area.photo_eyes_bypass
+net estop-pcells			hm2_7i94.0.7i84.0.2.input-03		machine_enable.estop_pcells
 net vaccuum-ok				hm2_7i94.0.7i84.0.2.input-04		work_area.vacuum_ok
 
 

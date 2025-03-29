@@ -10,6 +10,7 @@ class MachineEnable:
         
         # Input pins
         self.h.newpin("estop_ok", hal.HAL_BIT, hal.HAL_IN)       # E-stop chain status
+        self.h.newpin("estop_pcells", hal.HAL_BIT, hal.HAL_IN)   # E-stop PCells
         self.h.newpin("machine_btn_on", hal.HAL_BIT, hal.HAL_IN)       # Machine button state\
         
         # Output pins
@@ -27,7 +28,7 @@ class MachineEnable:
     
     def update(self):
         # Check machine enable and safety conditions
-        safety_ok = self.h.estop_ok
+        safety_ok = self.h.estop_ok and not self.h.estop_pcells
         machine_btn_on = self.h.machine_btn_on
 
         if safety_ok and machine_btn_on:

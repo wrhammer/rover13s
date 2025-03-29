@@ -254,7 +254,7 @@ net jog-selected-neg        halui.axis.selected.minus
 net spindle-manual-cw       halui.spindle.0.forward
 net spindle-manual-ccw      halui.spindle.0.reverse
 net spindle-manual-stop     halui.spindle.0.stop
-net machine-enabled    	    halui.machine.is-on         work_area.machine_enabled 				
+net machine-enabled    	    halui.machine.is-on         machine_enable.machine_btn_on 				
 net jog-speed               halui.axis.jog-speed
 net MDI-mode                halui.mode.is-mdi
 
@@ -283,15 +283,7 @@ net tooloffset-z  <=  motion.tooloffset.z
 #  ---ignore tool prepare requests---
 net tool-prepare-loopback   iocontrol.0.tool-prepare      =>  iocontrol.0.tool-prepared
 
-# Machine enable control
-net machine-btn-on      	        halui.machine.is-on    					machine_enable.machine_btn_on
-net machine-is-enabled        <=    motion.motion-enabled
-net x-axis-ok             hm2_7i96s.0.7i77.0.0.input-00
-net y-axis-ok             hm2_7i96s.0.7i77.0.0.input-01
-net z-axis-ok             hm2_7i96s.0.7i77.0.0.input-02
 
-# Axis enable chain
-net enable-axes 			work_area.enable_axes 					hm2_7i96s.0.7i77.0.0.output-01
 
 
 
