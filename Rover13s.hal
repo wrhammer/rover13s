@@ -283,7 +283,7 @@ net tooloffset-z  <=  motion.tooloffset.z
 net tool-prepare-loopback   iocontrol.0.tool-prepare      =>  iocontrol.0.tool-prepared
 
 # Machine On/Off control
-net machine-btn-on      	halui.machine.is-on    					work_area.machine_btn_on
+#net machine-btn-on      	halui.machine.is-on    					work_area.machine_btn_on
 
 # Axis enable chain
 net enable-axes 			work_area.enable_axes 					hm2_7i96s.0.7i77.0.0.output-01

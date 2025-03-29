@@ -28,9 +28,9 @@ net y-axis-ok 			hm2_7i96s.0.7i77.0.0.input-05 		classicladder.0.in-02
 net z-axis-ok 			hm2_7i96s.0.7i77.0.0.input-06 		classicladder.0.in-03
 
 ### MOTOR STOPPED SIGNAL FROM INVERTER ###
-net motor-stopped 		hm2_7i96s.0.7i77.0.0.input-07
+net motor-stopped 			hm2_7i96s.0.7i77.0.0.input-07
 net tooling-in-progress 	hm2_7i96s.0.7i77.0.0.input-09
-net start-lube 			hm2_7i96s.0.7i77.0.0.input-10
+net start-lube 				hm2_7i96s.0.7i77.0.0.input-10
 
 ### REMOTE SPEED INCREASE AND DECREASE ###
 net speed-incrs  		hm2_7i96s.0.7i77.0.0.input-11
