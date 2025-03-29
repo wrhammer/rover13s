@@ -57,6 +57,10 @@ class WorkAreaControl:
         self.h.newpin("spindle_stop", hal.HAL_BIT, hal.HAL_IN)     # Spindle state input
         self.h.newpin("enable_axes", hal.HAL_BIT, hal.HAL_OUT)    # Enable all axes
         
+        # Debug Output pins
+        self.h.newpin("debug-axes-ok", hal.HAL_BIT, hal.HAL_OUT)     # Shows if all axes are OK
+        self.h.newpin("debug-machine-safe", hal.HAL_BIT, hal.HAL_OUT) # Shows if machine is safe to enable
+        self.h.newpin("debug-halui-on", hal.HAL_BIT, hal.HAL_OUT)    # Shows HALUI machine.is-on state
         
         # Parameters
         self.VACUUM_CHECK_TIME = 2.0    # Time to check for good vacuum (seconds)
@@ -90,9 +94,9 @@ class WorkAreaControl:
         self.h.low_vacuum = False
         self.h.motion_enable = False     # Start with motion disabled
         self.h.enable_axes = False       # Start with axes disabled
-        self.h.debug_axes_ok = False
-        self.h.debug_machine_safe = False
-        self.h.debug_halui_on = False
+        self.h["debug-axes-ok"] = False
+        self.h["debug-machine-safe"] = False
+        self.h["debug-halui-on"] = False
         
         self.h.ready()
     
@@ -188,9 +192,9 @@ class WorkAreaControl:
         print(f"    motion_enable: {self.h.motion_enable}")
         
         # Update debug pins
-        self.h.debug_machine_safe = safety_ok
-        self.h.debug_halui_on = machine_btn_on
-        self.h.debug_axes_ok = x_ok and y_ok and z_ok
+        self.h["debug-machine-safe"] = safety_ok
+        self.h["debug-halui-on"] = machine_btn_on
+        self.h["debug-axes-ok"] = x_ok and y_ok and z_ok
         
         # Handle machine enable state
         if safety_ok and machine_btn_on:
