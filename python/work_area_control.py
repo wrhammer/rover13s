@@ -200,8 +200,11 @@ class WorkAreaControl:
         if safety_ok and machine_enabled:
             # Safety OK and machine enabled, enable machine
             # self.machine_enabled_state = True
+            self.machine_enabled_state = True
+            self.h.motion_enable = True
             self.h.enable_machine = True
             self.h.enable_axes = True
+            
             # Only enable motion if all axes are OK
             # if x_ok and y_ok and z_ok:
                 # self.h.motion_enable = True
