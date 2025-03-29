@@ -199,7 +199,7 @@ class WorkAreaControl:
         # Handle machine enable state
         if safety_ok and machine_btn_on:
             # Safety OK and machine enabled, enable machine
-            self.machine_btn_on_state = True
+            # self.machine_btn_on_state = True
             self.h.enable_machine = True
             self.h.enable_axes = True
             # Only enable motion if all axes are OK
@@ -208,9 +208,9 @@ class WorkAreaControl:
             print("  Action: Machine enabled - safety OK and machine enabled")
         else:
             # Safety not OK or machine not enabled, disable machine
-            if self.machine_btn_on_state:  # Only print if state is changing
-                print(f"  Action: Machine disabled - safety_ok: {safety_ok}, machine_btn_on: {machine_btn_on}")
-            self.machine_btn_on_state = False
+            # if self.machine_btn_on_state:  # Only print if state is changing
+                # print(f"  Action: Machine disabled - safety_ok: {safety_ok}, machine_btn_on: {machine_btn_on}")
+            #self.machine_btn_on_state = False
             self.h.enable_machine = False
             self.h.enable_axes = False
             self.h.motion_enable = False
@@ -238,7 +238,7 @@ class WorkAreaControl:
         
         # Work area state machine
         if self.work_area_state == WorkAreaState.IDLE:
-            if left_pressed or right_pressed and self.h.machine_btn_on and self.machine_btn_on_state:
+            if left_pressed or right_pressed and self.h.machine_btn_on:
                 self.work_area_state = WorkAreaState.SETUP_MODE
                 self.setup_side = 'left' if left_pressed else 'right'
                 
@@ -268,7 +268,7 @@ class WorkAreaControl:
                 self.h.front_stops = False
                 
                 # Re-enable motion if machine is still enabled and safe
-                if self.h.machine_btn_on and self.machine_btn_on_state:
+                if self.h.machine_btn_on:
                     self.h.motion_enable = True
                 
                 # Keep suction on but lower cups
