@@ -11,7 +11,7 @@ class MachineEnable:
         # Input pins
         self.h.newpin("estop_ok", hal.HAL_BIT, hal.HAL_IN)       # E-stop chain status
         self.h.newpin("estop_pcells", hal.HAL_BIT, hal.HAL_IN)   # E-stop PCells
-        self.h.newpin("machine_btn_on", hal.HAL_BIT, hal.HAL_IN)       # Machine button state\
+        self.h.newpin("machine_btn_on", hal.HAL_BIT, hal.HAL_IN)       # Machine button state
         
         # Output pins
         self.h.newpin("enable_machine", hal.HAL_BIT, hal.HAL_OUT)      # Machine enable output
@@ -30,6 +30,7 @@ class MachineEnable:
         self.h.enable_machine = False    # Start with machine disabled
         self.h.enable_axes = False       # Start with axes disabled
         
+        print("Machine Enable initialized with PCells latch = False")
         self.h.ready()
     
     def update(self):
@@ -38,6 +39,8 @@ class MachineEnable:
         
         # Handle PCells latching
         if not machine_btn_on:  # Machine is turned off
+            if self.pcells_latched:  # Only print if we're actually resetting
+                print("  Action: PCells latch reset (machine turned off)")
             self.pcells_latched = False  # Reset latch when machine is turned off
         elif self.h.estop_pcells and not self.pcells_latched:  # PCells just tripped
             self.pcells_latched = True
