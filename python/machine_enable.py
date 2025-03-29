@@ -33,7 +33,7 @@ class MachineEnable:
     
     def update(self):
         # Check machine enable and safety conditions
-        safety_ok = self.h.estop_ok and not self.h.estop_pcells
+        safety_ok = self.h.estop_ok and self.h.estop_pcells
         machine_btn_on = self.h.machine_btn_on
 
         # Print detailed state information
