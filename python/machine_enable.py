@@ -17,11 +17,6 @@ class MachineEnable:
         self.h.newpin("enable_machine", hal.HAL_BIT, hal.HAL_OUT)      # Machine enable output
         self.h.newpin("enable_axes", hal.HAL_BIT, hal.HAL_OUT)         # Enable all axes
         
-        # Debug output pins
-        self.h.newpin("debug_safety_ok", hal.HAL_BIT, hal.HAL_OUT)     # Shows if safety conditions are met
-        self.h.newpin("debug_machine_btn", hal.HAL_BIT, hal.HAL_OUT)   # Shows machine button state
-        self.h.newpin("debug_enabled", hal.HAL_BIT, hal.HAL_OUT)       # Shows if machine is enabled
-        
         # State tracking
         self.machine_enabled_state = False
         self.pcells_latched = False  # Track if PCells are latched
@@ -43,7 +38,7 @@ class MachineEnable:
                 print("  Action: PCells latch reset (machine turned off)")
             self.pcells_latched = False  # Reset latch when machine is turned off
         elif machine_btn_on and self.machine_enabled_state:  # Only check PCells if machine is running
-            if self.h.estop_pcells and not self.pcells_latched:  # PCells just tripped
+            if not self.h.estop_pcells:  # PCells just tripped
                 self.pcells_latched = True
                 print("  Action: PCells tripped and latched")
         
@@ -51,18 +46,13 @@ class MachineEnable:
         safety_ok = self.h.estop_ok and not self.pcells_latched
 
         # Print detailed state information
-        print(f"Machine Enable State:")
-        print(f"  estop_ok: {self.h.estop_ok}")
-        print(f"  estop_pcells: {self.h.estop_pcells}")
-        print(f"  pcells_latched: {self.pcells_latched}")
-        print(f"  machine_btn_on: {machine_btn_on}")
-        print(f"  safety_ok: {safety_ok}")
-        print(f"  current_state: {'Enabled' if self.machine_enabled_state else 'Disabled'}")
-
-        # Update debug outputs
-        self.h.debug_safety_ok = safety_ok
-        self.h.debug_machine_btn = machine_btn_on
-        self.h.debug_enabled = self.machine_enabled_state
+        # print(f"Machine Enable State:")
+        # print(f"  estop_ok: {self.h.estop_ok}")
+        # print(f"  estop_pcells: {self.h.estop_pcells}")
+        # print(f"  pcells_latched: {self.pcells_latched}")
+        # print(f"  machine_btn_on: {machine_btn_on}")
+        # print(f"  safety_ok: {safety_ok}")
+        # print(f"  current_state: {'Enabled' if self.machine_enabled_state else 'Disabled'}")
 
         if safety_ok and machine_btn_on:
             if not self.machine_enabled_state:
