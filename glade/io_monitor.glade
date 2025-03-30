@@ -1,209 +1,224 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="3.0"/>
-  <object class="GtkBox" id="io_monitor_box">
+  <object class="GtkWindow" id="window1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="orientation">vertical</property>
-    <property name="spacing">10</property>
-    <style>
-      <class name="custom-background"/>
-    </style>
+    <property name="title">IO Monitor</property>
+    <property name="default_width">300</property>
+    <property name="default_height">400</property>
     <child>
-      <object class="GtkFrame" id="work_area_frame">
+      <object class="GtkBox" id="io_monitor_box">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label">Work Area Status</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">10</property>
         <style>
-          <class name="custom-frame"/>
+          <class name="custom-background"/>
         </style>
         <child>
-          <object class="GtkGrid" id="work_area_grid">
+          <object class="GtkFrame" id="work_area_frame">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="margin_left">10</property>
-            <property name="margin_right">10</property>
-            <property name="margin_top">10</property>
-            <property name="margin_bottom">10</property>
-            <property name="row_spacing">5</property>
-            <property name="column_spacing">10</property>
+            <property name="label">Work Area Status</property>
+            <style>
+              <class name="custom-frame"/>
+            </style>
             <child>
-              <object class="HAL_LED" id="left_button_led">
+              <object class="GtkGrid" id="work_area_grid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="led_size">20</property>
-                <property name="led_blink_rate">0</property>
-                <property name="pick_color_on">#4CAF50</property>
-                <property name="pick_color_off">#B71C1C</property>
+                <property name="margin_left">10</property>
+                <property name="margin_right">10</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
+                <property name="row_spacing">5</property>
+                <property name="column_spacing">10</property>
+                <child>
+                  <object class="HAL_LED" id="left_button_led">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="led_size">20</property>
+                    <property name="led_blink_rate">0</property>
+                    <property name="pick_color_on">#4CAF50</property>
+                    <property name="pick_color_off">#B71C1C</property>
+                    <property name="hal_pin">work_area.left_button</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="left_button_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label">Left Button</property>
+                    <property name="xalign">0</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="HAL_LED" id="right_button_led">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="led_size">15</property>
+                    <property name="led_blink_rate">0</property>
+                    <property name="pick_color_on">#00FF00</property>
+                    <property name="pick_color_off">#FF0000</property>
+                    <property name="hal_pin">work_area.right_button</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="right_button_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label">Right Button</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="HAL_LED" id="vacuum_ok_led">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="led_size">15</property>
+                    <property name="led_blink_rate">0</property>
+                    <property name="pick_color_on">#00FF00</property>
+                    <property name="pick_color_off">#FF0000</property>
+                    <property name="hal_pin">vacuum.vacuum_ok</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="vacuum_ok_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label">Vacuum OK</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">2</property>
+                  </packing>
+                </child>
               </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="left_button_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label">Left Button</property>
-                <property name="xalign">0</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                </attributes>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="HAL_LED" id="right_button_led">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="led_size">15</property>
-                <property name="led_blink_rate">0</property>
-                <property name="pick_color_on">#00FF00</property>
-                <property name="pick_color_off">#FF0000</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="right_button_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label">Right Button</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="HAL_LED" id="vacuum_ok_led">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="led_size">15</property>
-                <property name="led_blink_rate">0</property>
-                <property name="pick_color_on">#00FF00</property>
-                <property name="pick_color_off">#FF0000</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="vacuum_ok_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label">Vacuum OK</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">2</property>
-              </packing>
             </child>
           </object>
         </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkFrame" id="tool_frame">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label">Tool Status</property>
         <child>
-          <object class="GtkGrid" id="tool_grid">
+          <object class="GtkFrame" id="tool_frame">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="margin_left">10</property>
-            <property name="margin_right">10</property>
-            <property name="margin_top">10</property>
-            <property name="margin_bottom">10</property>
-            <property name="row_spacing">5</property>
-            <property name="column_spacing">10</property>
+            <property name="label">Tool Status</property>
             <child>
-              <object class="HAL_LED" id="tool_locked_led">
+              <object class="GtkGrid" id="tool_grid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="led_size">15</property>
-                <property name="led_blink_rate">0</property>
-                <property name="pick_color_on">#00FF00</property>
-                <property name="pick_color_off">#FF0000</property>
+                <property name="margin_left">10</property>
+                <property name="margin_right">10</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
+                <property name="row_spacing">5</property>
+                <property name="column_spacing">10</property>
+                <child>
+                  <object class="HAL_LED" id="tool_locked_led">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="led_size">15</property>
+                    <property name="led_blink_rate">0</property>
+                    <property name="pick_color_on">#00FF00</property>
+                    <property name="pick_color_off">#FF0000</property>
+                    <property name="hal_pin">tool_release.tool_locked</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="tool_locked_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label">Tool Locked</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="HAL_LED" id="x_safe_led">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="led_size">15</property>
+                    <property name="led_blink_rate">0</property>
+                    <property name="pick_color_on">#00FF00</property>
+                    <property name="pick_color_off">#FF0000</property>
+                    <property name="hal_pin">work_area.x_safe</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="x_safe_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label">X Safe Zone</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="HAL_LED" id="y_safe_led">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="led_size">15</property>
+                    <property name="led_blink_rate">0</property>
+                    <property name="pick_color_on">#00FF00</property>
+                    <property name="pick_color_off">#FF0000</property>
+                    <property name="hal_pin">work_area.y_safe</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="y_safe_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label">Y Safe Zone</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">2</property>
+                  </packing>
+                </child>
               </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="tool_locked_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label">Tool Locked</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="HAL_LED" id="x_safe_led">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="led_size">15</property>
-                <property name="led_blink_rate">0</property>
-                <property name="pick_color_on">#00FF00</property>
-                <property name="pick_color_off">#FF0000</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="x_safe_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label">X Safe Zone</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="HAL_LED" id="y_safe_led">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="led_size">15</property>
-                <property name="led_blink_rate">0</property>
-                <property name="pick_color_on">#00FF00</property>
-                <property name="pick_color_off">#FF0000</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="y_safe_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label">Y Safe Zone</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">2</property>
-              </packing>
             </child>
           </object>
         </child>
