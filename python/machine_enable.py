@@ -12,6 +12,7 @@ class MachineEnable:
         self.h.newpin("estop_ok", hal.HAL_BIT, hal.HAL_IN)       # E-stop chain status
         self.h.newpin("estop_pcells", hal.HAL_BIT, hal.HAL_IN)   # E-stop PCells
         self.h.newpin("machine_btn_on", hal.HAL_BIT, hal.HAL_IN)       # Machine button state
+        self.h.newpin("work_area_setup", hal.HAL_BIT, hal.HAL_IN) 	# Work area setup state
         
         # Output pins
         self.h.newpin("enable_machine", hal.HAL_BIT, hal.HAL_OUT)      # Machine enable output
@@ -37,7 +38,7 @@ class MachineEnable:
             if self.pcells_latched:  # Only print if we're actually resetting
                 print("  Action: PCells latch reset (machine turned off)")
             self.pcells_latched = False  # Reset latch when machine is turned off
-        elif machine_btn_on and self.machine_enabled_state and not self.h.vacuum_ready:  # Only check PCells if machine is running and table not being setup
+        elif machine_btn_on and self.machine_enabled_state and not self.h.work_area_setup:  # Only check PCells if machine is running and table not being setup
             if not self.h.estop_pcells:  # PCells just tripped
                 self.pcells_latched = True
                 print("  Action: PCells tripped and latched")
