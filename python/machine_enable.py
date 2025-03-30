@@ -38,7 +38,11 @@ class MachineEnable:
             if self.pcells_latched:  # Only print if we're actually resetting
                 print("  Action: PCells latch reset (machine turned off)")
             self.pcells_latched = False  # Reset latch when machine is turned off
-        elif machine_btn_on and self.machine_enabled_state and not self.h.work_area_setup:  # Only check PCells if machine is running and table not being setup
+        elif self.h.work_area_setup:  # Reset latch when entering setup mode
+            if self.pcells_latched:
+                print("  Action: PCells latch reset (entering setup mode)")
+            self.pcells_latched = False
+        elif machine_btn_on and self.machine_enabled_state:  # Only check PCells if machine is running
             if not self.h.estop_pcells:  # PCells just tripped
                 self.pcells_latched = True
                 print("  Action: PCells tripped and latched")
@@ -47,13 +51,14 @@ class MachineEnable:
         safety_ok = self.h.estop_ok and not self.pcells_latched
 
         # Print detailed state information
-        # print(f"Machine Enable State:")
-        # print(f"  estop_ok: {self.h.estop_ok}")
-        # print(f"  estop_pcells: {self.h.estop_pcells}")
-        # print(f"  pcells_latched: {self.pcells_latched}")
-        # print(f"  machine_btn_on: {machine_btn_on}")
-        # print(f"  safety_ok: {safety_ok}")
-        # print(f"  current_state: {'Enabled' if self.machine_enabled_state else 'Disabled'}")
+        print(f"Machine Enable State:")
+        print(f"  estop_ok: {self.h.estop_ok}")
+        print(f"  estop_pcells: {self.h.estop_pcells}")
+        print(f"  pcells_latched: {self.pcells_latched}")
+        print(f"  work_area_setup: {self.h.work_area_setup}")
+        print(f"  machine_btn_on: {machine_btn_on}")
+        print(f"  safety_ok: {safety_ok}")
+        print(f"  current_state: {'Enabled' if self.machine_enabled_state else 'Disabled'}")
 
         if safety_ok and machine_btn_on:
             if not self.machine_enabled_state:
