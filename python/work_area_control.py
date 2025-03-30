@@ -59,9 +59,9 @@ class WorkAreaControl:
                 self.setup_side = 'left' if left_pressed else 'right'
 
                 # Raise appropriate stops
-                self.h.left_stops = True if left_pressed else False
-                self.h.right_stops = True if right_pressed else False
-                self.h.front_stops = True
+                self.h.left_stops = False
+                self.h.right_stops = False
+                self.h.front_stops = False
 
         elif self.work_area_state == WorkAreaState.SETUP_MODE:
             self.h.work_area_setup = True
@@ -71,9 +71,9 @@ class WorkAreaControl:
                 self.work_area_state = WorkAreaState.IDLE
 
                 # Lower all stops
-                self.h.left_stops = False
-                self.h.right_stops = False
-                self.h.front_stops = False
+                self.h.left_stops = True
+                self.h.right_stops = True
+                self.h.front_stops = True
 
         # Update button state tracking
         self.last_left_button = left_button
