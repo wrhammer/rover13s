@@ -18,17 +18,13 @@ class VacuumControl:
         # Input pins
         self.h.newpin("vacuum_pedal", hal.HAL_BIT, hal.HAL_IN)
         self.h.newpin("vacuum_ok", hal.HAL_BIT, hal.HAL_IN)      # Vacuum level OK signal
+        self.h.newpin("work_area_setup", hal.HAL_BIT, hal.HAL_IN)  # Set by work area control
         
         # Output pins
         self.h.newpin("suction_on", hal.HAL_BIT, hal.HAL_OUT)    # Turn vacuum on
         self.h.newpin("suction_off", hal.HAL_BIT, hal.HAL_OUT)   # Turn vacuum off
         self.h.newpin("suction_up", hal.HAL_BIT, hal.HAL_OUT)    # Raise suction cups
         self.h.newpin("low_vacuum", hal.HAL_BIT, hal.HAL_OUT)    # Low vacuum warning
-        
-        # Parameters
-        # self.VACUUM_CHECK_TIME = 2.0    # Time to check for good vacuum (seconds)
-        # self.ERROR_TIMEOUT = 5.0        # Time before declaring vacuum error
-        # self.ERROR_TIMEOUT = 5.0        # Time before declaring vacuum error
         
         # State tracking
         self.vacuum_state = VacuumState.IDLE
@@ -43,8 +39,8 @@ class VacuumControl:
         
         self.h.ready()
     
+    
     def update(self):
-                
         # Check for vacuum loss in any state
         if not self.h.vacuum_ok:
             self.vacuum_state = VacuumState.ERROR
@@ -62,7 +58,7 @@ class VacuumControl:
                 self.h.suction_off = False
                 self.h.low_vacuum = False
         
-        elif self.vacuum_state == VacuumState.VACUUM_ON:         
+        elif self.vacuum_state == VacuumState.VACUUM_ON:
             if pedal_pressed:  # Toggle vacuum off
                 self.vacuum_state = VacuumState.VACUUM_OFF
                 self.h.suction_on = False
