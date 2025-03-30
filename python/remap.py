@@ -179,6 +179,8 @@ def remap_m6(self, **params):
             # cause a sync()
             self.set_tool_parameters()
             self.toolchange_flag = True
+            # Force sync to update tool information
+            self.sync()
         else:
             # For all other tools (T1-T19), skip manual confirmation
             self.current_tool = tool_number
@@ -187,6 +189,8 @@ def remap_m6(self, **params):
             self.selected_tool = -1
             self.set_tool_parameters()
             self.toolchange_flag = True
+            # Force sync to update tool information
+            self.sync()
 
         # --- Activate New Tool ---
         if tool_number == 20:  # Router is now T20
