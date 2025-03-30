@@ -74,7 +74,7 @@ def main():
     try:
         while True:
             machine_enable.update()
-            time.sleep(0.1)  # Changed to 0.1 second
+            time.sleep(1.1)  # Changed to 0.1 second
             
     except KeyboardInterrupt:
         raise SystemExit
