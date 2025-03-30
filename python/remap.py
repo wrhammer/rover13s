@@ -234,6 +234,25 @@ def remap_m6(self, **params):
                 self.execute(f"M64 P{info['down_pin']}")
                 yield INTERP_EXECUTE_FINISH
 
+        # Apply tool length compensation (G43) and X/Y offsets
+        print(f"Applying tool offsets for T{tool_number}")
+        # First apply Z offset
+        self.execute(f"G43 H{tool_number}")
+        yield INTERP_EXECUTE_FINISH
+        
+        # Then apply X and Y offsets
+        self.execute(f"G10 L10 P{tool_number} X0 Y0 Z0")  # Reset offsets to 0 first
+        yield INTERP_EXECUTE_FINISH
+        
+        # Get tool offsets from tool table
+        for tool in stat.tool_table:
+            if tool.id == tool_number:
+                if tool.xoffset != 0 or tool.yoffset != 0:
+                    print(f"  Applying X offset: {tool.xoffset}, Y offset: {tool.yoffset}")
+                    self.execute(f"G10 L10 P{tool_number} X{tool.xoffset} Y{tool.yoffset}")
+                    yield INTERP_EXECUTE_FINISH
+                break
+
         yield INTERP_OK
 
     except Exception as e:
