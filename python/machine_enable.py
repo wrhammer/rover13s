@@ -46,14 +46,14 @@ class MachineEnable:
         # Use latched state for safety check
         safety_ok = self.h.estop_ok and not self.pcells_latched
 
-        # Print detailed state information
-        # print(f"Machine Enable State:")
-        # print(f"  estop_ok: {self.h.estop_ok}")
-        # print(f"  estop_pcells: {self.h.estop_pcells}")
-        # print(f"  pcells_latched: {self.pcells_latched}")
-        # print(f"  machine_btn_on: {machine_btn_on}")
-        # print(f"  safety_ok: {safety_ok}")
-        # print(f"  current_state: {'Enabled' if self.machine_enabled_state else 'Disabled'}")
+        Print detailed state information
+        print(f"Machine Enable State:")
+        print(f"  estop_ok: {self.h.estop_ok}")
+        print(f"  estop_pcells: {self.h.estop_pcells}")
+        print(f"  pcells_latched: {self.pcells_latched}")
+        print(f"  machine_btn_on: {machine_btn_on}")
+        print(f"  safety_ok: {safety_ok}")
+        print(f"  current_state: {'Enabled' if self.machine_enabled_state else 'Disabled'}")
 
         if safety_ok and machine_btn_on:
             if not self.machine_enabled_state:

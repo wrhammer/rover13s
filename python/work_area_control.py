@@ -40,13 +40,13 @@ class WorkAreaControl:
         self.h.ready()
 
     def update(self):
-        print(f"Work area state: {self.work_area_state}")
-        print(f"work_area_setup: {self.h.work_area_setup}")
-        print(f"left_button: {self.h.left_button}")
-        print(f"right_button: {self.h.right_button}")
-        print(f"left_stops: {self.h.left_stops}")
-        print(f"right_stops: {self.h.right_stops}")
-        print(f"front_stops: {self.h.front_stops}")
+        # print(f"Work area state: {self.work_area_state}")
+        # print(f"work_area_setup: {self.h.work_area_setup}")
+        # print(f"left_button: {self.h.left_button}")
+        # print(f"right_button: {self.h.right_button}")
+        # print(f"left_stops: {self.h.left_stops}")
+        # print(f"right_stops: {self.h.right_stops}")
+        # print(f"front_stops: {self.h.front_stops}")
         # Read button states
         left_button = self.h.left_button
         right_button = self.h.right_button
