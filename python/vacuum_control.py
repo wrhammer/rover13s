@@ -95,7 +95,7 @@ def main():
     try:
         while True:
             vacuum.update()
-            time.sleep(1.1)  # 100ms update rate
+            time.sleep(0.1)  # 100ms update rate
             
     except KeyboardInterrupt:
         raise SystemExit
