@@ -38,7 +38,7 @@ class MachineEnable:
             if self.pcells_latched:  # Only print if we're actually resetting
                 print("  Action: PCells latch reset (machine turned off)")
             self.pcells_latched = False  # Reset latch when machine is turned off
-        elif machine_btn_on and self.machine_enabled_state and not self.h.work_area_setup:  # Only check PCells if machine is running and table not being setup
+        elif machine_btn_on and self.machine_enabled_state and self.h.work_area_setup:  # Only check PCells if machine is running and table not being setup
             if not self.h.estop_pcells:  # PCells just tripped
                 self.pcells_latched = True
                 print("  Action: PCells tripped and latched")
@@ -46,7 +46,7 @@ class MachineEnable:
         # Use latched state for safety check
         safety_ok = self.h.estop_ok and not self.pcells_latched
 
-        Print detailed state information
+        # Print detailed state information
         print(f"Machine Enable State:")
         print(f"  estop_ok: {self.h.estop_ok}")
         print(f"  estop_pcells: {self.h.estop_pcells}")
@@ -74,7 +74,7 @@ def main():
     try:
         while True:
             machine_enable.update()
-            time.sleep(0.1)  # Changed to 0.1 second
+            time.sleep(1.0)  # Changed to 0.1 second
             
     except KeyboardInterrupt:
         raise SystemExit
