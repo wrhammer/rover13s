@@ -134,6 +134,6 @@ net up-suction				hm2_7i94.0.7i84.0.2.output-07		vacuum.suction_up
 net spindle-on          	vfd_control.spindle_on
 
 # Vacuum control connections
-net work-area-setup			work_area.work_area_setup			vacuum.work_area_setup
+net work-area-setup			work_area.work_area_setup			vacuum.work_area_setup			machine_enable.work_area_setup
 
 

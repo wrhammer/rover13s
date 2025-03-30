@@ -12,7 +12,7 @@ class MachineEnable:
         self.h.newpin("estop_ok", hal.HAL_BIT, hal.HAL_IN)       # E-stop chain status
         self.h.newpin("estop_pcells", hal.HAL_BIT, hal.HAL_IN)   # E-stop PCells
         self.h.newpin("machine_btn_on", hal.HAL_BIT, hal.HAL_IN)       # Machine button state
-        self.h.newpin("work_area_setup", hal.HAL_BIT, hal.HAL_IN) 	# Work area setup state
+        self.h.newpin("work_area_setup", hal.HAL_BIT, hal.HAL_IN) 	# Work area setup state (from work_area component)
         
         # Output pins
         self.h.newpin("enable_machine", hal.HAL_BIT, hal.HAL_OUT)      # Machine enable output
