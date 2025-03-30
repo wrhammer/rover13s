@@ -41,6 +41,8 @@ class VacuumControl:
     
     
     def update(self):
+        print(f"Vacuum state: {self.vacuum_state}")
+        print(f"work_area_setup: {self.h.work_area_setup}")
         # Check for vacuum loss in any state
         if not self.h.vacuum_ok:
             self.vacuum_state = VacuumState.ERROR
