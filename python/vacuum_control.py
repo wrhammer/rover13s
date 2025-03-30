@@ -46,30 +46,39 @@ class VacuumControl:
             self.vacuum_state = VacuumState.ERROR
             self.h.low_vacuum = True
             return
-        print(f"Vacuum state: {self.vacuum_state}")
-        print(f"work_area_setup: {self.h.work_area_setup}")
-        print(f"vacuum_pedal: {self.h.vacuum_pedal}")
-        print(f"last_vacuum_pedal: {self.last_vacuum_pedal}")
-        print(f"suction_on: {self.h.suction_on}")
-        print(f"suction_off: {self.h.suction_off}")
-        print(f"low_vacuum: {self.h.low_vacuum}")
+        # print(f"Vacuum state: {self.vacuum_state}")
+        # print(f"work_area_setup: {self.h.work_area_setup}")
+        # print(f"vacuum_pedal: {self.h.vacuum_pedal}")
+        # print(f"last_vacuum_pedal: {self.last_vacuum_pedal}")
+        # print(f"suction_on: {self.h.suction_on}")
+        # print(f"suction_off: {self.h.suction_off}")
+        # print(f"low_vacuum: {self.h.low_vacuum}")
 
         # Detect rising edge of pedal press for latching behavior
         pedal_pressed = self.h.vacuum_pedal and not self.last_vacuum_pedal
         self.last_vacuum_pedal = self.h.vacuum_pedal
         
+        # Only allow pedal control in setup mode
+        if not self.h.work_area_setup:
+            return  # Skip all control when not in setup mode
+        
+        # Handle pedal control in setup mode
         if self.vacuum_state == VacuumState.IDLE:
             if pedal_pressed:  # Toggle vacuum on
+                print("  Action: Vacuum on, raising cups")
                 self.vacuum_state = VacuumState.VACUUM_ON
                 self.h.suction_on = True
                 self.h.suction_off = False
+                self.h.suction_up = True  # Raise cups when vacuum is on
                 self.h.low_vacuum = False
         
         elif self.vacuum_state == VacuumState.VACUUM_ON:
             if pedal_pressed:  # Toggle vacuum off
+                print("  Action: Vacuum off, lowering cups")
                 self.vacuum_state = VacuumState.VACUUM_OFF
                 self.h.suction_on = False
                 self.h.suction_off = True
+                self.h.suction_up = False  # Lower cups when vacuum is off
         
         elif self.vacuum_state == VacuumState.VACUUM_OFF:
             self.vacuum_state = VacuumState.IDLE
