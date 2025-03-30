@@ -49,8 +49,8 @@ class MachineEnable:
         # Print detailed state information
         # print(f"Machine Enable State:")
         # print(f"  estop_ok: {self.h.estop_ok}")
-        print(f"  estop_pcells: {self.h.estop_pcells}")
-        print(f"  pcells_latched: {self.pcells_latched}")
+        # print(f"  estop_pcells: {self.h.estop_pcells}")
+        # print(f"  pcells_latched: {self.pcells_latched}")
         # print(f"  machine_btn_on: {machine_btn_on}")
         # print(f"  safety_ok: {safety_ok}")
         # print(f"  current_state: {'Enabled' if self.machine_enabled_state else 'Disabled'}")
@@ -74,7 +74,7 @@ def main():
     try:
         while True:
             machine_enable.update()
-            time.sleep(1.1)  # Changed to 0.1 second
+            time.sleep(0.1)  # Changed to 0.1 second
             
     except KeyboardInterrupt:
         raise SystemExit

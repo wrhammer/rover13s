@@ -18,12 +18,12 @@ class WorkAreaControl:
         # Work Area Input pins
         self.h.newpin("left_button", hal.HAL_BIT, hal.HAL_IN)
         self.h.newpin("right_button", hal.HAL_BIT, hal.HAL_IN)
-        self.h.newpin("work_area_setup", hal.HAL_BIT, hal.HAL_IN)    # From vacuum component
 
         # Work Area Output pins
         self.h.newpin("left_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("right_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("front_stops", hal.HAL_BIT, hal.HAL_OUT)
+        self.h.newpin("work_area_setup", hal.HAL_BIT, hal.HAL_OUT)    # Changed to output pin
 
         # State tracking
         self.work_area_state = WorkAreaState.IDLE
@@ -65,18 +65,20 @@ class WorkAreaControl:
                 self.h.left_stops = True 
                 self.h.right_stops = True
                 self.h.front_stops = True
+                self.h.work_area_setup = True  # Set setup mode output
 
         elif self.work_area_state == WorkAreaState.SETUP_MODE:
-            self.h.work_area_setup = True
             if (left_pressed and self.setup_side == 'left') or \
                (right_pressed and self.setup_side == 'right'):
                 # Return to idle state
                 self.work_area_state = WorkAreaState.IDLE
+                self.setup_side = None
 
                 # Lower all stops
                 self.h.left_stops = False
                 self.h.right_stops = False
                 self.h.front_stops = False
+                self.h.work_area_setup = False  # Clear setup mode output
 
         # Update button state tracking
         self.last_left_button = left_button
