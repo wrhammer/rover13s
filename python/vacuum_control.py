@@ -46,7 +46,14 @@ class VacuumControl:
             self.vacuum_state = VacuumState.ERROR
             self.h.low_vacuum = True
             return
-        
+        print(f"Vacuum state: {self.vacuum_state}")
+        print(f"work_area_setup: {self.h.work_area_setup}")
+        print(f"vacuum_pedal: {self.h.vacuum_pedal}")
+        print(f"last_vacuum_pedal: {self.last_vacuum_pedal}")
+        print(f"suction_on: {self.h.suction_on}")
+        print(f"suction_off: {self.h.suction_off}")
+        print(f"low_vacuum: {self.h.low_vacuum}")
+
         # Detect rising edge of pedal press for latching behavior
         pedal_pressed = self.h.vacuum_pedal and not self.last_vacuum_pedal
         self.last_vacuum_pedal = self.h.vacuum_pedal
@@ -79,7 +86,7 @@ def main():
     try:
         while True:
             vacuum.update()
-            time.sleep(0.1)  # 100ms update rate
+            time.sleep(1.1)  # 100ms update rate
             
     except KeyboardInterrupt:
         raise SystemExit
