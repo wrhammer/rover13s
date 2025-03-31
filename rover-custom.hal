@@ -101,7 +101,7 @@ net t15-t16-down			hm2_7i94.0.7i84.0.0.output-12		motion.digital-out-12
 net router-down				hm2_7i94.0.7i84.0.1.output-00		motion.digital-out-13
 net router-up				hm2_7i94.0.7i84.0.1.output-01		motion.digital-out-14
 
-# Saw blade control (T17)
+# Saw blade control (T18)
 net blade-up				hm2_7i94.0.7i84.0.1.output-02		motion.digital-out-15
 net blade-down				hm2_7i94.0.7i84.0.1.output-03		motion.digital-out-16
 
