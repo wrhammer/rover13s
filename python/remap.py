@@ -179,10 +179,9 @@ def remap_m6(self, **params):
             # cause a sync()
             self.set_tool_parameters()
             self.toolchange_flag = True
+
         else:
-            # For all other tools (T1-T19), use emccanon.CHANGE_TOOL() for proper sync
-            self.selected_pocket = tool_number
-            emccanon.CHANGE_TOOL()
+            # For all other tools (T1-T19), skip manual confirmation
             self.current_tool = tool_number
             self.current_pocket = tool_number
             self.selected_pocket = -1
