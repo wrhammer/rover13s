@@ -205,14 +205,14 @@ setp    hm2_7i96s.0.encoder.02.scale  [JOINT_2]ENCODER_SCALE
 net z-pos-fb               <=  	hm2_7i96s.0.encoder.02.position
 net z-vel-fb               <=  	hm2_7i96s.0.encoder.02.velocity
 net z-pos-fb               =>  	joint.2.motor-pos-fb
-net z-index-enable    		joint.2.index-enable  <=>  	hm2_7i96s.0.encoder.02.index-enable
+net z-index-enable    		    joint.2.index-enable  <=>  	        hm2_7i96s.0.encoder.02.index-enable
 net z-pos-rawcounts        <=  	hm2_7i96s.0.encoder.02.rawcounts
 
 # ---setup home / limit switch signals---
 
-net z-home-sw     =>  		joint.2.home-sw-in		hm2_7i96s.0.7i77.0.0.input-02
-net z-neg-limit     =>  	joint.2.neg-lim-sw-in
-net z-pos-limit     =>  	joint.2.pos-lim-sw-in
+net z-home-sw     =>  		    joint.2.home-sw-in		            hm2_7i96s.0.7i77.0.0.input-02
+net z-neg-limit     =>  	    joint.2.neg-lim-sw-in
+net z-pos-limit     =>  	    joint.2.pos-lim-sw-in
 
 
 #*******************
@@ -225,8 +225,9 @@ setp   hm2_7i96s.0.7i77.0.1.analogout4-minlim    [SPINDLE_0]OUTPUT_MIN_LIMIT
 setp   hm2_7i96s.0.7i77.0.1.analogout4-maxlim    [SPINDLE_0]OUTPUT_MAX_LIMIT
 
 # Spindle connections - connect to spindle_on pin
-net spindle-on 	spindle.0.on			hm2_7i96s.0.7i77.0.1.spinena	vfd_control.spindle_on
-net spindle-speed 	spindle.0.speed-out-abs 	hm2_7i96s.0.7i77.0.1.analogout4	
+net spindle-on 	    spindle.0.on			    hm2_7i96s.0.7i77.0.1.spinena	    vfd_control.spindle_on
+net spindle-speed 	spindle.0.speed-out-abs 	vfd_control.spindle_speed
+net vfd-speed 	    vfd_control.vfd_speed 	    hm2_7i96s.0.7i77.0.1.analogout4
 
 
 #******************************

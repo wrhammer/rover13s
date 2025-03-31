@@ -57,14 +57,14 @@ def get_simple_tools():
                 }
                 break
     
-    # Handle combined tools 19 and 20
+    # Handle combined tools 17 and 18
     combined_tools = {
-        19: {  # Vertical Y spindles (tools 1-5)
+        17: {  # Vertical Y spindles (tools 1-5)
             "name": "Vertical Y Spindles",
             "pins": [0, 1, 2, 3, 4],  # Pins for tools 1-5
             "tools": [1, 2, 3, 4, 5]
         },
-        20: {  # Vertical X spindles (tools 6-10)
+        18: {  # Vertical X spindles (tools 6-10)
             "name": "Vertical X Spindles",
             "pins": [5, 6, 7, 8, 9],  # Pins for tools 6-10
             "tools": [6, 7, 8, 9, 10]
@@ -134,7 +134,7 @@ def remap_m6(self, **params):
         simple_tools = get_simple_tools()
 
         # --- Retract Router or Blade ---
-        if tool_number not in [17, 18]:
+        if tool_number not in [19, 20]:
             if router_down:
                 print("Raising Router (P14)")
                 self.execute("M64 P14")

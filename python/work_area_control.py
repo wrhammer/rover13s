@@ -23,19 +23,22 @@ class WorkAreaControl:
         self.h.newpin("left_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("right_stops", hal.HAL_BIT, hal.HAL_OUT)
         self.h.newpin("front_stops", hal.HAL_BIT, hal.HAL_OUT)
-        self.h.newpin("work_area_setup", hal.HAL_BIT, hal.HAL_OUT)    # Changed to output pin
+        self.h.newpin("work_area_setup", hal.HAL_BIT, hal.HAL_OUT)
+        self.h.newpin("home_command", hal.HAL_BIT, hal.HAL_OUT)  # New pin for home command
 
         # State tracking
         self.work_area_state = WorkAreaState.IDLE
         self.last_left_button = False
         self.last_right_button = False
         self.setup_side = None  # 'left' or 'right'
+        self.home_sent = False  # Track if home command has been sent
 
         # Initialize outputs
         self.h.left_stops = False
         self.h.right_stops = False
         self.h.front_stops = False
         self.h.work_area_setup = False
+        self.h.home_command = False
 
         self.h.ready()
 
@@ -60,12 +63,14 @@ class WorkAreaControl:
             if left_pressed or right_pressed:
                 self.work_area_state = WorkAreaState.SETUP_MODE
                 self.setup_side = 'left' if left_pressed else 'right'
+                self.home_sent = False  # Reset home command flag
 
                 # Raise appropriate stops
                 self.h.left_stops = True 
                 self.h.right_stops = True
                 self.h.front_stops = True
                 self.h.work_area_setup = True  # Set setup mode output
+                self.h.home_command = True  # Send home command
 
         elif self.work_area_state == WorkAreaState.SETUP_MODE:
             if (left_pressed and self.setup_side == 'left') or \
@@ -73,12 +78,14 @@ class WorkAreaControl:
                 # Return to idle state
                 self.work_area_state = WorkAreaState.IDLE
                 self.setup_side = None
+                self.home_sent = False
 
                 # Lower all stops
                 self.h.left_stops = False
                 self.h.right_stops = False
                 self.h.front_stops = False
-                self.h.work_area_setup = False  # Clear setup mode output
+                self.h.work_area_setup = False
+                self.h.home_command = False
 
         # Update button state tracking
         self.last_left_button = left_button

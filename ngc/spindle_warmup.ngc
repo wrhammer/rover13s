@@ -1,0 +1,24 @@
+(Spindle Warm-up Program)
+(Follows Biesse manual recommendations)
+(50% for 2 min, 75% for 2 min, 100% for 1 min)
+
+G21 G40 G90 G94 G97 G64 P0.025
+G0 Z50.0
+G0 X0 Y0
+
+(Start spindle at 50% speed - 12000 RPM)
+M3 S12000
+G4 P120.0 (Dwell for 2 minutes)
+
+(Increase to 75% speed - 18000 RPM)
+M3 S18000
+G4 P120.0 (Dwell for 2 minutes)
+
+(Increase to 100% speed - 24000 RPM)
+M3 S24000
+G4 P60.0 (Dwell for 1 minute)
+
+(Stop spindle)
+M5
+
+M2 

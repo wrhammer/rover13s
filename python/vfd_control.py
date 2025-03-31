@@ -13,16 +13,20 @@ class VFDControl:
         self.h.newpin("motor_stopped", hal.HAL_BIT, hal.HAL_IN)     # Motor stopped feedback
         self.h.newpin("vfd_overload", hal.HAL_BIT, hal.HAL_IN)      # VFD overload signal
         self.h.newpin("reset_button", hal.HAL_BIT, hal.HAL_IN)      # Manual reset button
+        self.h.newpin("spindle_speed", hal.HAL_FLOAT, hal.HAL_IN)   # Commanded spindle speed
         
         # Output pins
         self.h.newpin("vfd_run", hal.HAL_BIT, hal.HAL_OUT)          # VFD run command
         self.h.newpin("vfd_reset", hal.HAL_BIT, hal.HAL_OUT)        # VFD reset command
         self.h.newpin("fault_active", hal.HAL_BIT, hal.HAL_OUT)     # Fault status
+        self.h.newpin("vfd_speed", hal.HAL_FLOAT, hal.HAL_OUT)      # Scaled speed output
         
         # Parameters
         self.START_DELAY = 0.5       # Delay before starting VFD (seconds)
         self.RESET_PULSE = 1.0       # Duration of reset pulse (seconds)
         self.STOP_TIMEOUT = 10.0      # Maximum time to wait for motor to stop
+        self.MAX_SPEED = 24000.0     # Maximum spindle speed
+        self.MIN_SPEED = 300.0       # Minimum spindle speed
         
         # State variables
         self.timer_start = 0
@@ -34,6 +38,7 @@ class VFDControl:
         self.h.vfd_run = False
         self.h.vfd_reset = False
         self.h.fault_active = False
+        self.h.vfd_speed = 0.0
         
         self.h.ready()
     
@@ -52,6 +57,13 @@ class VFDControl:
             self.is_resetting = False
             self.h.fault_active = False
     
+    def scale_speed(self, speed):
+        """Scale the spindle speed to VFD range"""
+        # Ensure speed is within limits
+        speed = max(self.MIN_SPEED, min(self.MAX_SPEED, speed))
+        # Scale to 0-100% for VFD
+        return (speed / self.MAX_SPEED) * 100.0
+    
     def update(self):
         current_time = time.time()
         
@@ -65,6 +77,7 @@ class VFDControl:
         if fault_detected:
             self.h.vfd_run = False
             self.h.fault_active = True
+            self.h.vfd_speed = 0.0
         else:
             self.h.fault_active = False
         
@@ -78,8 +91,11 @@ class VFDControl:
                 self.timer_start = current_time
             elif current_time - self.timer_start >= self.START_DELAY:
                 self.h.vfd_run = True
+                # Scale and output the speed
+                self.h.vfd_speed = self.scale_speed(self.h.spindle_speed)
         else:
             self.h.vfd_run = False
+            self.h.vfd_speed = 0.0
             self.timer_start = 0
             
             # Check motor stop timeout

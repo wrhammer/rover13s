@@ -136,4 +136,7 @@ net spindle-on          	vfd_control.spindle_on
 # Vacuum control connections
 net work-area-setup			work_area.work_area_setup			vacuum.work_area_setup			machine_enable.work_area_setup
 
+# Home command connection
+net home-command			work_area.home_command				halui.home-all
+
 
