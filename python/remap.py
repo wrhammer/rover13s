@@ -179,18 +179,16 @@ def remap_m6(self, **params):
             # cause a sync()
             self.set_tool_parameters()
             self.toolchange_flag = True
-            # Force sync to update tool information
-            self.sync()
         else:
-            # For all other tools (T1-T19), skip manual confirmation
+            # For all other tools (T1-T19), use emccanon.CHANGE_TOOL() for proper sync
+            self.selected_pocket = tool_number
+            emccanon.CHANGE_TOOL()
             self.current_tool = tool_number
             self.current_pocket = tool_number
             self.selected_pocket = -1
             self.selected_tool = -1
             self.set_tool_parameters()
             self.toolchange_flag = True
-            # Force sync to update tool information
-            self.sync()
 
         # --- Activate New Tool ---
         if tool_number == 20:  # Router is now T20
