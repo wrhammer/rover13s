@@ -33,6 +33,8 @@ class VFDControl:
         self.reset_timer = 0
         self.is_resetting = False
         self.last_reset_button = False
+        self.last_spindle_on = False
+        self.last_spindle_speed = 0.0
         
         # Initialize outputs
         self.h.vfd_run = False
@@ -40,6 +42,7 @@ class VFDControl:
         self.h.fault_active = False
         self.h.vfd_speed = 0.0
         
+        print("VFD Control initialized")
         self.h.ready()
     
     def check_faults(self):
@@ -49,10 +52,12 @@ class VFDControl:
     def handle_reset(self, current_time):
         """Handle VFD reset sequence"""
         if not self.is_resetting:
+            print("Starting VFD reset sequence")
             self.reset_timer = current_time
             self.is_resetting = True
             self.h.vfd_reset = True
         elif current_time - self.reset_timer >= self.RESET_PULSE:
+            print("VFD reset sequence complete")
             self.h.vfd_reset = False
             self.is_resetting = False
             self.h.fault_active = False
@@ -62,38 +67,42 @@ class VFDControl:
         # Ensure speed is within limits
         speed = max(self.MIN_SPEED, min(self.MAX_SPEED, speed))
         # Scale to 0-100% for VFD
-        return (speed / self.MAX_SPEED) * 100.0
+        scaled = (speed / self.MAX_SPEED) * 100.0
+        print(f"Speed scaling: {speed} RPM -> {scaled:.1f}%")
+        return scaled
     
     def update(self):
         current_time = time.time()
         
         # Check for faults
         fault_detected = self.check_faults()
-        
-        # Handle reset button
-        reset_button_pressed = self.h.reset_button
-        reset_button_rising_edge = reset_button_pressed and not self.last_reset_button
-        
         if fault_detected:
+            print(f"VFD fault detected: vfd_fault={self.h.vfd_fault}, vfd_overload={self.h.vfd_overload}")
             self.h.vfd_run = False
             self.h.fault_active = True
             self.h.vfd_speed = 0.0
         else:
             self.h.fault_active = False
         
-        # Handle reset sequence on button press
+        # Handle reset button
+        reset_button_pressed = self.h.reset_button
+        reset_button_rising_edge = reset_button_pressed and not self.last_reset_button
+        
         if reset_button_rising_edge and fault_detected and not self.is_resetting:
             self.handle_reset(current_time)
         
         # Normal operation
         if self.h.spindle_on and not self.h.fault_active:
             if self.timer_start == 0:
+                print(f"Starting spindle at {self.h.spindle_speed} RPM")
                 self.timer_start = current_time
             elif current_time - self.timer_start >= self.START_DELAY:
                 self.h.vfd_run = True
                 # Scale and output the speed
                 self.h.vfd_speed = self.scale_speed(self.h.spindle_speed)
         else:
+            if self.h.vfd_run:  # Only print when stopping
+                print("Stopping spindle")
             self.h.vfd_run = False
             self.h.vfd_speed = 0.0
             self.timer_start = 0
@@ -103,6 +112,7 @@ class VFDControl:
                 if self.timer_start == 0:
                     self.timer_start = current_time
                 elif current_time - self.timer_start >= self.STOP_TIMEOUT:
+                    print("Motor stop timeout - setting fault")
                     self.h.fault_active = True
         
         # Update button state tracking
