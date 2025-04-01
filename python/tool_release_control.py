@@ -18,7 +18,6 @@ class ToolReleaseControl:
         self.h.newpin("release_button", hal.HAL_BIT, hal.HAL_IN)     # Button input
         self.h.newpin("tool_released", hal.HAL_BIT, hal.HAL_IN)      # Feedback that tool is released
         self.h.newpin("tool_locked", hal.HAL_BIT, hal.HAL_IN)        # Feedback that tool is locked
-        self.h.newpin("override_safety", hal.HAL_BIT, hal.HAL_IN)    # Override safety checks (for maintenance)
         
         # Output pins
         self.h.newpin("release_tool", hal.HAL_BIT, hal.HAL_OUT)      # Release tool output

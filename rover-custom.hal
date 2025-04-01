@@ -69,7 +69,9 @@ net router-is-down			hm2_7i94.0.7i84.0.0.input-03		motion.digital-in-03
 net tool-locked-present		hm2_7i94.0.7i84.0.0.input-04		motion.digital-in-04 			tool_release.tool_locked
 net tool-released			hm2_7i94.0.7i84.0.0.input-05		tool_release.tool_released
 net release-tool-btn		hm2_7i94.0.7i84.0.0.input-06		tool_release.release_button
-net override-safety			hm2_7i94.0.7i84.0.0.input-09		tool_release.override_safety
+net x-safe-zone				hm2_7i94.0.7i84.0.0.input-07
+net y-safe-zone				hm2_7i94.0.7i84.0.0.input-08
+
 
 			# TB1 OUTPUTS #
 # Tools 1-5 (used in T18 - Vertical Y Spindles)
