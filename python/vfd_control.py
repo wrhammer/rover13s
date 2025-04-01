@@ -16,7 +16,7 @@ class VFDControl:
         self.h.newpin("spindle_speed", hal.HAL_FLOAT, hal.HAL_IN)   # Commanded spindle speed
         
         # Output pins
-        self.h.newpin("vfd_run", hal.HAL_BIT, hal.HAL_OUT)          # VFD run command
+        self.h.newpin("vfd_run", hal.HAL_BIT, hal.HAL_OUT)          # VFD run command (vfd-call-to-run)
         self.h.newpin("vfd_reset", hal.HAL_BIT, hal.HAL_OUT)        # VFD reset command
         self.h.newpin("fault_active", hal.HAL_BIT, hal.HAL_OUT)     # Fault status
         self.h.newpin("vfd_speed", hal.HAL_FLOAT, hal.HAL_OUT)      # Scaled speed output
@@ -97,9 +97,10 @@ class VFDControl:
                 print(f"Starting spindle at {self.h.spindle_speed} RPM")
                 self.timer_start = current_time
             elif current_time - self.timer_start >= self.START_DELAY:
+                # Set both the run command and speed
                 self.h.vfd_run = True
-                # Scale and output the speed
                 self.h.vfd_speed = self.scale_speed(self.h.spindle_speed)
+                print(f"VFD enabled: run={self.h.vfd_run}, speed={self.h.vfd_speed:.1f}%")
         else:
             if self.h.vfd_run:  # Only print when stopping
                 print("Stopping spindle")

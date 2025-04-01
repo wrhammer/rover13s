@@ -130,10 +130,6 @@ net off-suction				hm2_7i94.0.7i84.0.2.output-05		vacuum.suction_off
 net frnt-stops				hm2_7i94.0.7i84.0.2.output-06		work_area.front_stops
 net up-suction				hm2_7i94.0.7i84.0.2.output-07		vacuum.suction_up
 
-# Machine control connections
-net spindle-on          	spindle.0.on			vfd_control.spindle_on
-net spindle-speed      	spindle.0.speed-out-abs	vfd_control.spindle_speed
-net vfd-speed         	vfd_control.vfd_speed	hm2_7i96s.0.7i77.0.1.analogout4
 
 # Vacuum control connections
 net work-area-setup			work_area.work_area_setup			vacuum.work_area_setup			machine_enable.work_area_setup
