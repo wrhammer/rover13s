@@ -35,6 +35,7 @@ class VFDControl:
         self.last_reset_button = False
         self.last_spindle_on = False
         self.last_spindle_speed = 0.0
+        self.has_tried_start = False  # Track if we've tried to start the VFD
         
         # Initialize outputs
         self.h.vfd_run = False
@@ -47,6 +48,9 @@ class VFDControl:
     
     def check_faults(self):
         """Check for VFD faults"""
+        # Only check overload if we've tried to start the VFD
+        if not self.has_tried_start:
+            return self.h.vfd_fault
         return self.h.vfd_fault or self.h.vfd_overload
     
     def handle_reset(self, current_time):
@@ -61,6 +65,7 @@ class VFDControl:
             self.h.vfd_reset = False
             self.is_resetting = False
             self.h.fault_active = False
+            self.has_tried_start = False  # Reset the start attempt flag
     
     def scale_speed(self, speed):
         """Scale the spindle speed to VFD range"""
@@ -100,6 +105,7 @@ class VFDControl:
                 # Set both the run command and speed
                 self.h.vfd_run = True
                 self.h.vfd_speed = self.scale_speed(self.h.spindle_speed)
+                self.has_tried_start = True  # Mark that we've tried to start
                 print(f"VFD enabled: run={self.h.vfd_run}, speed={self.h.vfd_speed:.1f}%")
         else:
             if self.h.vfd_run:  # Only print when stopping
@@ -125,7 +131,7 @@ def main():
     try:
         while True:
             vfd.update()
-            time.sleep(0.1)  # 100ms update rate
+            time.sleep(1.0)  # 100ms update rate
             
     except KeyboardInterrupt:
         raise SystemExit
