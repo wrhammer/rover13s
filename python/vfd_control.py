@@ -11,7 +11,7 @@ class VFDControl:
         self.h.newpin("spindle_on", hal.HAL_BIT, hal.HAL_IN)        # Command to run spindle
         self.h.newpin("vfd_fault", hal.HAL_BIT, hal.HAL_IN)         # VFD fault input
         self.h.newpin("motor_stopped", hal.HAL_BIT, hal.HAL_IN)     # Motor stopped feedback
-        self.h.newpin("vfd_overload", hal.HAL_BIT, hal.HAL_IN)      # VFD overload signal
+        self.h.newpin("vfd_overload", hal.HAL_BIT, hal.HAL_IN)      # VFD overload signal (disabled for now)
         self.h.newpin("reset_button", hal.HAL_BIT, hal.HAL_IN)      # Manual reset button
         self.h.newpin("spindle_speed", hal.HAL_FLOAT, hal.HAL_IN)   # Commanded spindle speed
         
@@ -35,7 +35,6 @@ class VFDControl:
         self.last_reset_button = False
         self.last_spindle_on = False
         self.last_spindle_speed = 0.0
-        self.has_tried_start = False  # Track if we've tried to start the VFD
         
         # Initialize outputs
         self.h.vfd_run = False
@@ -48,10 +47,8 @@ class VFDControl:
     
     def check_faults(self):
         """Check for VFD faults"""
-        # Only check overload if we've tried to start the VFD
-        if not self.has_tried_start:
-            return self.h.vfd_fault
-        return self.h.vfd_fault or self.h.vfd_overload
+        # Only check VFD fault signal, ignore overload for now
+        return self.h.vfd_fault
     
     def handle_reset(self, current_time):
         """Handle VFD reset sequence"""
@@ -65,7 +62,6 @@ class VFDControl:
             self.h.vfd_reset = False
             self.is_resetting = False
             self.h.fault_active = False
-            self.has_tried_start = False  # Reset the start attempt flag
     
     def scale_speed(self, speed):
         """Scale the spindle speed to VFD range"""
@@ -82,7 +78,7 @@ class VFDControl:
         # Check for faults
         fault_detected = self.check_faults()
         if fault_detected:
-            print(f"VFD fault detected: vfd_fault={self.h.vfd_fault}, vfd_overload={self.h.vfd_overload}")
+            print(f"VFD fault detected: vfd_fault={self.h.vfd_fault}")
             self.h.vfd_run = False
             self.h.fault_active = True
             self.h.vfd_speed = 0.0
@@ -105,7 +101,6 @@ class VFDControl:
                 # Set both the run command and speed
                 self.h.vfd_run = True
                 self.h.vfd_speed = self.scale_speed(self.h.spindle_speed)
-                self.has_tried_start = True  # Mark that we've tried to start
                 print(f"VFD enabled: run={self.h.vfd_run}, speed={self.h.vfd_speed:.1f}%")
         else:
             if self.h.vfd_run:  # Only print when stopping
@@ -131,7 +126,7 @@ def main():
     try:
         while True:
             vfd.update()
-            time.sleep(1.0)  # 100ms update rate
+            time.sleep(0.1)  # 100ms update rate
             
     except KeyboardInterrupt:
         raise SystemExit
