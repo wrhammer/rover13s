@@ -138,7 +138,5 @@ net vfd-speed         	vfd_control.vfd_speed	hm2_7i96s.0.7i77.0.1.analogout4
 # Vacuum control connections
 net work-area-setup			work_area.work_area_setup			vacuum.work_area_setup			machine_enable.work_area_setup
 
-# Home command connection
-net home-command			work_area.home_command				halui.home-all
 
 
