@@ -19,7 +19,7 @@ class VFDControl:
         self.h.newpin("vfd_run", hal.HAL_BIT, hal.HAL_OUT)          # VFD run command (vfd-call-to-run)
         self.h.newpin("vfd_reset", hal.HAL_BIT, hal.HAL_OUT)        # VFD reset command
         self.h.newpin("fault_active", hal.HAL_BIT, hal.HAL_OUT)     # Fault status
-        self.h.newpin("vfd_speed", hal.HAL_FLOAT, hal.HAL_OUT)      # Scaled speed output (0-10V)
+        self.h.newpin("vfd_speed", hal.HAL_FLOAT, hal.HAL_OUT)      # Scaled speed output (RPM)
         
         # Parameters
         self.START_DELAY = 0.5       # Delay before starting VFD (seconds)
@@ -27,7 +27,6 @@ class VFDControl:
         self.STOP_TIMEOUT = 10.0      # Maximum time to wait for motor to stop
         self.MAX_SPEED = 24000.0     # Maximum spindle speed
         self.MIN_SPEED = 300.0       # Minimum spindle speed
-        self.MAX_VOLTAGE = 10.0      # Maximum output voltage (10V)
         
         # State variables
         self.timer_start = 0
@@ -65,13 +64,11 @@ class VFDControl:
             self.h.fault_active = False
     
     def scale_speed(self, speed):
-        """Scale the spindle speed to VFD voltage range (0-10V)"""
+        """Scale the spindle speed to RPM range"""
         # Ensure speed is within limits
         speed = max(self.MIN_SPEED, min(self.MAX_SPEED, speed))
-        # Scale to 0-10V for VFD
-        scaled = (speed / self.MAX_SPEED) * self.MAX_VOLTAGE
-        print(f"Speed scaling: {speed} RPM -> {scaled:.2f}V")
-        return scaled
+        print(f"Speed scaling: {speed} RPM")
+        return speed
     
     def update(self):
         current_time = time.time()
@@ -102,7 +99,7 @@ class VFDControl:
                 # Set both the run command and speed
                 self.h.vfd_run = True
                 self.h.vfd_speed = self.scale_speed(self.h.spindle_speed)
-                print(f"VFD enabled: run={self.h.vfd_run}, speed={self.h.vfd_speed:.2f}V")
+                print(f"VFD enabled: run={self.h.vfd_run}, speed={self.h.vfd_speed:.0f} RPM")
         else:
             if self.h.vfd_run:  # Only print when stopping
                 print("Stopping spindle")
