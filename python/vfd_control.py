@@ -2,6 +2,7 @@
 
 import hal
 import time
+import os
 
 class VFDControl:
     def __init__(self):
@@ -25,8 +26,30 @@ class VFDControl:
         self.START_DELAY = 0.5       # Delay before starting VFD (seconds)
         self.RESET_PULSE = 1.0       # Duration of reset pulse (seconds)
         self.STOP_TIMEOUT = 10.0      # Maximum time to wait for motor to stop
-        self.MAX_SPEED = 24000.0     # Maximum spindle speed
-        self.MIN_SPEED = 300.0       # Minimum spindle speed
+        
+        # Read spindle speed limits from INI file
+        try:
+            # Get the config directory from the environment
+            config_dir = os.environ.get('LINUXCNC_CONFIG_DIR', '')
+            if not config_dir:
+                print("Warning: LINUXCNC_CONFIG_DIR not set, using default speed limits")
+                self.MAX_SPEED = 24000.0
+                self.MIN_SPEED = 300.0
+            else:
+                ini_file = os.path.join(config_dir, 'Rover13s.ini')
+                with open(ini_file, 'r') as f:
+                    for line in f:
+                        if line.startswith('MAX_SPINDLE_0_SPEED'):
+                            self.MAX_SPEED = float(line.split('=')[1].strip())
+                        elif line.startswith('MIN_SPINDLE_0_SPEED'):
+                            self.MIN_SPEED = float(line.split('=')[1].strip())
+                
+                print(f"Loaded speed limits from INI: MIN={self.MIN_SPEED:.0f}, MAX={self.MAX_SPEED:.0f}")
+        except Exception as e:
+            print(f"Warning: Failed to read speed limits from INI: {e}")
+            print("Using default speed limits")
+            self.MAX_SPEED = 24000.0
+            self.MIN_SPEED = 300.0
         
         # State variables
         self.timer_start = 0

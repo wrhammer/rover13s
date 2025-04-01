@@ -139,7 +139,7 @@ def remap_m6(self, **params):
                 print("Raising Router (P14)")
                 self.execute("M64 P14")
                 yield INTERP_EXECUTE_FINISH
-                time.sleep(3)
+                time.sleep(2)
                 self.execute("M65 P14")
                 yield INTERP_EXECUTE_FINISH
 
@@ -147,7 +147,7 @@ def remap_m6(self, **params):
                 print("Raising Saw Blade (P15)")
                 self.execute("M64 P15")
                 yield INTERP_EXECUTE_FINISH
-                time.sleep(3)
+                time.sleep(2)
                 self.execute("M65 P15")
                 yield INTERP_EXECUTE_FINISH
 
