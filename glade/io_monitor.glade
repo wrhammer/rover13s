@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="3.0"/>
+  <requires lib="hal" version="1.0"/>
   <object class="GtkWindow" id="window1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -42,7 +43,7 @@
                     <property name="led_blink_rate">0</property>
                     <property name="pick_color_on">#4CAF50</property>
                     <property name="pick_color_off">#B71C1C</property>
-                    <property name="hal_pin">work_area.left_button</property>
+                    <property name="hal_pin_name">work_area.left_button</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -72,7 +73,7 @@
                     <property name="led_blink_rate">0</property>
                     <property name="pick_color_on">#00FF00</property>
                     <property name="pick_color_off">#FF0000</property>
-                    <property name="hal_pin">work_area.right_button</property>
+                    <property name="hal_pin_name">work_area.right_button</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -99,7 +100,7 @@
                     <property name="led_blink_rate">0</property>
                     <property name="pick_color_on">#00FF00</property>
                     <property name="pick_color_off">#FF0000</property>
-                    <property name="hal_pin">vacuum.vacuum_ok</property>
+                    <property name="hal_pin_name">vacuum.vacuum_ok</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -145,7 +146,7 @@
                     <property name="led_blink_rate">0</property>
                     <property name="pick_color_on">#00FF00</property>
                     <property name="pick_color_off">#FF0000</property>
-                    <property name="hal_pin">tool_release.tool_locked</property>
+                    <property name="hal_pin_name">tool_release.tool_locked</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -172,7 +173,7 @@
                     <property name="led_blink_rate">0</property>
                     <property name="pick_color_on">#00FF00</property>
                     <property name="pick_color_off">#FF0000</property>
-                    <property name="hal_pin">work_area.x_safe</property>
+                    <property name="hal_pin_name">work_area.x_safe</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -199,7 +200,7 @@
                     <property name="led_blink_rate">0</property>
                     <property name="pick_color_on">#00FF00</property>
                     <property name="pick_color_off">#FF0000</property>
-                    <property name="hal_pin">work_area.y_safe</property>
+                    <property name="hal_pin_name">work_area.y_safe</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
