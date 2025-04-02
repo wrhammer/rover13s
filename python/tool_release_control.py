@@ -3,6 +3,15 @@
 import hal
 import time
 from enum import Enum
+import logging
+
+# Set up logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filename='logs/tool_release.log'
+)
+logger = logging.getLogger('tool_release')
 
 class ToolState(Enum):
     IDLE = 0
@@ -13,6 +22,7 @@ class ToolState(Enum):
 class ToolReleaseControl:
     def __init__(self):
         self.h = hal.component("tool_release")
+        logger.info("Initializing tool release component")
         
         # Input pins
         self.h.newpin("release_button", hal.HAL_BIT, hal.HAL_IN)     # Button input
@@ -40,6 +50,7 @@ class ToolReleaseControl:
         self.h.error_active = False
         
         self.h.ready()
+        logger.info("Tool release component ready")
     
     def check_timeout(self):
         """Check if current operation has timed out"""
@@ -47,6 +58,7 @@ class ToolReleaseControl:
     
     def handle_error(self):
         """Set error state and safe outputs"""
+        logger.error("Operation timed out - entering error state")
         self.state = ToolState.ERROR
         self.h.error_active = True
         self.h.release_tool = False
@@ -59,9 +71,16 @@ class ToolReleaseControl:
         button_falling_edge = not button_pressed and self.last_button_state
         current_time = time.time()
         
+        # Log state changes
+        if button_rising_edge:
+            logger.debug(f"Button pressed - current state: {self.state.name}")
+        if button_falling_edge:
+            logger.debug(f"Button released - current state: {self.state.name}")
+        
         # State machine
         if self.state == ToolState.IDLE:
             if button_rising_edge:
+                logger.info("Starting tool release sequence")
                 self.state = ToolState.RELEASING
                 self.h.release_tool = True
                 self.h.lock_tool = False
@@ -70,6 +89,7 @@ class ToolReleaseControl:
         
         elif self.state == ToolState.RELEASING:
             if button_falling_edge:
+                logger.info("Starting tool lock sequence")
                 self.state = ToolState.LOCKING
                 self.h.release_tool = False
                 self.h.lock_tool = True
@@ -79,6 +99,7 @@ class ToolReleaseControl:
         
         elif self.state == ToolState.LOCKING:
             if self.h.tool_locked:
+                logger.info("Tool locked successfully")
                 self.state = ToolState.IDLE
             elif self.check_timeout():
                 self.handle_error()
@@ -89,6 +110,7 @@ class ToolReleaseControl:
                 if self.error_reset_time == 0:
                     self.error_reset_time = current_time
                 elif current_time - self.error_reset_time >= self.ERROR_RESET_TIME:
+                    logger.info("Error state reset")
                     self.state = ToolState.IDLE
                     self.h.error_active = False
             else:
@@ -99,6 +121,7 @@ class ToolReleaseControl:
 
 def main():
     tool_control = ToolReleaseControl()
+    logger.info("Tool release control started")
     
     try:
         while True:
@@ -106,6 +129,7 @@ def main():
             time.sleep(0.1)  # 100ms update rate
             
     except KeyboardInterrupt:
+        logger.info("Tool release control stopped")
         raise SystemExit
 
 if __name__ == "__main__":
