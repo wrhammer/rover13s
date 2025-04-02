@@ -287,7 +287,7 @@ net tooloffset-z  <=  motion.tooloffset.z
 net tool-prepare-loopback   iocontrol.0.tool-prepare      =>  iocontrol.0.tool-prepared
 
 # Machine Timers connections
-net current-tool iocontrol.0.current-tool => machine_timers.current_tool 
+net current-tool iocontrol.tool-number => machine_timers.current_tool 
 
 
 
