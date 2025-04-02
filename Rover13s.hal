@@ -14,7 +14,7 @@ loadusr -Wn work_area python3 python/work_area_control.py
 loadusr -Wn vfd_control python3 python/vfd_control.py
 loadusr -Wn tool_release python3 python/tool_release_control.py
 loadusr -Wn vacuum python3 python/vacuum_control.py
-# loadusr -Wn machine_timers python3 python/machine_timers.py
+loadusr -Wn machine_timers python3 python/machine_timers.py
 
 setp    [HMOT](CARD0).pwmgen.pwm_frequency 20000
 setp    [HMOT](CARD0).pwmgen.pdm_frequency 6000000
@@ -287,8 +287,7 @@ net tooloffset-z  <=  motion.tooloffset.z
 net tool-prepare-loopback   iocontrol.0.tool-prepare      =>  iocontrol.0.tool-prepared
 
 # Machine Timers connections
-net machine-running => machine_timers.machine_running
-net current-tool iocontrol.current-tool => machine_timers.current_tool 
+net current-tool iocontrol.0.current-tool => machine_timers.current_tool 
 
 
 
