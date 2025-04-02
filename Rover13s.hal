@@ -226,7 +226,8 @@ setp   hm2_7i96s.0.7i77.0.1.analogout4-minlim    [SPINDLE_0]OUTPUT_MIN_LIMIT
 setp   hm2_7i96s.0.7i77.0.1.analogout4-maxlim    [SPINDLE_0]OUTPUT_MAX_LIMIT
 
 # Spindle connections - connect to spindle_on pin
-net spindle-on 	    spindle.0.on			    hm2_7i96s.0.7i77.0.1.spinena	    vfd_control.spindle_on      machine_timers.spindle_on
+net spindle-on 	    spindle.0.on			    hm2_7i96s.0.7i77.0.1.spinena	    vfd_control.spindle_on      
+#machine_timers.spindle_on
 net spindle-speed 	spindle.0.speed-out-abs 	vfd_control.spindle_speed
 net vfd-speed 	    vfd_control.vfd_speed 	    hm2_7i96s.0.7i77.0.1.analogout4
 
@@ -287,8 +288,8 @@ net tooloffset-z  <=  motion.tooloffset.z
 net tool-prepare-loopback   iocontrol.0.tool-prepare      =>  iocontrol.0.tool-prepared
 
 # Machine Timers connections
-net machine-running => machine_timers.machine_running
-net current-tool => machine_timers.current_tool
+# net machine-running => machine_timers.machine_running
+# net current-tool => machine_timers.current_tool
 
 
 
