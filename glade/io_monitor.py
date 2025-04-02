@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import hal
-import gtk
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GLib
 import gladevcp
 import os
 
@@ -13,7 +15,7 @@ class HandlerClass:
         self.window = self.builder.get_object('window1')
         
         # Create a notebook (tab container)
-        self.notebook = gtk.Notebook()
+        self.notebook = Gtk.Notebook()
         self.notebook.set_show_tabs(True)
         self.notebook.set_show_border(True)
         
@@ -21,16 +23,18 @@ class HandlerClass:
         self.io_monitor_box = self.builder.get_object('io_monitor_box')
         
         # Create a scrolled window for the IO monitor
-        self.scrolled_window = gtk.ScrolledWindow()
-        self.scrolled_window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.scrolled_window = Gtk.ScrolledWindow()
+        self.scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        
+        # Add the IO monitor box to the scrolled window
         self.scrolled_window.add(self.io_monitor_box)
         
         # Add the IO monitor as the first tab
-        self.notebook.append_page(self.scrolled_window, gtk.Label("IO Monitor"))
+        self.notebook.append_page(self.scrolled_window, Gtk.Label(label="IO Monitor"))
         
         # Create a second tab for future use
-        self.tab2_box = gtk.Box(orientation=gtk.ORIENTATION_VERTICAL)
-        self.tab2_label = gtk.Label("Tab 2")
+        self.tab2_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.tab2_label = Gtk.Label(label="Tab 2")
         self.notebook.append_page(self.tab2_box, self.tab2_label)
         
         # Replace the original box in the window with our notebook
@@ -44,7 +48,7 @@ class HandlerClass:
         self.window.show_all()
         
         # Optional: Set the window position
-        self.window.set_position(gtk.WIN_POS_CENTER)
+        self.window.set_position(Gtk.WindowPosition.CENTER)
         
         # Optional: Make the window resizable
         self.window.set_resizable(True)
@@ -65,7 +69,7 @@ class HandlerClass:
     
     def on_window_destroy(self, widget, data=None):
         """Handle window close button"""
-        gtk.main_quit()
+        Gtk.main_quit()
         return False
     
     def periodic(self):
