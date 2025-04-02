@@ -22,26 +22,26 @@ net spindle-speed gmoccapy.spindle_feedback_bar
 #  ---IO Monitor connections---
 
 # Load the GladeVCP component
-loadusr -W gladevcp -c gladevcp glade/io_monitor.glade
+# loadusr -W gladevcp -c gladevcp glade/io_monitor.glade
 
 # Connect work area buttons
-net left-button <= work_area.left_button
-net right-button <= work_area.right_button
+# net left-button <= work_area.left_button
+# net right-button <= work_area.right_button
 
 # Connect vacuum status
-net vacuum-ok <= vacuum.vacuum_ok
+# net vacuum-ok <= vacuum.vacuum_ok
 
 # Connect tool release status
-net tool-locked <= tool_release.tool_locked
+# net tool-locked <= tool_release.tool_locked
 
 # Connect safe zone indicators
-net x-safe <= work_area.x_safe
-net y-safe <= work_area.y_safe
+# net x-safe <= work_area.x_safe
+# net y-safe <= work_area.y_safe
 
 # Connect to GladeVCP pins
-net left-button => gladevcp.work_area.left_button
-net right-button => gladevcp.work_area.right_button
-net vacuum-ok => gladevcp.vacuum.vacuum_ok
-net tool-locked => gladevcp.tool_release.tool_locked
-net x-safe => gladevcp.work_area.x_safe
-net y-safe => gladevcp.work_area.y_safe
+#net left-button => gladevcp.work_area.left_button
+#net right-button => gladevcp.work_area.right_button
+#net vacuum-ok => gladevcp.vacuum.vacuum_ok
+#net tool-locked => gladevcp.tool_release.tool_locked
+#net x-safe => gladevcp.work_area.x_safe
+#net y-safe => gladevcp.work_area.y_safe
