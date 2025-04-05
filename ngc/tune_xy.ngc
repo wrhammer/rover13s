@@ -1,5 +1,5 @@
 %
-O200 (XY Comprehensive Tuning)
+O200 (XY Advanced Tuning)
 G21 G90 G94 (Metric, Absolute, Feed/Min)
 G54 (Use work coordinate system)
 G1 Z35 F750 (Move to safe Z height at controlled speed)
@@ -13,94 +13,73 @@ G1 Z10 F750 (Slow move down to safe Z position - controlled speed)
 (Switch to relative positioning for tests)
 G91 (Relative positioning)
 
-(Test 1: Short moves at increasing speeds)
-G1 F2000 (33.3 mm/sec)
+(Test 1: High speed short moves)
+G1 F8000 (133.3 mm/sec)
 #1 = 5 (Number of repetitions)
 O201 while [#1 GT 0]
-    G1 X-50 Y-50 (Short diagonal)
-    G1 X50 Y50
+    G1 X-25 Y-25 (Very short diagonal)
+    G1 X25 Y25
     #1 = [#1 - 1]
 O201 endwhile
 G4 P1 (Pause for 1 second)
 
-G1 F4000 (66.7 mm/sec)
+G1 F10000 (166.7 mm/sec)
 #1 = 5
 O202 while [#1 GT 0]
-    G1 X-50 Y-50
-    G1 X50 Y50
+    G1 X-25 Y-25
+    G1 X25 Y25
     #1 = [#1 - 1]
 O202 endwhile
 G4 P1
 
+(Test 2: Complex patterns at medium speed)
 G1 F6000 (100 mm/sec)
-#1 = 5
+#1 = 3
 O203 while [#1 GT 0]
+    (Star pattern)
     G1 X-50 Y-50
+    G1 X50 Y-50
+    G1 X-50 Y50
     G1 X50 Y50
+    G1 X-50 Y-50
     #1 = [#1 - 1]
 O203 endwhile
 G4 P1
 
-(Test 2: Long moves at increasing speeds)
-G1 F2000 (33.3 mm/sec)
-#1 = 5
+(Test 3: Cornering tests)
+G1 F6000 (100 mm/sec)
+#1 = 3
 O204 while [#1 GT 0]
-    G1 X-100 Y-100 (Long diagonal)
-    G1 X100 Y100
+    (Sharp corners)
+    G1 X-100
+    G1 Y-100
+    G1 X100
+    G1 Y100
+    G1 X-100
+    G1 Y-100
+    G1 X100
+    G1 Y100
     #1 = [#1 - 1]
 O204 endwhile
 G4 P1
 
-G1 F4000 (66.7 mm/sec)
-#1 = 5
+(Test 4: High speed long moves)
+G1 F8000 (133.3 mm/sec)
+#1 = 3
 O205 while [#1 GT 0]
-    G1 X-100 Y-100
+    G1 X-100 Y-100 (Long diagonal)
     G1 X100 Y100
     #1 = [#1 - 1]
 O205 endwhile
 G4 P1
 
-G1 F6000 (100 mm/sec)
-#1 = 5
+G1 F10000 (166.7 mm/sec)
+#1 = 3
 O206 while [#1 GT 0]
     G1 X-100 Y-100
     G1 X100 Y100
     #1 = [#1 - 1]
 O206 endwhile
-G4 P1
-
-(Test 3: Square pattern at increasing speeds)
-G1 F2000 (33.3 mm/sec)
-#1 = 5
-O207 while [#1 GT 0]
-    G1 X-100 (Left)
-    G1 Y-100 (Down)
-    G1 X100  (Right)
-    G1 Y100  (Up)
-    #1 = [#1 - 1]
-O207 endwhile
-G4 P1
-
-G1 F4000 (66.7 mm/sec)
-#1 = 5
-O208 while [#1 GT 0]
-    G1 X-100
-    G1 Y-100
-    G1 X100
-    G1 Y100
-    #1 = [#1 - 1]
-O208 endwhile
-G4 P1
-
-G1 F6000 (100 mm/sec)
-#1 = 5
-O209 while [#1 GT 0]
-    G1 X-100
-    G1 Y-100
-    G1 X100
-    G1 Y100
-    #1 = [#1 - 1]
-O209 endwhile
 
 (Return to safe position)
 G90 (Back to absolute positioning)
