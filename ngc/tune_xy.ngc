@@ -2,13 +2,13 @@
 O200 (XY Coordination Test)
 G21 G90 G94 (Metric, Absolute, Feed/Min)
 G54 (Use work coordinate system)
-G0 Z50 (Move to safe Z height in work coordinates)
+G1 Z35 F750 (Move to safe Z height at controlled speed)
 
 (Move to start position slowly)
 G1 F2000
 G53 G1 X100 (Slow move to X start position)
 G53 G1 Y100 (Slow move to Y start position)
-G1 Z10  (Slow move down to safe Z position - in work coordinates)
+G1 Z10 F750 (Slow move down to safe Z position - controlled speed)
 
 (Switch to relative positioning for tests)
 G91 (Relative positioning)
@@ -56,6 +56,6 @@ O204 endwhile
 
 (Return to safe position)
 G90 (Back to absolute positioning)
-G0 Z50
+G1 Z35 F750 (Controlled move to safe height)
 M2
 % 
