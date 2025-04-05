@@ -1,0 +1,60 @@
+%
+O200 (XY Coordination Test)
+G21 G90 G94 (Metric, Absolute, Feed/Min)
+G53 G0 Z0 (Move to safe Z height)
+
+(Move to start position slowly)
+G1 F2000
+G53 G1 X100 (Slow move to X start position)
+G53 G1 Y100 (Slow move to Y start position)
+G53 G1 Z20  (Slow move down to safe Z position)
+
+(Switch to relative positioning for tests)
+G91 (Relative positioning)
+
+(Test 1: Slow diagonal moves - 25% of max)
+G1 F2250 (37.5 mm/sec)
+#1 = 5 (Number of repetitions)
+O201 while [#1 GT 0]
+    G1 X-100 Y-100 (Move down and left)
+    G1 X100 Y100   (Move up and right)
+    #1 = [#1 - 1]
+O201 endwhile
+G4 P1 (Pause for 1 second)
+
+(Test 2: Medium diagonal moves - 50% of max)
+G1 F4500 (75 mm/sec)
+#1 = 5
+O202 while [#1 GT 0]
+    G1 X-100 Y-100
+    G1 X100 Y100
+    #1 = [#1 - 1]
+O202 endwhile
+G4 P1
+
+(Test 3: Fast diagonal moves - 75% of max)
+G1 F6750 (112.5 mm/sec)
+#1 = 5
+O203 while [#1 GT 0]
+    G1 X-100 Y-100
+    G1 X100 Y100
+    #1 = [#1 - 1]
+O203 endwhile
+G4 P1
+
+(Test 4: Square pattern at 50% speed)
+G1 F4500 (75 mm/sec)
+#1 = 5
+O204 while [#1 GT 0]
+    G1 X-100 (Left)
+    G1 Y-100 (Down)
+    G1 X100  (Right)
+    G1 Y100  (Up)
+    #1 = [#1 - 1]
+O204 endwhile
+
+(Return to safe position)
+G90 (Back to absolute positioning)
+G53 G0 Z0
+M2
+% 
