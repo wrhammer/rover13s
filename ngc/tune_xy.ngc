@@ -1,5 +1,5 @@
 %
-O200 (XY Circular Interpolation Test)
+O200 (XY Circular Interpolation Test - Vibration Reduction)
 G21 G90 G94 (Metric, Absolute, Feed/Min)
 G54 (Use work coordinate system)
 G1 Z35 F750 (Move to safe Z height at controlled speed)
@@ -13,8 +13,9 @@ G1 Z10 F750 (Slow move down to safe Z position - controlled speed)
 (Switch to relative positioning for tests)
 G91 (Relative positioning)
 
-(Test 1: Small circles at increasing speeds)
-G1 F2000 (33.3 mm/sec)
+(Test 1: Small circles with path blending)
+G64 P0.1 (Enable path blending with 0.1mm tolerance)
+G1 F1500 (25 mm/sec - reduced speed)
 #1 = 3 (Number of repetitions)
 O201 while [#1 GT 0]
     G2 X0 Y0 I25 J0 (25mm radius circle)
@@ -23,7 +24,7 @@ O201 while [#1 GT 0]
 O201 endwhile
 G4 P1 (Pause for 1 second)
 
-G1 F4000 (66.7 mm/sec)
+G1 F2000 (33.3 mm/sec)
 #1 = 3
 O202 while [#1 GT 0]
     G2 X0 Y0 I25 J0
@@ -32,82 +33,67 @@ O202 while [#1 GT 0]
 O202 endwhile
 G4 P1
 
-G1 F6000 (100 mm/sec)
+(Test 2: Medium circles with different radii)
+G1 F1500 (25 mm/sec)
 #1 = 3
 O203 while [#1 GT 0]
-    G2 X0 Y0 I25 J0
-    G3 X0 Y0 I25 J0
+    G2 X0 Y0 I35 J0 (35mm radius - between small and medium)
+    G3 X0 Y0 I35 J0
     #1 = [#1 - 1]
 O203 endwhile
 G4 P1
 
-(Test 2: Medium circles at increasing speeds)
 G1 F2000 (33.3 mm/sec)
 #1 = 3
 O204 while [#1 GT 0]
-    G2 X0 Y0 I50 J0 (50mm radius circle)
-    G3 X0 Y0 I50 J0
+    G2 X0 Y0 I35 J0
+    G3 X0 Y0 I35 J0
     #1 = [#1 - 1]
 O204 endwhile
 G4 P1
 
-G1 F4000 (66.7 mm/sec)
+(Test 3: Large circles with reduced speed)
+G1 F1500 (25 mm/sec)
 #1 = 3
 O205 while [#1 GT 0]
-    G2 X0 Y0 I50 J0
-    G3 X0 Y0 I50 J0
+    G2 X0 Y0 I75 J0 (75mm radius circle)
+    G3 X0 Y0 I75 J0
     #1 = [#1 - 1]
 O205 endwhile
 G4 P1
 
-G1 F6000 (100 mm/sec)
+G1 F2000 (33.3 mm/sec)
 #1 = 3
 O206 while [#1 GT 0]
-    G2 X0 Y0 I50 J0
-    G3 X0 Y0 I50 J0
+    G2 X0 Y0 I75 J0
+    G3 X0 Y0 I75 J0
     #1 = [#1 - 1]
 O206 endwhile
 G4 P1
 
-(Test 3: Large circles at increasing speeds)
-G1 F2000 (33.3 mm/sec)
+(Test 4: Complex patterns with path blending)
+G64 P0.2 (Increase path blending tolerance)
+G1 F1500 (25 mm/sec)
 #1 = 3
 O207 while [#1 GT 0]
-    G2 X0 Y0 I75 J0 (75mm radius circle)
-    G3 X0 Y0 I75 J0
-    #1 = [#1 - 1]
-O207 endwhile
-G4 P1
-
-G1 F4000 (66.7 mm/sec)
-#1 = 3
-O208 while [#1 GT 0]
-    G2 X0 Y0 I75 J0
-    G3 X0 Y0 I75 J0
-    #1 = [#1 - 1]
-O208 endwhile
-G4 P1
-
-G1 F6000 (100 mm/sec)
-#1 = 3
-O209 while [#1 GT 0]
-    G2 X0 Y0 I75 J0
-    G3 X0 Y0 I75 J0
-    #1 = [#1 - 1]
-O209 endwhile
-G4 P1
-
-(Test 4: Complex arc patterns)
-G1 F4000 (66.7 mm/sec)
-#1 = 3
-O210 while [#1 GT 0]
     (Figure 8 pattern)
     G2 X0 Y0 I25 J0
     G3 X0 Y0 I25 J0
     G2 X0 Y0 I-25 J0
     G3 X0 Y0 I-25 J0
     #1 = [#1 - 1]
-O210 endwhile
+O207 endwhile
+G4 P1
+
+G1 F2000 (33.3 mm/sec)
+#1 = 3
+O208 while [#1 GT 0]
+    G2 X0 Y0 I25 J0
+    G3 X0 Y0 I25 J0
+    G2 X0 Y0 I-25 J0
+    G3 X0 Y0 I-25 J0
+    #1 = [#1 - 1]
+O208 endwhile
 
 (Return to safe position)
 G90 (Back to absolute positioning)
