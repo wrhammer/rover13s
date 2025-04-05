@@ -1,0 +1,24 @@
+2025-04-02 15:22:07 - TOOL_CHANGE: From: 1, To: 20, Duration: 272.9s
+2025-04-02 15:27:09 - TOOL_CHANGE: From: 20, To: 1, Duration: 301.8s
+2025-04-02 15:29:39 - TOOL_CHANGE: From: 1, To: 20, Duration: 150.7s
+2025-04-02 15:31:56 - TOOL_CHANGE: From: 20, To: 1, Duration: 136.9s
+2025-04-02 15:40:27 - TOOL_CHANGE: From: 1, To: 20, Duration: 210.3s
+2025-04-02 15:43:01 - TOOL_CHANGE: From: 20, To: 1, Duration: 153.7s
+2025-04-02 15:45:33 - TOOL_CHANGE: From: 1, To: 19, Duration: 151.7s
+2025-04-02 15:48:51 - TOOL_CHANGE: From: 19, To: 1, Duration: 198.0s
+2025-04-02 15:51:01 - TOOL_CHANGE: From: 1, To: 19, Duration: 39.2s
+2025-04-02 15:55:43 - TOOL_CHANGE: From: 19, To: 1, Duration: 16.3s
+2025-04-02 15:56:07 - TOOL_CHANGE: From: 1, To: 19, Duration: 24.1s
+2025-04-02 17:19:24 - TOOL_CHANGE: From: 19, To: 1, Duration: 8.8s
+2025-04-02 18:41:04 - SPINDLE_START: Tool: 1
+2025-04-02 18:41:36 - SPINDLE_STOP: Duration: 31.6s, Tool: 1
+2025-04-02 18:41:45 - SPINDLE_START: Tool: 1
+2025-04-02 18:42:30 - SPINDLE_STOP: Duration: 44.6s, Tool: 1
+2025-04-02 18:46:24 - TOOL_CHANGE: From: 1, To: 20, Duration: 390.4s
+2025-04-02 18:46:47 - SPINDLE_START: Tool: 20
+2025-04-02 18:51:47 - SPINDLE_STOP: Duration: 300.0s, Tool: 20
+2025-04-02 19:12:19 - SPINDLE_START: Tool: 20
+2025-04-02 19:16:03 - SPINDLE_STOP: Duration: 224.2s, Tool: 20
+2025-04-02 19:16:23 - TOOL_CHANGE: From: 20, To: 1, Duration: 281.4s
+2025-04-02 19:16:52 - TOOL_CHANGE: From: 1, To: 20, Duration: 29.4s
+2025-04-02 19:17:32 - TOOL_CHANGE: From: 20, To: 1, Duration: 39.6s

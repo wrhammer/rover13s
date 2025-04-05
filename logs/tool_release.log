@@ -1,0 +1,186 @@
+2025-04-02 15:16:35,947 - tool_release - INFO - Initializing tool release component
+2025-04-02 15:16:35,947 - tool_release - INFO - Tool release component ready
+2025-04-02 15:16:35,947 - tool_release - INFO - Tool release control started
+2025-04-02 15:16:53,759 - tool_release - DEBUG - Button pressed - current state: IDLE
+2025-04-02 15:16:53,759 - tool_release - INFO - Starting tool release sequence
+2025-04-02 15:16:54,159 - tool_release - DEBUG - Button released - current state: RELEASING
+2025-04-02 15:16:54,160 - tool_release - INFO - Starting tool lock sequence
+2025-04-02 15:16:54,460 - tool_release - INFO - Tool locked successfully
+2025-04-02 15:16:54,860 - tool_release - DEBUG - Button pressed - current state: IDLE
+2025-04-02 15:16:54,860 - tool_release - INFO - Starting tool release sequence
+2025-04-02 15:16:55,561 - tool_release - DEBUG - Button released - current state: RELEASING
+2025-04-02 15:16:55,561 - tool_release - INFO - Starting tool lock sequence
+2025-04-02 15:16:55,861 - tool_release - INFO - Tool locked successfully
+2025-04-02 15:16:56,262 - tool_release - DEBUG - Button pressed - current state: IDLE
+2025-04-02 15:16:56,262 - tool_release - INFO - Starting tool release sequence
+2025-04-02 15:16:56,962 - tool_release - DEBUG - Button released - current state: RELEASING
+2025-04-02 15:16:56,962 - tool_release - INFO - Starting tool lock sequence
+2025-04-02 15:16:57,262 - tool_release - INFO - Tool locked successfully
+2025-04-02 15:18:12,311 - tool_release - DEBUG - Button pressed - current state: IDLE
+2025-04-02 15:18:12,311 - tool_release - INFO - Starting tool release sequence
+2025-04-02 15:18:13,712 - tool_release - DEBUG - Button released - current state: RELEASING
+2025-04-02 15:18:13,712 - tool_release - INFO - Starting tool lock sequence
+2025-04-02 15:18:14,012 - tool_release - INFO - Tool locked successfully
+2025-04-02 15:34:42,961 - tool_release - INFO - Tool release control stopped
+2025-04-02 15:36:23,346 - tool_release - INFO - Initializing tool release component
+2025-04-02 15:36:23,346 - tool_release - INFO - Tool release component ready
+2025-04-02 15:36:23,346 - tool_release - INFO - Tool release control started
+2025-04-02 15:49:09,654 - tool_release - INFO - Tool release control stopped
+2025-04-02 15:49:43,150 - tool_release - INFO - Initializing tool release component
+2025-04-02 15:49:43,150 - tool_release - INFO - Tool release component ready
+2025-04-02 15:49:43,150 - tool_release - INFO - Tool release control started
+2025-04-02 15:54:43,415 - tool_release - INFO - Tool release control stopped
+2025-04-02 15:54:55,846 - tool_release - INFO - Initializing tool release component
+2025-04-02 15:54:55,846 - tool_release - INFO - Tool release component ready
+2025-04-02 15:54:55,846 - tool_release - INFO - Tool release control started
+2025-04-02 15:59:32,360 - tool_release - INFO - Tool release control stopped
+2025-04-02 15:59:41,034 - tool_release - INFO - Initializing tool release component
+2025-04-02 15:59:41,034 - tool_release - INFO - Tool release component ready
+2025-04-02 15:59:41,034 - tool_release - INFO - Tool release control started
+2025-04-02 16:03:23,289 - tool_release - INFO - Tool release control stopped
+2025-04-02 17:18:05,040 - tool_release - INFO - Initializing tool release component
+2025-04-02 17:18:05,040 - tool_release - INFO - Tool release component ready
+2025-04-02 17:18:05,040 - tool_release - INFO - Tool release control started
+2025-04-02 17:19:58,612 - tool_release - DEBUG - Button pressed - current state: IDLE
+2025-04-02 17:19:58,612 - tool_release - INFO - Starting tool release sequence
+2025-04-02 17:19:59,213 - tool_release - DEBUG - Button released - current state: RELEASING
+2025-04-02 17:19:59,213 - tool_release - INFO - Starting tool lock sequence
+2025-04-02 17:19:59,513 - tool_release - INFO - Tool locked successfully
+2025-04-02 17:20:20,234 - tool_release - INFO - Tool release control stopped
+2025-04-02 18:37:42,469 - tool_release - INFO - Initializing tool release component
+2025-04-02 18:37:42,471 - tool_release - INFO - Tool release component ready
+2025-04-02 18:37:42,471 - tool_release - INFO - Tool release control started
+2025-04-02 18:38:10,190 - tool_release - DEBUG - Button pressed - current state: IDLE
+2025-04-02 18:38:10,190 - tool_release - INFO - Starting tool release sequence
+2025-04-02 18:38:10,590 - tool_release - DEBUG - Button released - current state: RELEASING
+2025-04-02 18:38:10,590 - tool_release - INFO - Starting tool lock sequence
+2025-04-02 18:38:10,890 - tool_release - INFO - Tool locked successfully
+2025-04-02 18:38:11,291 - tool_release - DEBUG - Button pressed - current state: IDLE
+2025-04-02 18:38:11,291 - tool_release - INFO - Starting tool release sequence
+2025-04-02 18:38:13,492 - tool_release - DEBUG - Button released - current state: RELEASING
+2025-04-02 18:38:13,492 - tool_release - INFO - Starting tool lock sequence
+2025-04-02 18:38:13,793 - tool_release - INFO - Tool locked successfully
+2025-04-02 19:09:52,059 - tool_release - INFO - Tool release control stopped
+2025-04-02 19:11:24,081 - tool_release - INFO - Initializing tool release component
+2025-04-02 19:11:24,081 - tool_release - INFO - Tool release component ready
+2025-04-02 19:11:24,081 - tool_release - INFO - Tool release control started
+2025-04-03 18:20:39,589 - tool_release - INFO - Initializing tool release component
+2025-04-03 18:20:39,589 - tool_release - INFO - Tool release component ready
+2025-04-03 18:20:39,589 - tool_release - INFO - Tool release control started
+2025-04-03 18:24:42,543 - tool_release - DEBUG - Button pressed - current state: IDLE
+2025-04-03 18:24:42,543 - tool_release - INFO - Starting tool release sequence
+2025-04-03 18:24:43,344 - tool_release - DEBUG - Button released - current state: RELEASING
+2025-04-03 18:24:43,344 - tool_release - INFO - Starting tool lock sequence
+2025-04-03 18:24:43,644 - tool_release - INFO - Tool locked successfully
+2025-04-03 18:25:55,989 - tool_release - DEBUG - Button pressed - current state: IDLE
+2025-04-03 18:25:55,990 - tool_release - INFO - Starting tool release sequence
+2025-04-03 18:25:56,290 - tool_release - DEBUG - Button released - current state: RELEASING
+2025-04-03 18:25:56,290 - tool_release - INFO - Starting tool lock sequence
+2025-04-03 18:25:56,590 - tool_release - INFO - Tool locked successfully
+2025-04-03 18:25:58,291 - tool_release - DEBUG - Button pressed - current state: IDLE
+2025-04-03 18:25:58,291 - tool_release - INFO - Starting tool release sequence
+2025-04-03 18:25:58,591 - tool_release - DEBUG - Button released - current state: RELEASING
+2025-04-03 18:25:58,591 - tool_release - INFO - Starting tool lock sequence
+2025-04-03 18:25:58,892 - tool_release - INFO - Tool locked successfully
+2025-04-03 18:25:59,492 - tool_release - DEBUG - Button pressed - current state: IDLE
+2025-04-03 18:25:59,492 - tool_release - INFO - Starting tool release sequence
+2025-04-03 18:25:59,992 - tool_release - DEBUG - Button released - current state: RELEASING
+2025-04-03 18:25:59,993 - tool_release - INFO - Starting tool lock sequence
+2025-04-03 18:26:00,293 - tool_release - INFO - Tool locked successfully
+2025-04-03 18:26:00,693 - tool_release - DEBUG - Button pressed - current state: IDLE
+2025-04-03 18:26:00,693 - tool_release - INFO - Starting tool release sequence
+2025-04-03 18:26:01,193 - tool_release - DEBUG - Button released - current state: RELEASING
+2025-04-03 18:26:01,193 - tool_release - INFO - Starting tool lock sequence
+2025-04-03 18:26:01,494 - tool_release - INFO - Tool locked successfully
+2025-04-03 18:26:02,394 - tool_release - DEBUG - Button pressed - current state: IDLE
+2025-04-03 18:26:02,394 - tool_release - INFO - Starting tool release sequence
+2025-04-03 18:26:02,795 - tool_release - DEBUG - Button released - current state: RELEASING
+2025-04-03 18:26:02,795 - tool_release - INFO - Starting tool lock sequence
+2025-04-03 18:26:03,095 - tool_release - INFO - Tool locked successfully
+2025-04-03 18:26:05,296 - tool_release - DEBUG - Button pressed - current state: IDLE
+2025-04-03 18:26:05,296 - tool_release - INFO - Starting tool release sequence
+2025-04-03 18:26:05,597 - tool_release - DEBUG - Button released - current state: RELEASING
+2025-04-03 18:26:05,597 - tool_release - INFO - Starting tool lock sequence
+2025-04-03 18:26:05,897 - tool_release - INFO - Tool locked successfully
+2025-04-03 18:26:06,897 - tool_release - DEBUG - Button pressed - current state: IDLE
+2025-04-03 18:26:06,898 - tool_release - INFO - Starting tool release sequence
+2025-04-03 18:26:07,198 - tool_release - DEBUG - Button released - current state: RELEASING
+2025-04-03 18:26:07,198 - tool_release - INFO - Starting tool lock sequence
+2025-04-03 18:26:07,498 - tool_release - INFO - Tool locked successfully
+2025-04-03 18:28:48,878 - tool_release - INFO - Tool release control stopped
+2025-04-03 18:35:17,328 - tool_release - INFO - Initializing tool release component
+2025-04-03 18:35:17,329 - tool_release - INFO - Tool release component ready
+2025-04-03 18:35:17,329 - tool_release - INFO - Tool release control started
+2025-04-03 18:45:20,022 - tool_release - INFO - Tool release control stopped
+2025-04-03 18:45:39,872 - tool_release - INFO - Initializing tool release component
+2025-04-03 18:45:39,872 - tool_release - INFO - Tool release component ready
+2025-04-03 18:45:39,872 - tool_release - INFO - Tool release control started
+2025-04-03 18:51:21,990 - tool_release - INFO - Tool release control stopped
+2025-04-03 18:52:15,098 - tool_release - INFO - Initializing tool release component
+2025-04-03 18:52:15,098 - tool_release - INFO - Tool release component ready
+2025-04-03 18:52:15,098 - tool_release - INFO - Tool release control started
+2025-04-03 19:00:30,152 - tool_release - INFO - Tool release control stopped
+2025-04-03 19:00:37,318 - tool_release - INFO - Initializing tool release component
+2025-04-03 19:00:37,318 - tool_release - INFO - Tool release component ready
+2025-04-03 19:00:37,318 - tool_release - INFO - Tool release control started
+2025-04-03 19:02:33,570 - tool_release - INFO - Tool release control stopped
+2025-04-03 19:03:18,929 - tool_release - INFO - Initializing tool release component
+2025-04-03 19:03:18,929 - tool_release - INFO - Tool release component ready
+2025-04-03 19:03:18,929 - tool_release - INFO - Tool release control started
+2025-04-03 19:05:36,205 - tool_release - INFO - Tool release control stopped
+2025-04-03 19:12:57,299 - tool_release - INFO - Initializing tool release component
+2025-04-03 19:12:57,299 - tool_release - INFO - Tool release component ready
+2025-04-03 19:12:57,300 - tool_release - INFO - Tool release control started
+2025-04-03 19:16:40,075 - tool_release - INFO - Tool release control stopped
+2025-04-03 19:17:54,494 - tool_release - INFO - Initializing tool release component
+2025-04-03 19:17:54,494 - tool_release - INFO - Tool release component ready
+2025-04-03 19:17:54,494 - tool_release - INFO - Tool release control started
+2025-04-03 19:19:07,191 - tool_release - INFO - Tool release control stopped
+2025-04-03 19:19:22,247 - tool_release - INFO - Initializing tool release component
+2025-04-03 19:19:22,247 - tool_release - INFO - Tool release component ready
+2025-04-03 19:19:22,247 - tool_release - INFO - Tool release control started
+2025-04-03 19:20:02,230 - tool_release - INFO - Tool release control stopped
+2025-04-03 19:20:49,557 - tool_release - INFO - Initializing tool release component
+2025-04-03 19:20:49,557 - tool_release - INFO - Tool release component ready
+2025-04-03 19:20:49,557 - tool_release - INFO - Tool release control started
+2025-04-03 19:22:00,888 - tool_release - INFO - Tool release control stopped
+2025-04-03 19:22:08,281 - tool_release - INFO - Initializing tool release component
+2025-04-03 19:22:08,281 - tool_release - INFO - Tool release component ready
+2025-04-03 19:22:08,281 - tool_release - INFO - Tool release control started
+2025-04-03 19:22:53,786 - tool_release - INFO - Tool release control stopped
+2025-04-03 19:25:33,850 - tool_release - INFO - Initializing tool release component
+2025-04-03 19:25:33,850 - tool_release - INFO - Tool release component ready
+2025-04-03 19:25:33,850 - tool_release - INFO - Tool release control started
+2025-04-03 19:25:57,029 - tool_release - INFO - Tool release control stopped
+2025-04-03 19:27:35,027 - tool_release - INFO - Initializing tool release component
+2025-04-03 19:27:35,027 - tool_release - INFO - Tool release component ready
+2025-04-03 19:27:35,027 - tool_release - INFO - Tool release control started
+2025-04-03 19:31:28,021 - tool_release - INFO - Tool release control stopped
+2025-04-03 19:31:40,806 - tool_release - INFO - Initializing tool release component
+2025-04-03 19:31:40,806 - tool_release - INFO - Tool release component ready
+2025-04-03 19:31:40,806 - tool_release - INFO - Tool release control started
+2025-04-03 19:32:58,972 - tool_release - INFO - Tool release control stopped
+2025-04-03 19:34:15,867 - tool_release - INFO - Initializing tool release component
+2025-04-03 19:34:15,867 - tool_release - INFO - Tool release component ready
+2025-04-03 19:34:15,867 - tool_release - INFO - Tool release control started
+2025-04-03 19:36:05,705 - tool_release - INFO - Tool release control stopped
+2025-04-05 10:42:21,510 - tool_release - INFO - Initializing tool release component
+2025-04-05 10:42:21,510 - tool_release - INFO - Tool release component ready
+2025-04-05 10:42:21,510 - tool_release - INFO - Tool release control started
+2025-04-05 11:00:58,222 - tool_release - INFO - Tool release control stopped
+2025-04-05 11:01:22,432 - tool_release - INFO - Initializing tool release component
+2025-04-05 11:01:22,433 - tool_release - INFO - Tool release component ready
+2025-04-05 11:01:22,433 - tool_release - INFO - Tool release control started
+2025-04-05 14:18:14,859 - tool_release - INFO - Tool release control stopped
+2025-04-05 14:25:21,968 - tool_release - INFO - Initializing tool release component
+2025-04-05 14:25:21,968 - tool_release - INFO - Tool release component ready
+2025-04-05 14:25:21,968 - tool_release - INFO - Tool release control started
+2025-04-05 14:34:11,800 - tool_release - INFO - Tool release control stopped
+2025-04-05 14:34:42,955 - tool_release - INFO - Initializing tool release component
+2025-04-05 14:34:42,955 - tool_release - INFO - Tool release component ready
+2025-04-05 14:34:42,955 - tool_release - INFO - Tool release control started
+2025-04-05 14:54:13,721 - tool_release - INFO - Tool release control stopped
+2025-04-05 14:54:22,251 - tool_release - INFO - Initializing tool release component
+2025-04-05 14:54:22,251 - tool_release - INFO - Tool release component ready
+2025-04-05 14:54:22,251 - tool_release - INFO - Tool release control started
+2025-04-05 15:03:54,953 - tool_release - INFO - Tool release control stopped
