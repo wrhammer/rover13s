@@ -1,0 +1,15 @@
+G21 (Metric)
+G90 (Absolute positioning)
+G17 (XY plane selection)
+
+G0 X0 Y0 (Rapid to center)
+G0 Z5 (Lift to safe height)
+
+G1 F500 (Set feed rate to 500 mm/min)
+G2 X0 Y0 I50 J0 (Full circle, radius 50mm)
+G2 X0 Y0 I50 J0 (Second circle)
+G2 X0 Y0 I50 J0 (Third circle)
+
+G0 Z10 (Lift to safe height)
+G0 X0 Y0 (Return to center)
+M2 (Program end) 
