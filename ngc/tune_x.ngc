@@ -1,12 +1,13 @@
 %
 O100 (X Axis Tuning)
 G21 G90 G94 (Metric, Absolute, Feed/Min)
-G53 G0 Z0 (Move to safe Z height)
+G54 (Use work coordinate system)
+G0 Z50 (Move to safe Z height in work coordinates)
 
 (Move to start position slowly)
 G1 F2000
 G53 G1 X100 (Slow move to X start position)
-G53 G1 Z20  (Slow move down to safe Z position)
+G1 Z10  (Slow move down to safe Z position - in work coordinates)
 
 (Switch to relative positioning for tests)
 G91 (Relative positioning)
@@ -52,6 +53,6 @@ O104 endwhile
 
 (Return to safe position)
 G90 (Back to absolute positioning)
-G53 G0 Z0
+G0 Z50
 M2
 % 
