@@ -65,7 +65,11 @@ class MachineEnable:
                 print(f"  Action: Machine enabled - safety_ok: {safety_ok}, machine_btn_on: {machine_btn_on}")
             self.machine_enabled_state = True
             self.h.enable_machine = True
-            self.h.enable_axes = True
+            if not self.h.work_area_setup:
+                self.h.enable_axes = True
+            else:
+                print("  Action: Axes disabled - work_area_setup: True")
+                self.h.enable_axes = False
         else:
             if self.machine_enabled_state:
                 print(f"  Action: Machine disabled - safety_ok: {safety_ok}, machine_btn_on: {machine_btn_on}")
