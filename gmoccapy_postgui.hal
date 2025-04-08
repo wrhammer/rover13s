@@ -19,6 +19,15 @@ net tooloffset-z  => gmoccapy.tooloffset-z
 net spindle-at-speed => gmoccapy.spindle_at_speed_led
 net spindle-speed gmoccapy.spindle_feedback_bar
 
+net spindle-increase hm2_7i96s.0.7i77.0.0.input-11 => halui.spindle.0.override.increase
+net spindle-decrease hm2_7i96s.0.7i77.0.0.input-12 => halui.spindle.0.override.decrease
+
+# Set the scale for RPM changes (e.g., 100 means each press changes RPM by 100)
+setp halui.spindle.0.override.scale 100
+
+# Enable count-based control
+setp halui.spindle.0.override.count-enable 1
+
 #  ---IO Monitor connections---
 
 # Load the GladeVCP component
