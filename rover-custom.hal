@@ -120,7 +120,7 @@ net left-area-pb			hm2_7i94.0.7i84.0.2.input-00		work_area.left_button
 net rht-area-pb				hm2_7i94.0.7i84.0.2.input-01		work_area.right_button
 net vac-pedal				hm2_7i94.0.7i84.0.2.input-02		vacuum.vacuum_pedal
 net estop-pcells			hm2_7i94.0.7i84.0.2.input-03		machine_enable.estop_pcells
-net vacuum-ok				hm2_7i94.0.7i84.0.2.input-04-not	vacuum.vacuum_ok
+net vacuum-ok				hm2_7i94.0.7i84.0.2.input-04		vacuum.vacuum_ok
 
 
 			# TB2 OUTPUTS #
