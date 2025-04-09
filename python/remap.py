@@ -133,8 +133,14 @@ def remap_m6(self, **params):
 
         simple_tools = get_simple_tools()
 
+        # Get tool data to check for router flag
+        tool_data = next((t for t in stat.tool_table if t.id == tool_number), None)
+        is_router = False
+        if tool_data and tool_data.comment:
+            is_router = "ROUTER=1" in tool_data.comment
+
         # --- Retract Router or Blade ---
-        if tool_number not in [19, 20]:
+        if not is_router and tool_number != 19:  # Changed from tool_number not in [19, 20]
             if router_down:
                 print("Raising Router (P14)")
                 self.execute("M64 P14")
@@ -181,8 +187,8 @@ def remap_m6(self, **params):
                     yield INTERP_EXECUTE_FINISH
 
         # --- Activate New Tool ---
-        if tool_number == 20:
-            print("Activating Router (T20)")
+        if is_router:  # Changed from tool_number == 20
+            print("Activating Router (T{tool_number})")
             if router_up and not router_down:
                 self.execute("M64 P13")
                 yield INTERP_EXECUTE_FINISH
@@ -225,6 +231,12 @@ def remap_m6(self, **params):
                 print(f"Activating {info['name']}")
                 self.execute(f"M64 P{info['down_pin']}")
                 yield INTERP_EXECUTE_FINISH
+
+        # --- Activate Motor for T1-T19 ---
+        if 1 <= tool_number <= 19 and not is_router:
+            print("Activating Motor (P17)")
+            self.execute("M64 P17")
+            yield INTERP_EXECUTE_FINISH
 
         # --- Finalize Tool Change State ---
         self.current_tool = tool_number
