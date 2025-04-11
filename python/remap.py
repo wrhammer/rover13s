@@ -192,38 +192,44 @@ def remap_m6(self, **params):
         if is_router:  # Changed from tool_number == 20
             print("Activating Router (T{tool_number})")
             if router_up and not router_down:
+                print("Sending M64 P13 command")
                 self.execute("M64 P13")
                 yield INTERP_EXECUTE_FINISH
-                time.sleep(3)
-                self.execute("M65 P13")
-                yield INTERP_EXECUTE_FINISH
-                print("Waiting for router to reach down position...")
-                stat.poll()
+                print("Waiting for router activation...")
                 if not wait_for_input(stat, 3, True, timeout=5):
                     print("⚠️ Router did not reach down position!")
+                    yield INTERP_ERROR
+                    return
+                print("Sending M65 P13 command")
+                self.execute("M65 P13")
+                yield INTERP_EXECUTE_FINISH
 
         elif tool_number == 19:
             print("Activating Saw Blade (T19)")
             if blade_up and not blade_down:
+                print("Sending M64 P16 command")
                 self.execute("M64 P16")
                 yield INTERP_EXECUTE_FINISH
-                time.sleep(3)
-                self.execute("M65 P16")
-                yield INTERP_EXECUTE_FINISH
-                print("Waiting for saw blade to reach down position...")
-                stat.poll()
+                print("Waiting for blade activation...")
                 if not wait_for_input(stat, 1, True, timeout=5):
                     print("⚠️ Saw blade did not reach down position!")
+                    yield INTERP_ERROR
+                    return
+                print("Sending M65 P16 command")
+                self.execute("M65 P16")
+                yield INTERP_EXECUTE_FINISH
 
         elif tool_number == 17:
             print("Activating T17 (Vertical Y Spindles)")
             for pin in [0, 1, 2, 3, 4]:
+                print(f"Sending M64 P{pin} command")
                 self.execute(f"M64 P{pin}")
                 yield INTERP_EXECUTE_FINISH
 
         elif tool_number == 18:
             print("Activating T18 (Vertical X Spindles)")
             for pin in [5, 6, 7, 8, 9]:
+                print(f"Sending M64 P{pin} command")
                 self.execute(f"M64 P{pin}")
                 yield INTERP_EXECUTE_FINISH
 
@@ -231,6 +237,7 @@ def remap_m6(self, **params):
             info = simple_tools[tool_number]
             if not (info.get("shared_pin") and previous_tool == info.get("paired_tool")):
                 print(f"Activating {info['name']}")
+                print(f"Sending M64 P{info['down_pin']} command")
                 self.execute(f"M64 P{info['down_pin']}")
                 yield INTERP_EXECUTE_FINISH
 
