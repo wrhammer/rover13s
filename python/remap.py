@@ -120,6 +120,8 @@ def remap_m6(self, **params):
     print(f"Interpreter state: {stat.interp_state}")
     print(f"Task state: {stat.task_state}")
     print(f"Execution state: {stat.exec_state}")
+    print(f"Command state: {stat.command_state}")
+    print(f"Interpreter mode: {stat.interp_mode}")
     
     tool_number = getattr(self, "selected_tool", -1)
     previous_tool = int(params.get("tool_in_spindle", self.current_tool))
@@ -145,7 +147,6 @@ def remap_m6(self, **params):
         # Get tool data to check for router flag
         tool_data = next((t for t in stat.tool_table if t.id == tool_number), None)
         print(f"Tool data for T{tool_number}: {tool_data}")
-        print(f"Tool data attributes: {dir(tool_data)}")
         is_router = False
         if tool_data:
             print(f"Tool comment: {getattr(tool_data, 'comment', 'No comment')}")
@@ -215,13 +216,25 @@ def remap_m6(self, **params):
         print(f"Activating new tool T{tool_number}...")
         if is_router:
             print("Activating Router")
+            print(f"Current router states - Up: {bool(stat.din[2])}, Down: {bool(stat.din[3])}")
             if bool(stat.din[2]) and not bool(stat.din[3]):  # router_up and not router_down
                 print("Sending M64 P13 command")
                 self.execute("M64 P13")
                 yield INTERP_EXECUTE_FINISH
                 print("Waiting for router activation...")
-                if not wait_for_input(stat, 3, True, timeout=5):
-                    print("⚠️ Router did not reach down position!")
+                start_time = time.time()
+                while time.time() - start_time < 10:  # Increased timeout to 10 seconds
+                    stat.poll()
+                    print(f"Router states - Up: {bool(stat.din[2])}, Down: {bool(stat.din[3])}")
+                    print(f"Current interpreter state: {stat.interp_state}")
+                    print(f"Current task state: {stat.task_state}")
+                    print(f"Current execution state: {stat.exec_state}")
+                    if bool(stat.din[3]):  # router_down
+                        print("Router reached down position")
+                        break
+                    time.sleep(0.1)
+                else:
+                    print("⚠️ Router did not reach down position within timeout!")
                     yield INTERP_ERROR
                     return
                 print("Sending M65 P13 command")
