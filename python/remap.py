@@ -120,8 +120,6 @@ def remap_m6(self, **params):
     print(f"Interpreter state: {stat.interp_state}")
     print(f"Task state: {stat.task_state}")
     print(f"Execution state: {stat.exec_state}")
-    print(f"Command state: {stat.command_state}")
-    print(f"Interpreter mode: {stat.interp_mode}")
     
     tool_number = getattr(self, "selected_tool", -1)
     previous_tool = int(params.get("tool_in_spindle", self.current_tool))
@@ -183,35 +181,6 @@ def remap_m6(self, **params):
                 self.execute("M65 P15")
                 yield INTERP_EXECUTE_FINISH
 
-        # --- Retract Previous Simple or Combined Tool ---
-        if previous_tool != tool_number:
-            if previous_tool == 17:
-                print("Retracting T18 (Vertical Y Spindles)")
-                for pin in [0, 1, 2, 3, 4]:
-                    self.execute(f"M65 P{pin}")
-                    yield INTERP_EXECUTE_FINISH
-
-            elif previous_tool == 18:
-                print("Retracting T17 (Vertical Y Spindles)")
-                for pin in [5, 6, 7, 8, 9]:
-                    self.execute(f"M65 P{pin}")
-                    yield INTERP_EXECUTE_FINISH
-
-            elif previous_tool in simple_tools:
-                prev_info = simple_tools[previous_tool]
-                if prev_info.get("shared_pin"):
-                    paired_tool = prev_info.get("paired_tool")
-                    if tool_number != paired_tool:
-                        print(f"Retracting shared-pin tool: {prev_info['name']}")
-                        self.execute(f"M65 P{prev_info['down_pin']}")
-                        yield INTERP_EXECUTE_FINISH
-                    else:
-                        print(f"Skipping retraction: {prev_info['name']} shares pin with T{tool_number}")
-                else:
-                    print(f"Retracting standard tool: {prev_info['name']}")
-                    self.execute(f"M65 P{prev_info['down_pin']}")
-                    yield INTERP_EXECUTE_FINISH
-
         # --- Activate New Tool ---
         print(f"Activating new tool T{tool_number}...")
         if is_router:
@@ -239,43 +208,6 @@ def remap_m6(self, **params):
                     return
                 print("Sending M65 P13 command")
                 self.execute("M65 P13")
-                yield INTERP_EXECUTE_FINISH
-
-        elif tool_number == 19:
-            print("Activating Saw Blade")
-            if bool(stat.din[0]) and not bool(stat.din[1]):  # blade_up and not blade_down
-                print("Sending M64 P16 command")
-                self.execute("M64 P16")
-                yield INTERP_EXECUTE_FINISH
-                print("Waiting for blade activation...")
-                if not wait_for_input(stat, 1, True, timeout=5):
-                    print("⚠️ Saw blade did not reach down position!")
-                    yield INTERP_ERROR
-                    return
-                print("Sending M65 P16 command")
-                self.execute("M65 P16")
-                yield INTERP_EXECUTE_FINISH
-
-        elif tool_number == 17:
-            print("Activating T17 (Vertical Y Spindles)")
-            for pin in [0, 1, 2, 3, 4]:
-                print(f"Sending M64 P{pin} command")
-                self.execute(f"M64 P{pin}")
-                yield INTERP_EXECUTE_FINISH
-
-        elif tool_number == 18:
-            print("Activating T18 (Vertical X Spindles)")
-            for pin in [5, 6, 7, 8, 9]:
-                print(f"Sending M64 P{pin} command")
-                self.execute(f"M64 P{pin}")
-                yield INTERP_EXECUTE_FINISH
-
-        elif tool_number in simple_tools:
-            info = simple_tools[tool_number]
-            if not (info.get("shared_pin") and previous_tool == info.get("paired_tool")):
-                print(f"Activating {info['name']}")
-                print(f"Sending M64 P{info['down_pin']} command")
-                self.execute(f"M64 P{info['down_pin']}")
                 yield INTERP_EXECUTE_FINISH
 
         # --- Finalize Tool Change State ---
