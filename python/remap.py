@@ -135,8 +135,10 @@ def remap_m6(self, **params):
 
         # Get tool data to check for router flag
         tool_data = next((t for t in stat.tool_table if t.id == tool_number), None)
+        print(f"Debug - Tool data for T{tool_number}: {tool_data}")
+        print(f"Debug - Tool data attributes: {dir(tool_data)}")
         is_router = False
-        if tool_data and tool_data.comment:
+        if tool_data and hasattr(tool_data, 'comment') and tool_data.comment:
             is_router = "ROUTER=1" in tool_data.comment
 
         # --- Retract Router or Blade ---
