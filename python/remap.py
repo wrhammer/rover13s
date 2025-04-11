@@ -139,8 +139,15 @@ def remap_m6(self, **params):
     print(f"Task File: {stat.file}")
     print("============================\n")
 
-    # Switch to MDI mode for tool change
-    if stat.task_mode != linuxcnc.MODE_MDI:
+    # Handle mode switching based on current mode
+    if stat.task_mode == linuxcnc.MODE_AUTO:
+        print("Pausing auto mode for tool change...")
+        cmd.auto(linuxcnc.AUTO_PAUSE)
+        cmd.wait_complete()
+        time.sleep(0.5)  # Give it a moment to pause
+        stat.poll()
+        print(f"Auto mode paused, now in {mode_names.get(stat.task_mode, 'Unknown')} mode")
+    elif stat.task_mode != linuxcnc.MODE_MDI:
         print("Switching to MDI mode for tool change...")
         cmd.mode(linuxcnc.MODE_MDI)
         cmd.wait_complete()
