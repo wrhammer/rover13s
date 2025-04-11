@@ -142,21 +142,19 @@ def remap_m6(self, **params):
     # Handle mode switching based on current mode
     if stat.task_mode == linuxcnc.MODE_AUTO:
         print("Handling tool change in auto mode...")
-        # Ensure we're in a state where we can execute commands
-        cmd.abort()  # Abort any running program
-        cmd.wait_complete()
-        time.sleep(0.5)  # Give it a moment to settle
-        cmd.mode(linuxcnc.MODE_MDI)  # Switch to MDI mode
-        cmd.wait_complete()
-        time.sleep(0.5)  # Give it a moment to switch
-        stat.poll()
-        print(f"Now in {mode_names.get(stat.task_mode, 'Unknown')} mode")
-    elif stat.task_mode != linuxcnc.MODE_MDI:
-        print("Switching to MDI mode for tool change...")
-        cmd.mode(linuxcnc.MODE_MDI)
-        cmd.wait_complete()
-        stat.poll()
-        print(f"Now in {mode_names.get(stat.task_mode, 'Unknown')} mode")
+        # Wait for interpreter to be ready
+        timeout = 0
+        while True:
+            stat.poll()
+            if stat.interp_state == linuxcnc.INTERP_IDLE:
+                break
+            time.sleep(0.1)
+            timeout += 1
+            if timeout > 50:  # 5 second timeout
+                print("ERROR: Interpreter not ready after 5 seconds")
+                yield INTERP_ERROR
+                return
+        print("Interpreter is ready for tool change")
 
     tool_number = getattr(self, "selected_tool", -1)
     previous_tool = int(params.get("tool_in_spindle", self.current_tool))
