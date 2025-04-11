@@ -115,6 +115,38 @@ def remap_m6(self, **params):
     stat = linuxcnc.stat()
     stat.poll()
 
+    # Debug mode information
+    mode_names = {
+        linuxcnc.MODE_MANUAL: "Manual",
+        linuxcnc.MODE_AUTO: "Auto",
+        linuxcnc.MODE_MDI: "MDI"
+    }
+    current_mode = mode_names.get(stat.task_mode, f"Unknown ({stat.task_mode})")
+    
+    # Debug interpreter state
+    interp_states = {
+        linuxcnc.INTERP_IDLE: "IDLE",
+        linuxcnc.INTERP_READING: "READING",
+        linuxcnc.INTERP_PAUSED: "PAUSED",
+        linuxcnc.INTERP_WAITING: "WAITING"
+    }
+    current_interp_state = interp_states.get(stat.interp_state, f"Unknown ({stat.interp_state})")
+    
+    print(f"\n=== Tool Change Debug Info ===")
+    print(f"Current Mode: {current_mode}")
+    print(f"Interpreter State: {current_interp_state}")
+    print(f"Task State: {stat.task_state}")
+    print(f"Task File: {stat.file}")
+    print("============================\n")
+
+    # Switch to MDI mode for tool change
+    if stat.task_mode != linuxcnc.MODE_MDI:
+        print("Switching to MDI mode for tool change...")
+        cmd.mode(linuxcnc.MODE_MDI)
+        cmd.wait_complete()
+        stat.poll()
+        print(f"Now in {mode_names.get(stat.task_mode, 'Unknown')} mode")
+
     tool_number = getattr(self, "selected_tool", -1)
     previous_tool = int(params.get("tool_in_spindle", self.current_tool))
     if tool_number < 1:
@@ -136,7 +168,7 @@ def remap_m6(self, **params):
         # Get tool data to check for router flag
         tool_data = next((t for t in stat.tool_table if t.id == tool_number), None)
         print(f"Debug - Tool data for T{tool_number}: {tool_data}")
-        print(f"Debug - Tool data attributes: {dir(tool_data)}")
+        # print(f"Debug - Tool data attributes: {dir(tool_data)}")
         is_router = False
         if tool_data and hasattr(tool_data, 'comment') and tool_data.comment:
             is_router = "ROUTER=1" in tool_data.comment
