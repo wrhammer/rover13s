@@ -157,6 +157,7 @@ def remap_m6(self, **params):
         # --- Optional: Release all outputs first ---
         yield from release_all_outputs(self)
         print(f"Tool change: T{previous_tool} -> T{tool_number}")
+        print(f"Current Mode: {current_mode}")
         stat.poll()
         blade_up = bool(stat.din[0])
         blade_down = bool(stat.din[1])
