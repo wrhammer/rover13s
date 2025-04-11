@@ -141,12 +141,16 @@ def remap_m6(self, **params):
 
     # Handle mode switching based on current mode
     if stat.task_mode == linuxcnc.MODE_AUTO:
-        print("Pausing auto mode for tool change...")
-        cmd.auto(linuxcnc.AUTO_PAUSE)
+        print("Handling tool change in auto mode...")
+        # Ensure we're in a state where we can execute commands
+        cmd.abort()  # Abort any running program
         cmd.wait_complete()
-        time.sleep(0.5)  # Give it a moment to pause
+        time.sleep(0.5)  # Give it a moment to settle
+        cmd.mode(linuxcnc.MODE_MDI)  # Switch to MDI mode
+        cmd.wait_complete()
+        time.sleep(0.5)  # Give it a moment to switch
         stat.poll()
-        print(f"Auto mode paused, now in {mode_names.get(stat.task_mode, 'Unknown')} mode")
+        print(f"Now in {mode_names.get(stat.task_mode, 'Unknown')} mode")
     elif stat.task_mode != linuxcnc.MODE_MDI:
         print("Switching to MDI mode for tool change...")
         cmd.mode(linuxcnc.MODE_MDI)
@@ -164,7 +168,7 @@ def remap_m6(self, **params):
         # --- Optional: Release all outputs first ---
         yield from release_all_outputs(self)
         print(f"Tool change: T{previous_tool} -> T{tool_number}")
-        print(f"Current Mode: {current_mode}")
+        print(f"Current Mode: {mode_names.get(stat.task_mode, 'Unknown')}")  # Get fresh mode info
         stat.poll()
         blade_up = bool(stat.din[0])
         blade_down = bool(stat.din[1])
