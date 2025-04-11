@@ -117,6 +117,9 @@ def remap_m6(self, **params):
 
     print("=== Starting M6 Tool Change ===")
     print(f"Params received: {params}")
+    print(f"Interpreter state: {stat.interp_state}")
+    print(f"Task state: {stat.task_state}")
+    print(f"Execution state: {stat.exec_state}")
     
     tool_number = getattr(self, "selected_tool", -1)
     previous_tool = int(params.get("tool_in_spindle", self.current_tool))
@@ -291,6 +294,9 @@ def remap_m6(self, **params):
         emccanon.CHANGE_TOOL(tool_number)
         
         print(f"✅ Tool change to T{tool_number} complete.")
+        print(f"Final interpreter state: {stat.interp_state}")
+        print(f"Final task state: {stat.task_state}")
+        print(f"Final execution state: {stat.exec_state}")
         yield INTERP_OK
 
     except Exception as e:
