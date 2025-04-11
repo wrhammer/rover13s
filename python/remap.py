@@ -163,23 +163,31 @@ def remap_m6(self, **params):
                 print("Raising Router (P14)")
                 self.execute("M64 P14")
                 yield INTERP_EXECUTE_FINISH
+                stat.poll()
+                print(f"After M64 P14 - Input states: Router up: {bool(stat.din[2])}, Router down: {bool(stat.din[3])}")
                 if not wait_for_input(stat, 2, True, timeout=5):
                     print("⚠️ Router did not reach up position!")
                     yield INTERP_ERROR
                     return
                 self.execute("M65 P14")
                 yield INTERP_EXECUTE_FINISH
+                stat.poll()
+                print(f"After M65 P14 - Input states: Router up: {bool(stat.din[2])}, Router down: {bool(stat.din[3])}")
 
             if bool(stat.din[1]):  # blade_down
                 print("Raising Saw Blade (P15)")
                 self.execute("M64 P15")
                 yield INTERP_EXECUTE_FINISH
+                stat.poll()
+                print(f"After M64 P15 - Input states: Blade up: {bool(stat.din[0])}, Blade down: {bool(stat.din[1])}")
                 if not wait_for_input(stat, 0, True, timeout=5):
                     print("⚠️ Saw blade did not reach up position!")
                     yield INTERP_ERROR
                     return
                 self.execute("M65 P15")
                 yield INTERP_EXECUTE_FINISH
+                stat.poll()
+                print(f"After M65 P15 - Input states: Blade up: {bool(stat.din[0])}, Blade down: {bool(stat.din[1])}")
 
         # --- Activate New Tool ---
         print(f"Activating new tool T{tool_number}...")
@@ -190,6 +198,8 @@ def remap_m6(self, **params):
                 print("Sending M64 P13 command")
                 self.execute("M64 P13")
                 yield INTERP_EXECUTE_FINISH
+                stat.poll()
+                print(f"After M64 P13 - Input states: Router up: {bool(stat.din[2])}, Router down: {bool(stat.din[3])}")
                 print("Waiting for router activation...")
                 start_time = time.time()
                 while time.time() - start_time < 10:  # Increased timeout to 10 seconds
@@ -209,6 +219,8 @@ def remap_m6(self, **params):
                 print("Sending M65 P13 command")
                 self.execute("M65 P13")
                 yield INTERP_EXECUTE_FINISH
+                stat.poll()
+                print(f"After M65 P13 - Input states: Router up: {bool(stat.din[2])}, Router down: {bool(stat.din[3])}")
 
         # --- Finalize Tool Change State ---
         print("Finalizing tool change...")
@@ -239,11 +251,18 @@ def remap_m6(self, **params):
 
         self.execute(g10_cmd)
         yield INTERP_EXECUTE_FINISH
+        stat.poll()
+        print(f"After G10 - Interpreter state: {stat.interp_state}")
+        
         self.execute(f"G43 H{tool_number}")
         yield INTERP_EXECUTE_FINISH
+        stat.poll()
+        print(f"After G43 - Interpreter state: {stat.interp_state}")
 
         # Now tell LinuxCNC this is the active tool
         emccanon.CHANGE_TOOL(tool_number)
+        stat.poll()
+        print(f"After CHANGE_TOOL - Interpreter state: {stat.interp_state}")
         
         print(f"✅ Tool change to T{tool_number} complete.")
         print(f"Final interpreter state: {stat.interp_state}")
