@@ -234,12 +234,6 @@ def remap_m6(self, **params):
                 self.execute(f"M64 P{info['down_pin']}")
                 yield INTERP_EXECUTE_FINISH
 
-        # --- Activate Motor for T1-T19 ---
-        if 1 <= tool_number <= 19 and not is_router:
-            print("Activating Motor (P17)")
-            self.execute("M64 P17")
-            yield INTERP_EXECUTE_FINISH
-
         # --- Finalize Tool Change State ---
         self.current_tool = tool_number
         self.selected_tool = -1
@@ -277,4 +271,32 @@ def remap_m6(self, **params):
     except Exception as e:
         print(f"❌ Error in remap_m6: {e}")
         yield INTERP_ERROR
+
+def remap_m3(self, **params):
+    """Handle M3 (spindle on) command"""
+    import linuxcnc
+    stat = linuxcnc.stat()
+    stat.poll()
+    
+    # Only activate motor for tools 1-19 (not router)
+    if 1 <= self.current_tool <= 19:
+        print("Activating Motor (P17)")
+        self.execute("M64 P17")
+        yield INTERP_EXECUTE_FINISH
+    
+    yield INTERP_OK
+
+def remap_m5(self, **params):
+    """Handle M5 (spindle off) command"""
+    import linuxcnc
+    stat = linuxcnc.stat()
+    stat.poll()
+    
+    # Deactivate motor for tools 1-19 (not router)
+    if 1 <= self.current_tool <= 19:
+        print("Deactivating Motor (P17)")
+        self.execute("M65 P17")
+        yield INTERP_EXECUTE_FINISH
+    
+    yield INTERP_OK
     
