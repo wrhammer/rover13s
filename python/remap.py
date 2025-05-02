@@ -19,8 +19,8 @@ def get_simple_tools():
     - Tools 11-12: both map to pin 10
     - Tools 13-14: both map to pin 11
     - Tools 15-16: both map to pin 12
-    - Tool 19: combines tools 1-5 (vertical Y spindles)
-    - Tool 20: combines tools 6-10 (vertical X spindles)
+    - Tool 17: combines tools 1-5 (vertical Y spindles)
+    - Tool 18: combines tools 6-10 (vertical X spindles)
     """
     stat = linuxcnc.stat()
     stat.poll()
@@ -153,15 +153,26 @@ def remap_m6(self, **params):
 
         simple_tools = get_simple_tools()
 
-        # Get tool data to check for router flag
-        tool_data = next((t for t in stat.tool_table if t.id == tool_number), None)
-        print(f"Debug - Tool data for T{tool_number}: {tool_data}")
-        is_router = False
-        if tool_data and hasattr(tool_data, 'comment') and tool_data.comment:
-            is_router = "ROUTER=1" in tool_data.comment
+        # Check if current or previous tool is a router (T20 or greater)
+        is_router = tool_number >= 20
+        was_router = previous_tool >= 20
 
         # --- Retract Router or Blade ---
-        if not is_router and tool_number != 19:  # Changed from tool_number not in [19, 20]
+        if was_router:  # If previous tool was a router
+            if router_down:
+                print(f"Raising Router (T{previous_tool})")
+                self.execute("M64 P14")
+                self.execute("G04 P2")  # Wait 2 seconds
+                self.execute("M65 P14")
+                yield INTERP_EXECUTE_FINISH
+        elif previous_tool == 19:  # If previous tool was saw
+            if blade_down:
+                print("Raising Saw Blade (T19)")
+                self.execute("M64 P15")
+                self.execute("G04 P2")  # Wait 2 seconds
+                self.execute("M65 P15")
+                yield INTERP_EXECUTE_FINISH
+        elif not is_router and tool_number != 19:  # For other tools
             if router_down:
                 print("Raising Router (P14)")
                 self.execute("M64 P14")
@@ -206,8 +217,8 @@ def remap_m6(self, **params):
                     yield INTERP_EXECUTE_FINISH
 
         # --- Activate New Tool ---
-        if is_router:
-            print("Activating Router (T{tool_number})")
+        if is_router:  # Any tool T20 or greater is a router
+            print(f"Activating Router (T{tool_number})")
             if router_up and not router_down:
                 self.execute("M64 P13")
                 self.execute("G04 P3")  # Wait 3 seconds
@@ -218,7 +229,7 @@ def remap_m6(self, **params):
                 if not wait_for_input(stat, 3, True, timeout=5):
                     print("⚠️ Router did not reach down position!")
 
-        elif tool_number == 19:
+        elif tool_number == 19:  # Saw
             print("Activating Saw Blade (T19)")
             if blade_up and not blade_down:
                 self.execute("M64 P16")
