@@ -163,9 +163,10 @@ def remap_m6(self, **params):
         # Check if current or previous tool is a router (T20 or greater)
         is_router = tool_number >= 20
         was_router = previous_tool >= 20
+        both_routers = is_router and was_router  # Switching between router tools
 
         # --- Retract Router or Blade ---
-        if was_router:  # If previous tool was a router
+        if was_router and not both_routers:  # If previous tool was a router AND we're switching to non-router
             if router_down:
                 print(f"Raising Router (T{previous_tool})")
                 self.execute("M64 P14")
@@ -241,16 +242,45 @@ def remap_m6(self, **params):
 
         # --- Activate New Tool ---
         if is_router:  # Any tool T20 or greater is a router
-            print(f"Activating Router (T{tool_number})")
-            if router_up and not router_down:
-                self.execute("M64 P13")
-                self.execute("G04 P3")  # Wait 3 seconds
-                self.execute("M65 P13")
-                yield INTERP_EXECUTE_FINISH
-                print("Waiting for router to reach down position...")
+            # Move to router tool change position (X800 Y0 in G54 coordinates)
+            print(f"Moving to router tool change position (X800 Y0)")
+            self.execute("G90")  # Ensure absolute mode
+            self.execute("G54")  # Ensure G54 coordinate system
+            # Move to safe Z height first (if not already there), then to tool change position
+            self.execute("G0 Z15")  # Move to safe Z height (adjust if needed)
+            yield INTERP_EXECUTE_FINISH
+            self.execute("G0 X800 Y0")  # Rapid move to tool change position in G54
+            yield INTERP_EXECUTE_FINISH
+            print("At tool change position (X800 Y0)")
+            
+            if both_routers:
+                # Switching between router tools (e.g., T20 -> T21)
+                # Router is already down, just verify it's in position
                 stat.poll()
-                if not wait_for_input(stat, 3, True, timeout=5):
-                    print("⚠️ Router did not reach down position!")
+                if router_down:
+                    print(f"Router already down - Skipping raise/lower cycle (T{previous_tool} -> T{tool_number})")
+                else:
+                    # Router is up when it shouldn't be, lower it
+                    print(f"Router is up - Lowering for T{tool_number}")
+                    self.execute("M64 P13")
+                    self.execute("G04 P3")  # Wait 3 seconds
+                    self.execute("M65 P13")
+                    yield INTERP_EXECUTE_FINISH
+                    stat.poll()
+                    if not wait_for_input(stat, 3, True, timeout=5):
+                        print("⚠️ Router did not reach down position!")
+            else:
+                # Switching to router from non-router tool
+                print(f"Activating Router (T{tool_number})")
+                if router_up and not router_down:
+                    self.execute("M64 P13")
+                    self.execute("G04 P3")  # Wait 3 seconds
+                    self.execute("M65 P13")
+                    yield INTERP_EXECUTE_FINISH
+                    print("Waiting for router to reach down position...")
+                    stat.poll()
+                    if not wait_for_input(stat, 3, True, timeout=5):
+                        print("⚠️ Router did not reach down position!")
 
         elif tool_number == 19:  # Saw
             print("Activating Saw Blade (T19)")
