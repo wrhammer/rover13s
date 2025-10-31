@@ -135,7 +135,14 @@ def remap_m6(self, **params):
     print("============================\n")
 
     tool_number = getattr(self, "selected_tool", -1)
-    previous_tool = int(params.get("tool_in_spindle", self.current_tool))
+    
+    # Get the actual tool currently in spindle from LinuxCNC stat
+    stat.poll()
+    previous_tool = stat.tool_in_spindle
+    
+    # Fallback to stored current_tool if stat doesn't have a tool
+    if previous_tool <= 0:
+        previous_tool = int(params.get("tool_in_spindle", getattr(self, "current_tool", 0)))
     
     if tool_number < 1:
         print("ERROR: No valid tool number received.")
@@ -188,15 +195,15 @@ def remap_m6(self, **params):
                 yield INTERP_EXECUTE_FINISH
 
         # --- Retract Previous Simple or Combined Tool ---
-        if previous_tool != tool_number:
+        if previous_tool != tool_number and previous_tool > 0:
             if previous_tool == 17:
-                print("Retracting T18 (Vertical Y Spindles)")
+                print("Retracting T17 (Vertical Y Spindles)")
                 for pin in [0, 1, 2, 3, 4]:
                     self.execute(f"M65 P{pin}")
                     yield INTERP_EXECUTE_FINISH
 
             elif previous_tool == 18:
-                print("Retracting T17 (Vertical Y Spindles)")
+                print("Retracting T18 (Vertical X Spindles)")
                 for pin in [5, 6, 7, 8, 9]:
                     self.execute(f"M65 P{pin}")
                     yield INTERP_EXECUTE_FINISH
@@ -212,9 +219,25 @@ def remap_m6(self, **params):
                     else:
                         print(f"Skipping retraction: {prev_info['name']} shares pin with T{tool_number}")
                 else:
-                    print(f"Retracting standard tool: {prev_info['name']}")
+                    print(f"Retracting standard tool: {prev_info['name']} (T{previous_tool}, Pin P{prev_info['down_pin']})")
                     self.execute(f"M65 P{prev_info['down_pin']}")
                     yield INTERP_EXECUTE_FINISH
+            
+            # Fallback: If previous tool is 1-10 but not in simple_tools for some reason,
+            # retract based on tool number (tools 1-10 map to pins 0-9)
+            elif 1 <= previous_tool <= 10:
+                pin_to_retract = previous_tool - 1
+                print(f"Fallback retraction: Retracting T{previous_tool} on pin P{pin_to_retract}")
+                self.execute(f"M65 P{pin_to_retract}")
+                yield INTERP_EXECUTE_FINISH
+        
+        # Safety: If switching to router and we're not sure what the previous tool was,
+        # retract all standard tool pins (0-9) to be safe
+        elif is_router and previous_tool <= 0:
+            print(f"Warning: Previous tool unknown. Retracting all standard tool pins (P0-P9) as safety measure.")
+            for pin in range(10):
+                self.execute(f"M65 P{pin}")
+                yield INTERP_EXECUTE_FINISH
 
         # --- Activate New Tool ---
         if is_router:  # Any tool T20 or greater is a router
@@ -272,13 +295,34 @@ def remap_m6(self, **params):
             print(f"❌ Tool ID {tool_number} not found in tool table.")
             yield INTERP_ERROR
         else:
+            # For router tools (T20+), use T20's X/Y offsets for G54, but use tool's own offsets for tool length
+            # All router tools share the same X/Y work coordinate offsets
+            is_router_tool = tool_number >= 20
+            if is_router_tool:
+                # Get T20's offsets for G54 work coordinate system
+                t20_data = next((t for t in stat.tool_table if t.id == 20), None)
+                if t20_data:
+                    g54_x = t20_data.xoffset
+                    g54_y = t20_data.yoffset
+                    print(f"Router tool T{tool_number} detected - Using T20's X/Y offsets for G54 (X{g54_x} Y{g54_y})")
+                else:
+                    # Fallback to tool's own offsets if T20 not found
+                    g54_x = tool_data.xoffset
+                    g54_y = tool_data.yoffset
+                    print(f"Warning: T20 not found in tool table. Using T{tool_number}'s own offsets for G54")
+            else:
+                # For non-router tools, use their own offsets
+                g54_x = tool_data.xoffset
+                g54_y = tool_data.yoffset
+            
+            # Use tool's own offsets for tool length compensation (X, Y, Z, diameter)
             x = tool_data.xoffset
             y = tool_data.yoffset
             z = tool_data.zoffset
             d = tool_data.diameter
             r = d / 2 if d else 0
             g10_cmd = f"G10 L1 P{tool_number} X{x} Y{y} Z{z} R{r}"
-            print(f"Applying offsets: {g10_cmd}")
+            print(f"Applying tool offsets: {g10_cmd}")
 
             if tool_number <= 0:
                 print(f"Invalid tool number for G10: {tool_number}")
@@ -287,6 +331,15 @@ def remap_m6(self, **params):
                 self.execute(g10_cmd)
                 self.execute(f"G43 H{tool_number}")
                 yield INTERP_EXECUTE_FINISH
+
+                # Apply X/Y offsets to G54 work coordinate system
+                # For router tools (T20+), use T20's offsets; for others, use tool's own offsets
+                # G10 L2 P1 sets G54 offsets (P1 = G54, P2 = G55, etc.)
+                if g54_x != 0 or g54_y != 0:
+                    g54_cmd = f"G10 L2 P1 X{g54_x} Y{g54_y}"
+                    print(f"Applying work coordinate offsets to G54: {g54_cmd}")
+                    self.execute(g54_cmd)
+                    yield INTERP_EXECUTE_FINISH
 
                 # Now tell LinuxCNC this is the active tool
                 emccanon.CHANGE_TOOL(tool_number)
