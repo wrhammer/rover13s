@@ -164,6 +164,10 @@ def remap_m6(self, **params):
         is_router = tool_number >= 20
         was_router = previous_tool >= 20
         both_routers = is_router and was_router  # Switching between router tools
+        
+        # Check if this router tool is different from the last one used
+        last_router_tool = getattr(self, "last_router_tool", None)
+        router_tool_changed = (is_router and last_router_tool is not None and tool_number != last_router_tool)
 
         # --- Retract Router or Blade ---
         if was_router and not both_routers:  # If previous tool was a router AND we're switching to non-router
@@ -247,17 +251,35 @@ def remap_m6(self, **params):
             router_up = bool(stat.din[2])
             router_down = bool(stat.din[3])
             
-            # Move to router tool change position (X800 Y0 in G54 coordinates)
-            # COMMENTED OUT FOR NOW - needs troubleshooting
-            # print(f"Moving to router tool change position (X800 Y0)")
-            # self.execute("G90")  # Ensure absolute mode
-            # self.execute("G54")  # Ensure G54 coordinate system
-            # # Move to safe Z height first (if not already there), then to tool change position
-            # self.execute("G0 Z15")  # Move to safe Z height (adjust if needed)
-            # yield INTERP_EXECUTE_FINISH
-            # self.execute("G0 X800 Y0")  # Rapid move to tool change position in G54
-            # yield INTERP_EXECUTE_FINISH
-            # print("At tool change position (X800 Y0)")
+            # Move to router tool change position only if router tool has changed
+            # (skip if using same router bit as last time)
+            # if router_tool_changed:
+            #     # OPTION 1: Using G54 work coordinate system (coordinates relative to G54 origin)
+            #     # print(f"Router tool changed - Moving to safe zone (X800 Y0 in G54)")
+            #     # self.execute("G90")  # Ensure absolute mode
+            #     # self.execute("G54")  # Ensure G54 coordinate system
+            #     # self.execute("G0 Z15")  # Move to safe Z height first
+            #     # yield INTERP_EXECUTE_FINISH
+            #     # self.execute("G0 X800 Y0")  # Rapid move to tool change position in G54
+            #     # yield INTERP_EXECUTE_FINISH
+            #     # print("At tool change position (X800 Y0 in G54)")
+            #     
+            #     # OPTION 2: Using G53 machine coordinates (coordinates relative to machine home)
+            #     # current_machine_pos = stat.actual_position  # Machine coordinates
+            #     # target_x = 800.0  # Desired X in machine coordinates
+            #     # target_y = 0.0    # Desired Y in machine coordinates
+            #     # target_z = 30.0   # Safe Z height in machine coordinates
+            #     # print(f"Router tool changed - Moving to safe zone (X{target_x} Y{target_y} in machine coordinates)")
+            #     # self.execute("G90")  # Ensure absolute mode
+            #     # self.execute("G53")  # Use machine coordinate system
+            #     # self.execute(f"G0 Z{target_z}")  # Move to safe Z height first
+            #     # yield INTERP_EXECUTE_FINISH
+            #     # self.execute(f"G0 X{target_x} Y{target_y}")  # Rapid move to tool change position
+            #     # yield INTERP_EXECUTE_FINISH
+            #     # print(f"At tool change position (X{target_x} Y{target_y} in machine coordinates)")
+            # else:
+            #     print(f"Router bit unchanged - Skipping move to safe zone (T{tool_number})")
+            # NOTE: Currently disabled - enable one of the options above as needed
             
             if both_routers:
                 # Switching between router tools (e.g., T20 -> T21)
@@ -322,6 +344,10 @@ def remap_m6(self, **params):
         self.current_tool = tool_number
         self.selected_tool = -1
         self.toolchange_flag = True
+        
+        # Track last router tool used (T20+) for safe zone movement logic
+        if is_router:
+            self.last_router_tool = tool_number
 
         # --- Apply Tool Offsets ---
         stat.poll()
