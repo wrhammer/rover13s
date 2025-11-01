@@ -243,15 +243,16 @@ def remap_m6(self, **params):
         # --- Activate New Tool ---
         if is_router:  # Any tool T20 or greater is a router
             # Move to router tool change position (X800 Y0 in G54 coordinates)
-            print(f"Moving to router tool change position (X800 Y0)")
-            self.execute("G90")  # Ensure absolute mode
-            self.execute("G54")  # Ensure G54 coordinate system
-            # Move to safe Z height first (if not already there), then to tool change position
-            self.execute("G0 Z15")  # Move to safe Z height (adjust if needed)
-            yield INTERP_EXECUTE_FINISH
-            self.execute("G0 X800 Y0")  # Rapid move to tool change position in G54
-            yield INTERP_EXECUTE_FINISH
-            print("At tool change position (X800 Y0)")
+            # COMMENTED OUT FOR NOW - needs troubleshooting
+            # print(f"Moving to router tool change position (X800 Y0)")
+            # self.execute("G90")  # Ensure absolute mode
+            # self.execute("G54")  # Ensure G54 coordinate system
+            # # Move to safe Z height first (if not already there), then to tool change position
+            # self.execute("G0 Z15")  # Move to safe Z height (adjust if needed)
+            # yield INTERP_EXECUTE_FINISH
+            # self.execute("G0 X800 Y0")  # Rapid move to tool change position in G54
+            # yield INTERP_EXECUTE_FINISH
+            # print("At tool change position (X800 Y0)")
             
             if both_routers:
                 # Switching between router tools (e.g., T20 -> T21)
@@ -325,26 +326,6 @@ def remap_m6(self, **params):
             print(f"❌ Tool ID {tool_number} not found in tool table.")
             yield INTERP_ERROR
         else:
-            # For router tools (T20+), use T20's X/Y offsets for G54, but use tool's own offsets for tool length
-            # All router tools share the same X/Y work coordinate offsets
-            is_router_tool = tool_number >= 20
-            if is_router_tool:
-                # Get T20's offsets for G54 work coordinate system
-                t20_data = next((t for t in stat.tool_table if t.id == 20), None)
-                if t20_data:
-                    g54_x = t20_data.xoffset
-                    g54_y = t20_data.yoffset
-                    print(f"Router tool T{tool_number} detected - Using T20's X/Y offsets for G54 (X{g54_x} Y{g54_y})")
-                else:
-                    # Fallback to tool's own offsets if T20 not found
-                    g54_x = tool_data.xoffset
-                    g54_y = tool_data.yoffset
-                    print(f"Warning: T20 not found in tool table. Using T{tool_number}'s own offsets for G54")
-            else:
-                # For non-router tools, use their own offsets
-                g54_x = tool_data.xoffset
-                g54_y = tool_data.yoffset
-            
             # Use tool's own offsets for tool length compensation (X, Y, Z, diameter)
             x = tool_data.xoffset
             y = tool_data.yoffset
@@ -361,15 +342,6 @@ def remap_m6(self, **params):
                 self.execute(g10_cmd)
                 self.execute(f"G43 H{tool_number}")
                 yield INTERP_EXECUTE_FINISH
-
-                # Apply X/Y offsets to G54 work coordinate system
-                # For router tools (T20+), use T20's offsets; for others, use tool's own offsets
-                # G10 L2 P1 sets G54 offsets (P1 = G54, P2 = G55, etc.)
-                if g54_x != 0 or g54_y != 0:
-                    g54_cmd = f"G10 L2 P1 X{g54_x} Y{g54_y}"
-                    print(f"Applying work coordinate offsets to G54: {g54_cmd}")
-                    self.execute(g54_cmd)
-                    yield INTERP_EXECUTE_FINISH
 
                 # Now tell LinuxCNC this is the active tool
                 emccanon.CHANGE_TOOL(tool_number)
