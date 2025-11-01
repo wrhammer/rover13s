@@ -242,6 +242,11 @@ def remap_m6(self, **params):
 
         # --- Activate New Tool ---
         if is_router:  # Any tool T20 or greater is a router
+            # Poll fresh router state after retractions
+            stat.poll()
+            router_up = bool(stat.din[2])
+            router_down = bool(stat.din[3])
+            
             # Move to router tool change position (X800 Y0 in G54 coordinates)
             # COMMENTED OUT FOR NOW - needs troubleshooting
             # print(f"Moving to router tool change position (X800 Y0)")
@@ -257,7 +262,6 @@ def remap_m6(self, **params):
             if both_routers:
                 # Switching between router tools (e.g., T20 -> T21)
                 # Router is already down, just verify it's in position
-                stat.poll()
                 if router_down:
                     print(f"Router already down - Skipping raise/lower cycle (T{previous_tool} -> T{tool_number})")
                 else:
@@ -273,15 +277,15 @@ def remap_m6(self, **params):
             else:
                 # Switching to router from non-router tool
                 print(f"Activating Router (T{tool_number})")
-                if router_up and not router_down:
-                    self.execute("M64 P13")
-                    self.execute("G04 P3")  # Wait 3 seconds
-                    self.execute("M65 P13")
-                    yield INTERP_EXECUTE_FINISH
-                    print("Waiting for router to reach down position...")
-                    stat.poll()
-                    if not wait_for_input(stat, 3, True, timeout=5):
-                        print("⚠️ Router did not reach down position!")
+                # Always lower router when switching from non-router to router tool
+                self.execute("M64 P13")
+                self.execute("G04 P3")  # Wait 3 seconds
+                self.execute("M65 P13")
+                yield INTERP_EXECUTE_FINISH
+                print("Waiting for router to reach down position...")
+                stat.poll()
+                if not wait_for_input(stat, 3, True, timeout=5):
+                    print("⚠️ Router did not reach down position!")
 
         elif tool_number == 19:  # Saw
             print("Activating Saw Blade (T19)")
