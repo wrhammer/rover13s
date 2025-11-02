@@ -18,6 +18,7 @@ class WorkAreaControl:
         # Work Area Input pins
         self.h.newpin("left_button", hal.HAL_BIT, hal.HAL_IN)
         self.h.newpin("right_button", hal.HAL_BIT, hal.HAL_IN)
+        self.h.newpin("router_safe_zone", hal.HAL_BIT, hal.HAL_IN)  # Router safe zone signal from remap
 
         # Work Area Output pins
         self.h.newpin("left_stops", hal.HAL_BIT, hal.HAL_OUT)
@@ -45,12 +46,14 @@ class WorkAreaControl:
         # print(f"work_area_setup: {self.h.work_area_setup}")
         # print(f"left_button: {self.h.left_button}")
         # print(f"right_button: {self.h.right_button}")
+        # print(f"router_safe_zone: {self.h.router_safe_zone}")
         # print(f"left_stops: {self.h.left_stops}")
         # print(f"right_stops: {self.h.right_stops}")
         # print(f"front_stops: {self.h.front_stops}")
         # Read button states
         left_button = self.h.left_button
         right_button = self.h.right_button
+        router_safe_zone = self.h.router_safe_zone
 
         # Detect button press events
         left_pressed = left_button and not self.last_left_button
@@ -58,9 +61,13 @@ class WorkAreaControl:
 
         # Work area state machine
         if self.work_area_state == WorkAreaState.IDLE:
-            if left_pressed or right_pressed:
+            # Enter setup mode if router safe zone is active OR button is pressed
+            if router_safe_zone or left_pressed or right_pressed:
                 self.work_area_state = WorkAreaState.SETUP_MODE
-                self.setup_side = 'left' if left_pressed else 'right'
+                if left_pressed or right_pressed:
+                    self.setup_side = 'left' if left_pressed else 'right'
+                else:
+                    self.setup_side = 'router'  # Router safe zone triggered
                 self.home_sent = False  # Reset home command flag
 
                 # Raise appropriate stops
@@ -70,18 +77,29 @@ class WorkAreaControl:
                 self.h.work_area_setup = True  # Set setup mode output
 
         elif self.work_area_state == WorkAreaState.SETUP_MODE:
-            if (left_pressed and self.setup_side == 'left') or \
-               (right_pressed and self.setup_side == 'right'):
-                # Return to idle state
-                self.work_area_state = WorkAreaState.IDLE
-                self.setup_side = None
-                self.home_sent = False
-
-                # Lower all stops
-                self.h.left_stops = False
-                self.h.right_stops = False
-                self.h.front_stops = False
-                self.h.work_area_setup = False
+            # Exit setup mode when:
+            # - Router safe zone is cleared AND
+            # - Either no buttons were pressed, or the pressed button matches the setup side
+            if not router_safe_zone:
+                if self.setup_side == 'router':
+                    # Router safe zone cleared - exit immediately
+                    self.work_area_state = WorkAreaState.IDLE
+                    self.setup_side = None
+                    self.home_sent = False
+                    self.h.left_stops = False
+                    self.h.right_stops = False
+                    self.h.front_stops = False
+                    self.h.work_area_setup = False
+                elif (left_pressed and self.setup_side == 'left') or \
+                     (right_pressed and self.setup_side == 'right'):
+                    # Button match - exit setup mode
+                    self.work_area_state = WorkAreaState.IDLE
+                    self.setup_side = None
+                    self.home_sent = False
+                    self.h.left_stops = False
+                    self.h.right_stops = False
+                    self.h.front_stops = False
+                    self.h.work_area_setup = False
 
         # Update button state tracking
         self.last_left_button = left_button

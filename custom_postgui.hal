@@ -1,2 +1,15 @@
 # Include your custom_postgui HAL commands here
 # This file will not be overwritten when you run PNCconf again
+
+# Z-axis jog toggle control
+# This allows a gmoccapy button to toggle Z-axis jog mode for the pendant
+# When active, pendant jog controls Z-axis directly; when inactive, pendant uses normal selected axis jog
+
+# Connect gmoccapy button to toggle Z-axis jog mode
+# Configure a button in gmoccapy's homing screen with action: "HAL pin toggle" -> "z_jog_toggle.toggle_button"
+net toggle-z-jog-btn        gmoccapy.z-jog-toggle-btn   =>    z_jog_toggle.toggle_button
+
+# Route Z-mode jog outputs directly to Z-axis
+# Up button = Z+ (up), Down button = Z- (down)
+net z-jog-up                z_jog_toggle.z_jog_up         =>    halui.axis.z.plus
+net z-jog-down              z_jog_toggle.z_jog_down       =>    halui.axis.z.minus

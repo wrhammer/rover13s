@@ -43,7 +43,7 @@
                     <property name="led_blink_rate">0</property>
                     <property name="pick_color_on">#4CAF50</property>
                     <property name="pick_color_off">#B71C1C</property>
-                    <property name="hal_pin_name">work_area.left_button</property>
+                    <property name="hal_pin_name">io_monitor.left_button_led</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -73,7 +73,7 @@
                     <property name="led_blink_rate">0</property>
                     <property name="pick_color_on">#00FF00</property>
                     <property name="pick_color_off">#FF0000</property>
-                    <property name="hal_pin_name">work_area.right_button</property>
+                    <property name="hal_pin_name">io_monitor.right_button_led</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -100,7 +100,7 @@
                     <property name="led_blink_rate">0</property>
                     <property name="pick_color_on">#00FF00</property>
                     <property name="pick_color_off">#FF0000</property>
-                    <property name="hal_pin_name">vacuum.vacuum_ok</property>
+                    <property name="hal_pin_name">io_monitor.vacuum_ok_led</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -146,7 +146,7 @@
                     <property name="led_blink_rate">0</property>
                     <property name="pick_color_on">#00FF00</property>
                     <property name="pick_color_off">#FF0000</property>
-                    <property name="hal_pin_name">tool_release.tool_locked</property>
+                    <property name="hal_pin_name">io_monitor.tool_locked_led</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -173,7 +173,7 @@
                     <property name="led_blink_rate">0</property>
                     <property name="pick_color_on">#00FF00</property>
                     <property name="pick_color_off">#FF0000</property>
-                    <property name="hal_pin_name">work_area.x_safe</property>
+                    <property name="hal_pin_name">io_monitor.x_safe_led</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -200,7 +200,7 @@
                     <property name="led_blink_rate">0</property>
                     <property name="pick_color_on">#00FF00</property>
                     <property name="pick_color_off">#FF0000</property>
-                    <property name="hal_pin_name">work_area.y_safe</property>
+                    <property name="hal_pin_name">io_monitor.y_safe_led</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>

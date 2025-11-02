@@ -1,7 +1,7 @@
 # Connect Work Area LEDs
 net left-area-pb => io_monitor.left_button_led
 net rht-area-pb => io_monitor.right_button_led
-net vaccuum-ok => io_monitor.vacuum_ok_led
+net vacuum-ok => io_monitor.vacuum_ok_led
 
 # Connect Tool Status LEDs
 net tool-locked-present => io_monitor.tool_locked_led

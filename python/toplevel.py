@@ -15,3 +15,7 @@
 #   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 import remap
+
+def __init__(self):
+    if self.task:
+        remap.build_router_hal(self)

@@ -11,6 +11,36 @@ import linuxcnc
 import time  # Add import for sleep function
 import emccanon
 from itertools import count
+try:
+    import hal
+    HAL_AVAILABLE = True
+except ImportError:
+    HAL_AVAILABLE = False
+
+def check_setup_mode():
+    """Check if machine is in setup mode by reading HAL pin"""
+    if not HAL_AVAILABLE:
+        return False
+    try:
+        # Read the work_area_setup pin from work_area component
+        setup_mode = hal.get_value('work_area.work_area_setup')
+        return bool(setup_mode)
+    except Exception:
+        # If pin doesn't exist or error reading it, assume not in setup mode
+        return False
+
+def build_router_hal(self):
+    """Initialize HAL component for router safe zone signal"""
+    if not HAL_AVAILABLE:
+        return
+    try:
+        h = hal.component('remap_router')
+        h.newpin("safe_zone", hal.HAL_BIT, hal.HAL_OUT)
+        h.ready()
+        self.hal_router_comp = h
+        print("Router HAL component initialized")
+    except Exception as e:
+        print(f"Failed to initialize router HAL component: {e}")
 
 def get_simple_tools():
     """Dynamically build the simple_tools dictionary from the tool table.
@@ -253,33 +283,26 @@ def remap_m6(self, **params):
             
             # Move to router tool change position only if router tool has changed
             # (skip if using same router bit as last time)
-            # if router_tool_changed:
-            #     # OPTION 1: Using G54 work coordinate system (coordinates relative to G54 origin)
-            #     # print(f"Router tool changed - Moving to safe zone (X800 Y0 in G54)")
-            #     # self.execute("G90")  # Ensure absolute mode
-            #     # self.execute("G54")  # Ensure G54 coordinate system
-            #     # self.execute("G0 Z15")  # Move to safe Z height first
-            #     # yield INTERP_EXECUTE_FINISH
-            #     # self.execute("G0 X800 Y0")  # Rapid move to tool change position in G54
-            #     # yield INTERP_EXECUTE_FINISH
-            #     # print("At tool change position (X800 Y0 in G54)")
-            #     
-            #     # OPTION 2: Using G53 machine coordinates (coordinates relative to machine home)
-            #     # current_machine_pos = stat.actual_position  # Machine coordinates
-            #     # target_x = 800.0  # Desired X in machine coordinates
-            #     # target_y = 0.0    # Desired Y in machine coordinates
-            #     # target_z = 30.0   # Safe Z height in machine coordinates
-            #     # print(f"Router tool changed - Moving to safe zone (X{target_x} Y{target_y} in machine coordinates)")
-            #     # self.execute("G90")  # Ensure absolute mode
-            #     # self.execute("G53")  # Use machine coordinate system
-            #     # self.execute(f"G0 Z{target_z}")  # Move to safe Z height first
-            #     # yield INTERP_EXECUTE_FINISH
-            #     # self.execute(f"G0 X{target_x} Y{target_y}")  # Rapid move to tool change position
-            #     # yield INTERP_EXECUTE_FINISH
-            #     # print(f"At tool change position (X{target_x} Y{target_y} in machine coordinates)")
-            # else:
-            #     print(f"Router bit unchanged - Skipping move to safe zone (T{tool_number})")
-            # NOTE: Currently disabled - enable one of the options above as needed
+            if router_tool_changed:
+                # OPTION 2: Using G53 machine coordinates (coordinates relative to machine home)
+                # Router tool change position: X950 Y-100 (for router offsets like T20)
+                target_x = 770.0  # Desired X in machine coordinates
+                target_y = -145.0  # Desired Y in machine coordinates
+                target_z = 30.0   # Safe Z height in machine coordinates
+                print(f"Router tool changed - Moving to safe zone (X{target_x} Y{target_y} in machine coordinates)")
+                self.execute("G90")  # Ensure absolute mode
+                self.execute("G53")  # Use machine coordinate system
+                self.execute(f"G0 Z{target_z}")  # Move to safe Z height first
+                yield INTERP_EXECUTE_FINISH
+                self.execute(f"G0 X{target_x} Y{target_y}")  # Rapid move to tool change position
+                yield INTERP_EXECUTE_FINISH
+                print(f"At tool change position (X{target_x} Y{target_y} in machine coordinates)")
+                # Set safe zone signal for setup mode
+                if hasattr(self, 'hal_router_comp'):
+                    self.hal_router_comp.safe_zone = True
+                    print("Router safe zone active - Setup mode enabled")
+            else:
+                print(f"Router bit unchanged - Skipping move to safe zone (T{tool_number})")
             
             if both_routers:
                 # Switching between router tools (e.g., T20 -> T21)
@@ -376,10 +399,17 @@ def remap_m6(self, **params):
                 # Now tell LinuxCNC this is the active tool
                 emccanon.CHANGE_TOOL(tool_number)
         
+        # Clear router safe zone signal after tool change completes
+        if hasattr(self, 'hal_router_comp'):
+            self.hal_router_comp.safe_zone = False
+        
         print(f"✅ Tool change to T{tool_number} complete.")
         yield INTERP_OK
 
     except Exception as e:
+        # Clear router safe zone signal on error too
+        if hasattr(self, 'hal_router_comp'):
+            self.hal_router_comp.safe_zone = False
         print(f"❌ Error in remap_m6: {e}")
         yield INTERP_ERROR
 
@@ -410,4 +440,22 @@ def remap_m5(self, **params):
         yield INTERP_EXECUTE_FINISH
     
     yield INTERP_OK
+
+def motion_prolog(self, **words):
+    """Prolog function to check if motion is allowed (not in setup mode)
+    Used by G0, G1, G2, G3, G28 to block motion when in setup mode"""
+    # Ignore the preview interpreter
+    if self.task == 0:
+        return INTERP_OK
+    
+    # Check if machine is in setup mode
+    if check_setup_mode():
+        error_msg = "⚠️ MOTION BLOCKED: Machine is in SETUP MODE and stops are UP\n"
+        error_msg += "   Please exit setup mode by lowering the stops before moving axes."
+        self.set_errormsg(error_msg)
+        print(error_msg)
+        return INTERP_ERROR
+    
+    # Motion allowed - let the original command execute
+    return INTERP_OK
     

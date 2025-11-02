@@ -42,9 +42,13 @@ net motor-stopped 			hm2_7i96s.0.7i77.0.0.input-07      	vfd_control.motor_stopp
 net tooling-in-progress 	hm2_7i96s.0.7i77.0.0.input-09		
 net start-lube 				hm2_7i96s.0.7i77.0.0.input-10
 
-### REMOTE SPEED INCREASE AND DECREASE ###
-net speed-incrs  			hm2_7i96s.0.7i77.0.0.input-11		halui.spindle.0.override.increase
-net speed-dcrs   			hm2_7i96s.0.7i77.0.0.input-12		halui.spindle.0.override.decrease
+### REMOTE SPEED INCREASE AND DECREASE / PENDANT UP-DOWN BUTTONS ###
+# These buttons are shared: Z-jog mode = Z-axis control, normal mode = spindle speed control
+net pendant-up-btn		hm2_7i96s.0.7i77.0.0.input-11		z_jog_toggle.pendant_up
+net pendant-down-btn	hm2_7i96s.0.7i77.0.0.input-12		z_jog_toggle.pendant_down
+# Route based on mode (spindle speed when not in Z-mode, Z-jog when in Z-mode)
+net speed-incrs			z_jog_toggle.spindle_speed_incr		halui.spindle.0.override.increase
+net speed-dcrs			z_jog_toggle.spindle_speed_decr		halui.spindle.0.override.decrease
 net enable-machine 			hm2_7i96s.0.7i77.0.0.output-00  	machine_enable.enable_machine 			
 net enable-axes				hm2_7i96s.0.7i77.0.0.output-01		machine_enable.enable_axes
 net reset-vfd				hm2_7i96s.0.7i77.0.0.output-02      vfd_control.vfd_reset
@@ -55,6 +59,7 @@ net vfd-overload			hm2_7i96s.0.7i77.0.0.input-13		motion.digital-in-05 			vfd_co
 net low-vac					hm2_7i96s.0.7i77.0.0.output-04		vacuum.low_vacuum
 
 setp halui.spindle.0.override.scale 100
+setp halui.spindle.0.override.count-enable 1
 
 	#***************************************#
 	#	MESA 7I84-00 IN MACHINE HEAD	#
@@ -136,6 +141,9 @@ net up-suction				hm2_7i94.0.7i84.0.2.output-07		vacuum.suction_up
 
 # Vacuum control connections
 net work-area-setup			work_area.work_area_setup			vacuum.work_area_setup			machine_enable.work_area_setup
+
+# Router safe zone control
+net router-safe-zone		remap_router.safe_zone				work_area.router_safe_zone
 
 
 
