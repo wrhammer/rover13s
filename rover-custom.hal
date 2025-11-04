@@ -43,12 +43,15 @@ net tooling-in-progress 	hm2_7i96s.0.7i77.0.0.input-09
 net start-lube 				hm2_7i96s.0.7i77.0.0.input-10
 
 ### REMOTE SPEED INCREASE AND DECREASE / PENDANT UP-DOWN BUTTONS ###
-# These buttons are shared: Z-jog mode = Z-axis control, normal mode = spindle speed control
-net pendant-up-btn		hm2_7i96s.0.7i77.0.0.input-11		z_jog_toggle.pendant_up
-net pendant-down-btn	hm2_7i96s.0.7i77.0.0.input-12		z_jog_toggle.pendant_down
-# Route based on mode (spindle speed when not in Z-mode, Z-jog when in Z-mode)
-net speed-incrs			z_jog_toggle.spindle_speed_incr		halui.spindle.0.override.increase
-net speed-dcrs			z_jog_toggle.spindle_speed_decr		halui.spindle.0.override.decrease
+# Z jog toggle temporarily disabled - buttons only control spindle speed for now
+# net pendant-up-btn		hm2_7i96s.0.7i77.0.0.input-11		z_jog_toggle.pendant_up
+# net pendant-down-btn	hm2_7i96s.0.7i77.0.0.input-12		z_jog_toggle.pendant_down
+# net speed-incrs			z_jog_toggle.spindle_speed_incr		halui.spindle.0.override.increase
+# net speed-dcrs			z_jog_toggle.spindle_speed_decr		halui.spindle.0.override.decrease
+
+# Temporary direct connection - pendant buttons control spindle speed only
+net speed-incrs			hm2_7i96s.0.7i77.0.0.input-11		halui.spindle.0.override.increase
+net speed-dcrs			hm2_7i96s.0.7i77.0.0.input-12		halui.spindle.0.override.decrease
 net enable-machine 			hm2_7i96s.0.7i77.0.0.output-00  	machine_enable.enable_machine 			
 net enable-axes				hm2_7i96s.0.7i77.0.0.output-01		machine_enable.enable_axes
 net reset-vfd				hm2_7i96s.0.7i77.0.0.output-02      vfd_control.vfd_reset
