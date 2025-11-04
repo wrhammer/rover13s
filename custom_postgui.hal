@@ -23,16 +23,15 @@
 net z-jog-mode-not          z_jog_toggle.z_jog_mode_active =>    not.0.in
 net z-jog-mode-normal       not.0.out
 
-# Gate normal jog signals (only active when NOT in Z-mode)
-# jog-z-pos and jog-z-neg are signals created by gmoccapy when it connects
-# We intercept them here and route through AND gates
-# Note: These signals are created when gmoccapy loads, so they should exist by the time postgui runs
-net jog-z-pos-normal        jog-z-pos                       =>    and2.0.in0
-net z-jog-mode-normal       =>                            and2.0.in1
+# Create and gate normal jog signals (only active when NOT in Z-mode)
+# Create jog-z-pos signal by connecting it to AND gate input (signal is created by this connection)
+# gmoccapy will connect to this signal when it loads
+net jog-z-pos               =>    and2.0.in0
+net z-jog-mode-normal       =>    and2.0.in1
 net jog-z-pos-gated         and2.0.out
 
-net jog-z-neg-normal        jog-z-neg                       =>    and2.1.in0
-net z-jog-mode-normal       =>                            and2.1.in1
+net jog-z-neg               =>    and2.1.in0
+net z-jog-mode-normal       =>    and2.1.in1
 net jog-z-neg-gated         and2.1.out
 
 # Gate pendant jog signals (only active when IN Z-mode)
