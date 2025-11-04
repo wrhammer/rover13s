@@ -33,9 +33,12 @@ loadrt scale count=1
 addf scale.0 servo-thread
 
 # Load OR2 components for combining Z jog signals (pendant + normal jog)
-loadrt or2 names=z_jog_or,z_jog_or_down
-addf z_jog_or.0 servo-thread
-addf z_jog_or_down.0 servo-thread
+# Note: OR gates will be connected in custom_postgui.hal
+# Using count=2 creates or2.0 and or2.1 instances
+loadrt or2 count=2
+# Add functions to servo-thread
+addf or2.0 servo-thread
+addf or2.1 servo-thread
 
 # Removed ClassicLadder - replaced with Python components
 #loadrt classicladder_rt numPhysInputs=50 numPhysOutputs=50 numSections=15
@@ -256,8 +259,8 @@ net jog-y-analog            halui.axis.y.analog
 net y-is-homed              halui.joint.1.is-homed
 net axis-select-z           halui.axis.z.select
 # Z jog signals are combined with pendant jog in custom_postgui.hal using OR gates
-net jog-z-pos               z_jog_or.0.in1
-net jog-z-neg               z_jog_or_down.0.in1
+# Note: jog-z-pos and jog-z-neg signals are created here but connected through OR gates in postgui
+# (These signals will be driven by gmoccapy/halui when jogging)
 net jog-z-analog            halui.axis.z.analog
 net z-is-homed              halui.joint.2.is-homed
 net jog-selected-pos        halui.axis.selected.plus
