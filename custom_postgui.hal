@@ -19,14 +19,20 @@
 # When z_jog_mode_active is TRUE: pendant jog is selected (in1)
 # When z_jog_mode_active is FALSE: normal jog is selected (in0)
 
-# Connect pendant Z jog to mux inputs (in1)
-net z-jog-up-pendant        z_jog_toggle.z_jog_up         =>    mux2.0.in1
-net z-jog-down-pendant       z_jog_toggle.z_jog_down       =>    mux2.1.in1
+# Convert pendant Z jog bits to floats (mux2 needs float inputs)
+net z-jog-up-bit           z_jog_toggle.z_jog_up         =>    conv-bit-float.0.in
+net z-jog-down-bit          z_jog_toggle.z_jog_down      =>    conv-bit-float.1.in
+
+# Connect converted pendant Z jog to mux inputs (in1)
+net z-jog-up-pendant-float  conv-bit-float.0.out          =>    mux2.0.in1
+net z-jog-down-pendant-float conv-bit-float.1.out        =>    mux2.1.in1
 
 # Connect mux select signal (switches between normal and pendant jog)
 net z-jog-mode-select       z_jog_toggle.z_jog_mode_active =>    mux2.0.select
 net z-jog-mode-select       =>    mux2.1.select
 
-# Connect mux outputs to halui (normal jog is already connected to mux inputs in Rover13s.hal)
-net z-jog-up-output         mux2.0.out                     =>    halui.axis.z.plus
-net z-jog-down-output        mux2.1.out                     =>    halui.axis.z.minus
+# Convert mux float outputs back to bits for halui (halui.axis.z.plus/minus are bits)
+net z-jog-up-float          mux2.0.out                     =>    conv-float-bit.0.in
+net z-jog-down-float         mux2.1.out                     =>    conv-float-bit.1.in
+net z-jog-up-output         conv-float-bit.0.out           =>    halui.axis.z.plus
+net z-jog-down-output        conv-float-bit.1.out           =>    halui.axis.z.minus

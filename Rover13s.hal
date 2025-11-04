@@ -24,6 +24,19 @@ loadrt mux2 count=2
 addf mux2.0 servo-thread
 addf mux2.1 servo-thread
 
+# Load bit-to-float converters (mux2 needs float inputs, but jog signals are bits)
+# We need 4 converters: 2 for normal jog, 2 for pendant jog
+loadrt conv_bit_float count=4
+addf conv-bit-float.0 servo-thread
+addf conv-bit-float.1 servo-thread
+addf conv-bit-float.2 servo-thread
+addf conv-bit-float.3 servo-thread
+
+# Load float-to-bit converter for mux output (halui expects bits)
+loadrt conv_float_bit count=2
+addf conv-float-bit.0 servo-thread
+addf conv-float-bit.1 servo-thread
+
 setp    [HMOT](CARD0).pwmgen.pwm_frequency 20000
 setp    [HMOT](CARD0).pwmgen.pdm_frequency 6000000
 setp    [HMOT](CARD0).watchdog.timeout_ns 5000000
@@ -259,9 +272,11 @@ net jog-y-analog            halui.axis.y.analog
 net y-is-homed              halui.joint.1.is-homed
 net axis-select-z           halui.axis.z.select
 # Z jog signals - routed through mux2 to allow switching between normal jog and pendant jog
-# Normal jog signals go to mux inputs (will be selected when Z-mode is inactive)
-net jog-z-pos               =>    mux2.0.in0
-net jog-z-neg               =>    mux2.1.in0
+# Convert normal jog bits to floats for mux2 inputs
+net jog-z-pos               =>    conv-bit-float.2.in
+net jog-z-neg               =>    conv-bit-float.3.in
+net jog-z-pos-float         conv-bit-float.2.out =>    mux2.0.in0
+net jog-z-neg-float         conv-bit-float.3.out =>    mux2.1.in0
 net jog-z-analog            halui.axis.z.analog
 net z-is-homed              halui.joint.2.is-homed
 net jog-selected-pos        halui.axis.selected.plus
