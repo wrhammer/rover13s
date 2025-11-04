@@ -14,11 +14,19 @@
 # Alternative: If you want to use a hardware button instead, uncomment and modify:
 # net toggle-z-jog-btn        <your-hardware-button-pin>   =>    z_jog_toggle.toggle_button
 
-# Route Z-mode jog outputs
-# TEMPORARILY DISABLED: Multiple drivers conflict when both normal jog and pendant jog connect to same pin
-# TODO: Use mux2 component or proper OR gate setup to combine signals
-# For now, Z jog toggle is disabled to prevent conflicts
+# Route Z-mode jog outputs using mux2 components
+# mux2 switches between normal jog (in0) and pendant jog (in1) based on select signal
+# When z_jog_mode_active is TRUE: pendant jog is selected (in1)
+# When z_jog_mode_active is FALSE: normal jog is selected (in0)
 
-# When ready to enable:
-# - Use mux2 to switch between normal jog and pendant jog based on z_jog_toggle.z_jog_mode_active
-# - Or properly set up OR gates with intermediate signals
+# Connect pendant Z jog to mux inputs (in1)
+net z-jog-up-pendant        z_jog_toggle.z_jog_up         =>    mux2.0.in1
+net z-jog-down-pendant       z_jog_toggle.z_jog_down       =>    mux2.1.in1
+
+# Connect mux select signal (switches between normal and pendant jog)
+net z-jog-mode-select       z_jog_toggle.z_jog_mode_active =>    mux2.0.select
+net z-jog-mode-select       =>    mux2.1.select
+
+# Connect mux outputs to halui (normal jog is already connected to mux inputs in Rover13s.hal)
+net z-jog-up-output         mux2.0.out                     =>    halui.axis.z.plus
+net z-jog-down-output        mux2.1.out                     =>    halui.axis.z.minus
