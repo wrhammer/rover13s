@@ -14,7 +14,11 @@
 # Alternative: If you want to use a hardware button instead, uncomment and modify:
 # net toggle-z-jog-btn        <your-hardware-button-pin>   =>    z_jog_toggle.toggle_button
 
-# Route Z-mode jog outputs directly to Z-axis
+# Route Z-mode jog outputs - combine with existing jog signals using OR gates
 # Up button = Z+ (up), Down button = Z- (down)
-net z-jog-up                z_jog_toggle.z_jog_up         =>    halui.axis.z.plus
-net z-jog-down              z_jog_toggle.z_jog_down       =>    halui.axis.z.minus
+# OR gates are loaded in Rover13s.hal, we just connect them here
+net z-jog-up-1              z_jog_toggle.z_jog_up         =>    z_jog_or.0.in0
+net z-jog-up-combined        z_jog_or.0.out                =>    halui.axis.z.plus
+
+net z-jog-down-1             z_jog_toggle.z_jog_down       =>    z_jog_or_down.0.in0
+net z-jog-down-combined      z_jog_or_down.0.out           =>    halui.axis.z.minus

@@ -1,4 +1,6 @@
 # Connect Work Area LEDs
+# GladeVCP creates HAL pins automatically based on widget IDs
+# Format: io_monitor.<widget_id>
 net left-area-pb => io_monitor.left_button_led
 net rht-area-pb => io_monitor.right_button_led
 net vacuum-ok => io_monitor.vacuum_ok_led
