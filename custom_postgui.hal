@@ -5,9 +5,14 @@
 # This allows a gmoccapy button to toggle Z-axis jog mode for the pendant
 # When active, pendant jog controls Z-axis directly; when inactive, pendant uses normal selected axis jog
 
-# Connect gmoccapy button to toggle Z-axis jog mode
-# Configure a button in gmoccapy's homing screen with action: "HAL pin toggle" -> "z_jog_toggle.toggle_button"
-net toggle-z-jog-btn        gmoccapy.z-jog-toggle-btn   =>    z_jog_toggle.toggle_button
+# To configure gmoccapy button:
+# 1. Right-click on a button in the homing screen
+# 2. Set Action to: "HAL pin toggle" or "HAL pin set"
+# 3. Set Pin name to: "z_jog_toggle.toggle_button"
+# gmoccapy will automatically connect to this pin - no HAL net statement needed here
+
+# Alternative: If you want to use a hardware button instead, uncomment and modify:
+# net toggle-z-jog-btn        <your-hardware-button-pin>   =>    z_jog_toggle.toggle_button
 
 # Route Z-mode jog outputs directly to Z-axis
 # Up button = Z+ (up), Down button = Z- (down)
