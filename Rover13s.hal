@@ -9,6 +9,7 @@ loadrt hostmot2
 loadrt hm2_eth board_ip="10.10.10.10,10.10.10.11" config="num_encoders=8 num_pwmgens=1 num_stepgens=5 sserial_port_0=0000xxxx" 
 
 # Load all Python components first
+loadusr -Wn remap_router python3 python/router_hal.py
 loadusr -Wn machine_enable python3 python/machine_enable.py
 loadusr -Wn work_area python3 python/work_area_control.py
 loadusr -Wn vfd_control python3 python/vfd_control.py

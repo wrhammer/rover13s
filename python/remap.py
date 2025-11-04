@@ -30,17 +30,24 @@ def check_setup_mode():
         return False
 
 def build_router_hal(self):
-    """Initialize HAL component for router safe zone signal"""
+    """Get reference to existing remap_router HAL component"""
     if not HAL_AVAILABLE:
         return
     try:
-        h = hal.component('remap_router')
-        h.newpin("safe_zone", hal.HAL_BIT, hal.HAL_OUT)
-        h.ready()
-        self.hal_router_comp = h
-        print("Router HAL component initialized")
+        # Component should already exist from router_hal.py, just get reference
+        if hal.component_exists('remap_router'):
+            h = hal.component('remap_router')
+            self.hal_router_comp = h
+            print("Router HAL component reference obtained")
+        else:
+            print("Warning: remap_router component not found, creating it")
+            h = hal.component('remap_router')
+            h.newpin("safe_zone", hal.HAL_BIT, hal.HAL_OUT)
+            h.ready()
+            self.hal_router_comp = h
+            print("Router HAL component created (fallback)")
     except Exception as e:
-        print(f"Failed to initialize router HAL component: {e}")
+        print(f"Failed to get router HAL component: {e}")
 
 def get_simple_tools():
     """Dynamically build the simple_tools dictionary from the tool table.
