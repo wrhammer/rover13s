@@ -14,25 +14,38 @@
 # Alternative: If you want to use a hardware button instead, uncomment and modify:
 # net toggle-z-jog-btn        <your-hardware-button-pin>   =>    z_jog_toggle.toggle_button
 
-# Route Z-mode jog outputs using mux2 components
-# mux2 switches between normal jog (in0) and pendant jog (in1) based on select signal
-# When z_jog_mode_active is TRUE: pendant jog is selected (in1)
-# When z_jog_mode_active is FALSE: normal jog is selected (in0)
+# Route Z-mode jog outputs using logic gates (all bit-based)
+# When z_jog_mode_active is TRUE: pendant jog controls Z
+# When z_jog_mode_active is FALSE: normal jog controls Z
+# We use AND gates to gate each source, then OR to combine
 
-# Convert pendant Z jog bits to floats (mux2 needs float inputs)
-net z-jog-up-bit           z_jog_toggle.z_jog_up         =>    conv-bit-float.0.in
-net z-jog-down-bit          z_jog_toggle.z_jog_down      =>    conv-bit-float.1.in
+# Create inverted mode signal (normal mode active)
+net z-jog-mode-not          z_jog_toggle.z_jog_mode_active =>    not.0.in
+net z-jog-mode-normal       not.0.out
 
-# Connect converted pendant Z jog to mux inputs (in1)
-net z-jog-up-pendant-float  conv-bit-float.0.out          =>    mux2.0.in1
-net z-jog-down-pendant-float conv-bit-float.1.out        =>    mux2.1.in1
+# Gate normal jog signals (only active when NOT in Z-mode)
+net jog-z-pos-normal        jog-z-pos-sig                  =>    and2.0.in0
+net z-jog-mode-normal       =>                            and2.0.in1
+net jog-z-pos-gated         and2.0.out
 
-# Connect mux select signal (switches between normal and pendant jog)
-net z-jog-mode-select       z_jog_toggle.z_jog_mode_active =>    mux2.0.select
-net z-jog-mode-select       =>    mux2.1.select
+net jog-z-neg-normal        jog-z-neg-sig                  =>    and2.1.in0
+net z-jog-mode-normal       =>                            and2.1.in1
+net jog-z-neg-gated         and2.1.out
 
-# Convert mux float outputs back to bits for halui (halui.axis.z.plus/minus are bits)
-net z-jog-up-float          mux2.0.out                     =>    conv-float-bit.0.in
-net z-jog-down-float         mux2.1.out                     =>    conv-float-bit.1.in
-net z-jog-up-output         conv-float-bit.0.out           =>    halui.axis.z.plus
-net z-jog-down-output        conv-float-bit.1.out           =>    halui.axis.z.minus
+# Gate pendant jog signals (only active when IN Z-mode)
+net z-jog-up-pendant        z_jog_toggle.z_jog_up          =>    and2.2.in0
+net z-jog-mode-active       z_jog_toggle.z_jog_mode_active =>    and2.2.in1
+net z-jog-up-gated          and2.2.out
+
+net z-jog-down-pendant      z_jog_toggle.z_jog_down        =>    and2.3.in0
+net z-jog-mode-active       =>                            and2.3.in1
+net z-jog-down-gated        and2.3.out
+
+# Combine gated signals with OR gates
+net z-jog-up-combined       jog-z-pos-gated                 =>    or2.0.in0
+net z-jog-up-combined       z-jog-up-gated                 =>    or2.0.in1
+net z-jog-up-output         or2.0.out                      =>    halui.axis.z.plus
+
+net z-jog-down-combined     jog-z-neg-gated                =>    or2.1.in0
+net z-jog-down-combined     z-jog-down-gated               =>    or2.1.in1
+net z-jog-down-output       or2.1.out                      =>    halui.axis.z.minus
