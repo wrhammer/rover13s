@@ -19,8 +19,11 @@
 # When z_jog_mode_active is FALSE: normal jog controls Z
 # We use AND gates to gate each source, then OR to combine
 
+# Create mode signal from z_jog_toggle (only connect once, then distribute)
+net z-jog-mode-active       z_jog_toggle.z_jog_mode_active
+
 # Create inverted mode signal (normal mode active)
-net z-jog-mode-not          z_jog_toggle.z_jog_mode_active =>    not.0.in
+net z-jog-mode-not          z-jog-mode-active               =>    not.0.in
 net z-jog-mode-normal       not.0.out
 
 # Create and gate normal jog signals (only active when NOT in Z-mode)
@@ -36,7 +39,7 @@ net jog-z-neg-gated         and2.1.out
 
 # Gate pendant jog signals (only active when IN Z-mode)
 net z-jog-up-pendant        z_jog_toggle.z_jog_up          =>    and2.2.in0
-net z-jog-mode-active       z_jog_toggle.z_jog_mode_active =>    and2.2.in1
+net z-jog-mode-active       =>                            and2.2.in1
 net z-jog-up-gated          and2.2.out
 
 net z-jog-down-pendant      z_jog_toggle.z_jog_down        =>    and2.3.in0
