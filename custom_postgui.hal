@@ -14,21 +14,11 @@
 # Alternative: If you want to use a hardware button instead, uncomment and modify:
 # net toggle-z-jog-btn        <your-hardware-button-pin>   =>    z_jog_toggle.toggle_button
 
-# Route Z-mode jog outputs - combine with existing jog signals using OR gates
-# Up button = Z+ (up), Down button = Z- (down)
-# OR gates are loaded in Rover13s.hal, we connect them here
-# Note: jog-z-pos and jog-z-neg signals come from gmoccapy/halui and need to be routed through OR gates
+# Route Z-mode jog outputs
+# TEMPORARILY DISABLED: Multiple drivers conflict when both normal jog and pendant jog connect to same pin
+# TODO: Use mux2 component or proper OR gate setup to combine signals
+# For now, Z jog toggle is disabled to prevent conflicts
 
-# Route existing jog signals through OR gates
-# OR gates: or2.0 for Z-up, or2.1 for Z-down
-# These signals come from gmoccapy/halui and need to go through OR gates
-net jog-z-pos               or2.0.in1
-net jog-z-neg               or2.1.in1
-
-# Pendant jog in Z-mode
-net z-jog-up-1              z_jog_toggle.z_jog_up         =>    or2.0.in0
-net z-jog-down-1            z_jog_toggle.z_jog_down     =>    or2.1.in0
-
-# Combined outputs
-net z-jog-up-combined       or2.0.out                     =>    halui.axis.z.plus
-net z-jog-down-combined    or2.1.out                      =>    halui.axis.z.minus
+# When ready to enable:
+# - Use mux2 to switch between normal jog and pendant jog based on z_jog_toggle.z_jog_mode_active
+# - Or properly set up OR gates with intermediate signals
