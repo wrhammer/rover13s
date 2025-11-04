@@ -24,11 +24,12 @@ net z-jog-mode-not          z_jog_toggle.z_jog_mode_active =>    not.0.in
 net z-jog-mode-normal       not.0.out
 
 # Gate normal jog signals (only active when NOT in Z-mode)
-net jog-z-pos-normal        jog-z-pos-sig                  =>    and2.0.in0
+# jog-z-pos and jog-z-neg are signals created by gmoccapy/halui
+net jog-z-pos-normal        jog-z-pos                       =>    and2.0.in0
 net z-jog-mode-normal       =>                            and2.0.in1
 net jog-z-pos-gated         and2.0.out
 
-net jog-z-neg-normal        jog-z-neg-sig                  =>    and2.1.in0
+net jog-z-neg-normal        jog-z-neg                       =>    and2.1.in0
 net z-jog-mode-normal       =>                            and2.1.in1
 net jog-z-neg-gated         and2.1.out
 

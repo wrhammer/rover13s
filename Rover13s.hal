@@ -269,9 +269,8 @@ net jog-y-analog            halui.axis.y.analog
 net y-is-homed              halui.joint.1.is-homed
 net axis-select-z           halui.axis.z.select
 # Z jog signals - routed through logic gates to allow switching between normal jog and pendant jog
-# Normal jog signals will be gated and combined with pendant jog in custom_postgui.hal
-net jog-z-pos               =>    jog-z-pos-sig
-net jog-z-neg               =>    jog-z-neg-sig
+# Normal jog signals are routed to logic gates in custom_postgui.hal
+# Note: jog-z-pos and jog-z-neg signals come from gmoccapy/halui
 net jog-z-analog            halui.axis.z.analog
 net z-is-homed              halui.joint.2.is-homed
 net jog-selected-pos        halui.axis.selected.plus
