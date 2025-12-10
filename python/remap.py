@@ -389,9 +389,15 @@ def remap_m3(self, **params):
     stat = linuxcnc.stat()
     stat.poll()
     
-    # Only activate motor for tools 1-19 (not router)
-    if 1 <= self.current_tool <= 19:
-        print("Activating Motor (P17)")
+    # Get current tool from LinuxCNC stat (more reliable than self.current_tool)
+    current_tool = stat.tool_in_spindle
+    if current_tool <= 0:
+        # Fallback to self.current_tool if stat doesn't have a tool
+        current_tool = getattr(self, "current_tool", 0)
+    
+    # Only activate motor for tools 1-19 (not router T20+)
+    if 1 <= current_tool <= 19:
+        print(f"Activating Motor (P17) for T{current_tool}")
         self.execute("M64 P17")
         yield INTERP_EXECUTE_FINISH
     
@@ -403,9 +409,15 @@ def remap_m5(self, **params):
     stat = linuxcnc.stat()
     stat.poll()
     
-    # Deactivate motor for tools 1-19 (not router)
-    if 1 <= self.current_tool <= 19:
-        print("Deactivating Motor (P17)")
+    # Get current tool from LinuxCNC stat (more reliable than self.current_tool)
+    current_tool = stat.tool_in_spindle
+    if current_tool <= 0:
+        # Fallback to self.current_tool if stat doesn't have a tool
+        current_tool = getattr(self, "current_tool", 0)
+    
+    # Deactivate motor for tools 1-19 (not router T20+)
+    if 1 <= current_tool <= 19:
+        print(f"Deactivating Motor (P17) for T{current_tool}")
         self.execute("M65 P17")
         yield INTERP_EXECUTE_FINISH
     
@@ -435,9 +447,10 @@ HORIZONTAL_X_BITS = [15, 16]
 def motion_prolog(self, **words):
     """
     Prolog for G0/G1/G2/G3 motion commands.
-    Swaps axes when horizontal bits are active:
-    - T11-T14 (Horizontal Y-bits): Swap Y↔Z
-    - T15-T16 (Horizontal X-bits): Swap X↔Z
+    - Saw blade (T19) safety: When blade is below material surface, only allow Y movement
+    - Swaps axes when horizontal bits are active:
+      - T11-T14 (Horizontal Y-bits): Swap Y↔Z
+      - T15-T16 (Horizontal X-bits): Swap X↔Z
     
     This allows any post-processor to output standard g-code - the transformation
     happens automatically at the LinuxCNC level. This is the foolproof approach
@@ -458,15 +471,57 @@ def motion_prolog(self, **words):
     
     tool_number = stat.tool_in_spindle
     
+    # Get current block
+    c = self.blocks[self.remap_level]
+    
+    # ========================================================================
+    # SAW BLADE (T19) SAFETY CHECK
+    # When blade is below material surface, restrict dangerous movements
+    # Blade doesn't swivel, so X movement and circular moves when engaged are dangerous
+    # Z movement and Y± movement are allowed (for depth changes and cleanup passes)
+    # ========================================================================
+    if tool_number == 19:  # Saw blade
+        # Get current Z position (work coordinates)
+        current_z = stat.position[2]  # Z position in work coordinates
+        
+        # Material surface is typically at Z=0 in work coordinates
+        # Blade is engaged if Z < 0 (below material surface)
+        # You can adjust this threshold if needed (e.g., Z < 0.5 for safety margin)
+        MATERIAL_SURFACE_Z = 0.0  # Z=0 is typically the material surface
+        blade_engaged = current_z < MATERIAL_SURFACE_Z
+        
+        if blade_engaged:
+            # Blade is below material surface - restrict dangerous movements
+            # Allow: Y movement (both directions for cleanup passes), Z movement (for depth changes)
+            # Block: X movement (sideways movement is dangerous), circular moves (G2/G3)
+            
+            # Check for X movement - block it (sideways movement is dangerous)
+            if c.x_flag:
+                error_msg = f"⚠️ SAW BLADE SAFETY: X movement blocked! Blade is engaged (Z={current_z:.3f} < {MATERIAL_SURFACE_Z}). X movement is not allowed when blade is below material surface."
+                print(error_msg)
+                self.set_errormsg(error_msg)
+                return INTERP_ERROR
+            
+            # Block circular moves (G2/G3) when blade is engaged
+            # Circular moves have I, J, or K parameters (arc center offsets)
+            if c.i_flag or c.j_flag or c.k_flag:
+                error_msg = f"⚠️ SAW BLADE SAFETY: Circular moves (G2/G3) blocked! Blade is engaged (Z={current_z:.3f} < {MATERIAL_SURFACE_Z}). Only straight linear movement allowed when blade is below material surface."
+                print(error_msg)
+                self.set_errormsg(error_msg)
+                return INTERP_ERROR
+            
+            # Z movement is allowed (for depth changes)
+            # Y movement is allowed in both directions (for cleanup passes)
+        
+        # If blade is not engaged (above material surface), allow all movements
+        # Continue to horizontal bit transformations below
+    
     # Check if current tool is a horizontal bit
     is_horizontal_y = tool_number in HORIZONTAL_Y_BITS
     is_horizontal_x = tool_number in HORIZONTAL_X_BITS
     
     if not (is_horizontal_y or is_horizontal_x):
         return INTERP_OK  # No transformation needed
-    
-    # Get current block
-    c = self.blocks[self.remap_level]
     
     # Handle horizontal Y-bits (T11-T14): Swap Y↔Z
     if is_horizontal_y:
