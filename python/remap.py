@@ -410,4 +410,153 @@ def remap_m5(self, **params):
         yield INTERP_EXECUTE_FINISH
     
     yield INTERP_OK
+
+# ============================================================================
+# HORIZONTAL BIT AXIS TRANSFORMATION
+# ============================================================================
+# This section handles automatic axis swapping for horizontal bits.
+# This allows ANY post-processor to be used - the transformation happens
+# automatically at the LinuxCNC level, making it foolproof and machine-specific
+# rather than post-processor-specific.
+#
+# Horizontal Y-bits (T11-T14): Swap Y↔Z (bits drill along Y-axis)
+# Horizontal X-bits (T15-T16): Swap X↔Z (bits drill along X-axis)
+#
+# When a horizontal bit is active, this prolog function intercepts G0/G1/G2/G3
+# motion commands and swaps the appropriate axes before execution.
+# ============================================================================
+
+# Horizontal Y-bit tools that require Y↔Z axis swap
+HORIZONTAL_Y_BITS = [11, 12, 13, 14]
+
+# Horizontal X-bit tools that require X↔Z axis swap
+HORIZONTAL_X_BITS = [15, 16]
+
+def motion_prolog(self, **words):
+    """
+    Prolog for G0/G1/G2/G3 motion commands.
+    Swaps axes when horizontal bits are active:
+    - T11-T14 (Horizontal Y-bits): Swap Y↔Z
+    - T15-T16 (Horizontal X-bits): Swap X↔Z
+    
+    This allows any post-processor to output standard g-code - the transformation
+    happens automatically at the LinuxCNC level. This is the foolproof approach
+    that works regardless of which CAM software or post-processor is used.
+    
+    Usage: Add to Rover13s.ini:
+        REMAP=G0 modalgroup=1 prolog=motion_prolog
+        REMAP=G1 modalgroup=1 prolog=motion_prolog
+        REMAP=G2 modalgroup=1 prolog=motion_prolog
+        REMAP=G3 modalgroup=1 prolog=motion_prolog
+    """
+    if self.task == 0:  # Preview interpreter - skip transformation
+        return INTERP_OK
+    
+    import linuxcnc
+    stat = linuxcnc.stat()
+    stat.poll()
+    
+    tool_number = stat.tool_in_spindle
+    
+    # Check if current tool is a horizontal bit
+    is_horizontal_y = tool_number in HORIZONTAL_Y_BITS
+    is_horizontal_x = tool_number in HORIZONTAL_X_BITS
+    
+    if not (is_horizontal_y or is_horizontal_x):
+        return INTERP_OK  # No transformation needed
+    
+    # Get current block
+    c = self.blocks[self.remap_level]
+    
+    # Handle horizontal Y-bits (T11-T14): Swap Y↔Z
+    if is_horizontal_y:
+        # Swap Y and Z coordinates
+        if c.y_flag and c.z_flag:
+            # Both Y and Z present - swap them
+            temp = c.y_number
+            c.y_number = c.z_number
+            c.z_number = temp
+            if hasattr(self, 'debug') and self.debug:
+                print(f"🔄 [T{tool_number}] Swapped Y↔Z: Y{c.z_number:.3f} Z{c.y_number:.3f}")
+        elif c.y_flag:
+            # Only Y present - move to Z
+            c.z_flag = True
+            c.z_number = c.y_number
+            c.y_flag = False
+            c.y_number = 0
+            if hasattr(self, 'debug') and self.debug:
+                print(f"🔄 [T{tool_number}] Moved Y→Z: Z{c.z_number:.3f}")
+        elif c.z_flag:
+            # Only Z present - move to Y
+            c.y_flag = True
+            c.y_number = c.z_number
+            c.z_flag = False
+            c.z_number = 0
+            if hasattr(self, 'debug') and self.debug:
+                print(f"🔄 [T{tool_number}] Moved Z→Y: Y{c.y_number:.3f}")
+        
+        # For circular moves (G2/G3), also swap J and K (arc center offsets)
+        if c.j_flag and c.k_flag:
+            temp = c.j_number
+            c.j_number = c.k_number
+            c.k_number = temp
+            if hasattr(self, 'debug') and self.debug:
+                print(f"🔄 [T{tool_number}] Swapped J↔K: J{c.k_number:.3f} K{c.j_number:.3f}")
+        elif c.j_flag:
+            c.k_flag = True
+            c.k_number = c.j_number
+            c.j_flag = False
+            c.j_number = 0
+        elif c.k_flag:
+            c.j_flag = True
+            c.j_number = c.k_number
+            c.k_flag = False
+            c.k_number = 0
+    
+    # Handle horizontal X-bits (T15-T16): Swap X↔Z
+    if is_horizontal_x:
+        # Swap X and Z coordinates
+        if c.x_flag and c.z_flag:
+            # Both X and Z present - swap them
+            temp = c.x_number
+            c.x_number = c.z_number
+            c.z_number = temp
+            if hasattr(self, 'debug') and self.debug:
+                print(f"🔄 [T{tool_number}] Swapped X↔Z: X{c.z_number:.3f} Z{c.x_number:.3f}")
+        elif c.x_flag:
+            # Only X present - move to Z
+            c.z_flag = True
+            c.z_number = c.x_number
+            c.x_flag = False
+            c.x_number = 0
+            if hasattr(self, 'debug') and self.debug:
+                print(f"🔄 [T{tool_number}] Moved X→Z: Z{c.z_number:.3f}")
+        elif c.z_flag:
+            # Only Z present - move to X
+            c.x_flag = True
+            c.x_number = c.z_number
+            c.z_flag = False
+            c.z_number = 0
+            if hasattr(self, 'debug') and self.debug:
+                print(f"🔄 [T{tool_number}] Moved Z→X: X{c.x_number:.3f}")
+        
+        # For circular moves (G2/G3), also swap I and K (arc center offsets)
+        if c.i_flag and c.k_flag:
+            temp = c.i_number
+            c.i_number = c.k_number
+            c.k_number = temp
+            if hasattr(self, 'debug') and self.debug:
+                print(f"🔄 [T{tool_number}] Swapped I↔K: I{c.k_number:.3f} K{c.i_number:.3f}")
+        elif c.i_flag:
+            c.k_flag = True
+            c.k_number = c.i_number
+            c.i_flag = False
+            c.i_number = 0
+        elif c.k_flag:
+            c.i_flag = True
+            c.i_number = c.k_number
+            c.k_flag = False
+            c.k_number = 0
+    
+    return INTERP_OK
     

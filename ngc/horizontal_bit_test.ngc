@@ -1,0 +1,59 @@
+%
+O100 (Horizontal Bit Test - 10mm Round Hole, 6mm Deep)
+G21 G90 G94 G40 (Metric, Absolute, Feed/Min, Cutter Comp Off)
+G17 (XY plane)
+
+(========================================)
+(TEST: T11 - Horizontal Y+ Bit)
+(Cuts in +Y direction, swaps Y↔Z)
+(10mm round hole, 6mm deep)
+(In Fusion top-view: X=width, Y=depth(6mm), Z=diameter(10mm))
+(After Y↔Z swap: X=width, Y=diameter(10mm), Z=depth(6mm))
+(========================================)
+G54
+T11 M6
+G43 H11
+M3 S5000
+G0 X0 Y0 Z10 (Rapid to center of hole, safe height)
+G1 X0 Y0 Z4 F200 (Plunge to depth - Z=4mm (6mm deep from Z10))
+G2 X10 Y0 Z4 I5 J0 (10mm diameter circle in X-Y plane at depth)
+G1 X0 Y0 Z4 (Return to center)
+G1 X0 Y0 Z10 F500 (Retract to safe height)
+M5
+
+(========================================)
+(TEST: T16 - Horizontal X+ Bit)
+(Cuts in +X direction, swaps X↔Z)
+(10mm round hole, 6mm deep)
+(In Fusion top-view: X=depth(6mm), Y=width, Z=diameter(10mm))
+(After X↔Z swap: X=diameter(10mm), Y=width, Z=depth(6mm))
+(========================================)
+T16 M6
+G43 H16
+M3 S5000
+G0 X0 Y0 Z10 (Rapid to center of hole, safe height)
+G1 X0 Y0 Z4 F200 (Plunge to depth - Z=4mm (6mm deep from Z10))
+G2 X10 Y0 Z4 I5 J0 (10mm diameter circle in X-Y plane at depth)
+G1 X0 Y0 Z4 (Return to center)
+G1 X0 Y0 Z10 F500 (Retract to safe height)
+M5
+
+(========================================)
+(VERIFY: Normal Tool - T21)
+(Should NOT swap - verify normal operation and tool change)
+(10mm round hole 6mm deep - normal vertical drilling)
+(========================================)
+T21 M6
+G43 H21
+M3 S18000
+G0 X0 Y0 Z10 (Normal - no swap)
+G0 Z5
+G1 Z-1 F200 (Plunge 6mm deep - Z goes from 5 to -1 = 6mm)
+G2 X10 Y0 Z-1 I5 J0 (10mm diameter circle in XY plane)
+G1 X0 Y0 Z-1 (Back to center)
+G1 Z5 F500 (Normal retract)
+G0 Z10
+M5
+
+M2
+%
