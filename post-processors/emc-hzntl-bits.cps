@@ -10,7 +10,7 @@
   FORKID {52A5C3D6-1533-413E-B493-7B93D9E48B30}
 */
 
-description = "Enhanced Machine Controller (EMC)";
+description = "Daybreak CNC";
 vendor = "LinuxCNC";
 vendorUrl = "http://www.linuxcnc.org";
 legal = "Copyright (C) 2012-2025 by Autodesk, Inc.";
@@ -612,6 +612,10 @@ function onCommand(command) {
   case COMMAND_START_SPINDLE:
     forceSpindleSpeed = false;
     writeBlock(sOutput.format(spindleSpeed), mFormat.format(tool.clockwise ? 3 : 4));
+    if (!spindleHasStarted) {
+      writeBlock("G4", "P3.0"); // 3 second dwell after first spindle start
+      spindleHasStarted = true;
+    }
     return;
   case COMMAND_LOAD_TOOL:
     writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
@@ -674,9 +678,8 @@ function onClose() {
   setCoolant(COOLANT_OFF);
   writeRetract(Z);
   setWorkPlane(new Vector(0, 0, 0)); // reset working plane
-  if (getSetting("retract.homeXY.onProgramEnd", false)) {
-    writeRetract(settings.retract.homeXY.onProgramEnd);
-  }
+  // Skip default home XY retract (G53 G0 X0 Y0); we use custom park position below instead
+  writeBlock("G53", "G0", "X-200", "Y-150"); // park at machine position before program end
   writeBlock(mFormat.format(30)); // stop program, spindle stop, coolant off
   writeln("%");
 }
@@ -700,6 +703,7 @@ var sequenceNumber;
 var optionalSection = false;
 var currentWorkOffset;
 var forceSpindleSpeed = false;
+var spindleHasStarted = false; // used to add G4 P3.0 dwell only after first M3
 var operationNeedsSafeStart = false; // used to convert blocks to optional for safeStartAllOperations
 
 function activateMachine() {

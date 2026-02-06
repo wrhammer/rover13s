@@ -1,6 +1,22 @@
 # Joint 1 (Y Axis) Following Error - Real Root Cause Analysis
 
-## Issue Pattern
+## Working Solution (confirmed)
+
+**PID tuning resolved the issue.** Final working values for Joint 1 (Y axis):
+
+| Parameter | Original | Tried (chatter) | **Final working** |
+|-----------|----------|-----------------|---------------------|
+| P         | 2.0      | 3.5 (chatter)  | **1.5**             |
+| I         | 0.01     | 0.005          | **0.005**           |
+| D         | 0.0      | 0.1 (chatter)  | **0.0**             |
+
+- **Higher P** and **any D** caused chatter; kept P low and D at zero.
+- **Result:** 30+ minutes run with no following errors. Servo hum reduced (still slightly present but much quieter).
+- Root cause was **integrator windup** (I too high) and **over-aggressive P**; reducing both and avoiding D gave stable, quiet operation.
+
+---
+
+## Issue Pattern (original)
 - **Works fine for ~15 minutes**, then fails
 - **Joint 1 (Y axis) following error** occurs
 - **Appears to "flip polarity"** - axis moves in wrong direction
