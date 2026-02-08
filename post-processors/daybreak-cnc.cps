@@ -1722,6 +1722,9 @@ function writeToolCall(tool, insertToolCall) {
   }
   writeStartBlocks(insertToolCall, function () {
     writeRetract(Z);
+    if (insertToolCall) {
+      writeBlock("G53", "G0", "X-200", "Y0"); // router tool change position before M3
+    }
     if (getSetting("retract.homeXY.onToolChange", false)) {
       writeRetract(settings.retract.homeXY.onToolChange);
     }
