@@ -377,10 +377,13 @@ def remap_m6(self, **params):
                 emccanon.CHANGE_TOOL(tool_number)
         
         print(f"✅ Tool change to T{tool_number} complete.")
+        # Queue buster: flush readahead so LinuxCNC doesn't report "Queue not empty after toolchange"
+        yield INTERP_EXECUTE_FINISH
         yield INTERP_OK
 
     except Exception as e:
         print(f"❌ Error in remap_m6: {e}")
+        yield INTERP_EXECUTE_FINISH
         yield INTERP_ERROR
 
 def remap_m3(self, **params):
