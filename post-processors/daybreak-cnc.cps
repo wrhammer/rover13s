@@ -612,8 +612,8 @@ function onCommand(command) {
   case COMMAND_START_SPINDLE:
     forceSpindleSpeed = false;
     writeBlock(sOutput.format(spindleSpeed), mFormat.format(tool.clockwise ? 3 : 4));
+    writeBlock("G4", "P2.0"); // dwell so spindle has time to wind up
     if (!spindleHasStarted) {
-      writeBlock("G4", "P3.0"); // 3 second dwell after first spindle start
       spindleHasStarted = true;
     }
     return;
@@ -1738,14 +1738,15 @@ function writeToolCall(tool, insertToolCall) {
       }
     }
 
-    if (tool.manualToolChange) {
-      onCommand(COMMAND_STOP);
-      writeComment("MANUAL TOOL CHANGE TO T" + toolFormat.format(tool.number));
-    } else {
+    // Use M6 when "Use tool changer" is checked; otherwise respect tool's Manual tool change flag
+    if (getProperty("useToolCall") || !tool.manualToolChange) {
       if (!isFirstSection() && getProperty("optionalStop") && insertToolCall) {
         onCommand(COMMAND_OPTIONAL_STOP);
       }
       onCommand(COMMAND_LOAD_TOOL);
+    } else {
+      onCommand(COMMAND_STOP);
+      writeComment("MANUAL TOOL CHANGE TO T" + toolFormat.format(tool.number));
     }
   });
   if (typeof forceModals == "function" && (insertToolCall || getProperty("safeStartAllOperations"))) {
