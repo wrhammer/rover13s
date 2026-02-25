@@ -4,6 +4,10 @@
 # overwritten when you run PNCconf again
 
 #  ---manual tool change signals to gmoccapy's dialog---
+#  Do not leave the M6 dialog open for many minutes (e.g. while cleaning) or the
+#  interpreter can lose remap context -> BUG: execute_call(): arrived with call_type=CT_NONE.
+#  If you need to clean before a tool change, use Optional Stop (M1) in the program
+#  so the program pauses first; clean, then Cycle Start and do the tool change when ready.
 
 net tool-change-request    => gmoccapy.toolchange-change
 net tool-change-confirmed  <= gmoccapy.toolchange-changed

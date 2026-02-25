@@ -611,8 +611,12 @@ function onCommand(command) {
     return;
   case COMMAND_START_SPINDLE:
     forceSpindleSpeed = false;
-    writeBlock(sOutput.format(spindleSpeed), mFormat.format(tool.clockwise ? 3 : 4));
-    writeBlock("G4", "P2.0"); // dwell so spindle has time to wind up
+    if (tool.number >= 20) {
+      writeBlock(sOutput.format(spindleSpeed), mFormat.format(tool.clockwise ? 3 : 4));
+    } else {
+      writeBlock(mFormat.format(tool.clockwise ? 3 : 4)); // T1–T19: one-speed drill/saw, no S
+    }
+    writeBlock("G4", "P4.0"); // dwell so spindle has time to wind up
     if (!spindleHasStarted) {
       spindleHasStarted = true;
     }
@@ -1723,7 +1727,11 @@ function writeToolCall(tool, insertToolCall) {
   writeStartBlocks(insertToolCall, function () {
     writeRetract(Z);
     if (insertToolCall) {
-      writeBlock("G53", "G0", "X-200", "Y0"); // router tool change position before M3
+      if (tool.number >= 20) {
+        writeBlock("G53", "G0", "X-200", "Y0"); // router tool change position for T20+
+      } else {
+        writeBlock("G4", "P2.0"); // dwell for spindle to stop before T1–T19 (drill/saw)
+      }
     }
     if (getSetting("retract.homeXY.onToolChange", false)) {
       writeRetract(settings.retract.homeXY.onToolChange);
